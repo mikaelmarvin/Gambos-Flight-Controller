@@ -1,0 +1,51 @@
+# docker-compose.yml: Orchestrates containers and their configuration
+# Run with: docker compose up -d
+# Stop with: docker compose down
+
+services:
+  # Service name - you'll reference this as 'dev-env'
+  dev-env:
+    # Build from Dockerfile in current directory
+    build:
+      context: .
+      dockerfile: Dockerfile
+    
+    # Container name
+    container_name: gambos-dev
+    
+    # Keep container running (don't exit after CMD)
+    stdin_open: true
+    tty: true
+    
+    # Mount your project directory into container
+    # Format: host_path:container_path
+    volumes:
+      # Mount entire project (so changes reflect immediately)
+      - ../:/workspace/project:rw
+      # Optional: mount home for persistent config
+      - dev-home:/home/developer
+    
+    # Working directory when you exec into container
+    working_dir: /workspace/project
+    
+    # Environment variables
+    environment:
+      - TERM=xterm-256color
+    
+    # OpenOCD ports (for GDB debugging and telnet)
+    ports:
+      - "3333:3333"   # GDB server
+      - "4444:4444"   # OpenOCD telnet
+    
+    # USB access for programmers/debuggers (ST-Link, J-Link, serial adapters).
+    # Uncomment below when device is attached to WSL2 (usbipd-win). Commented out so the
+    # container can start when no device is present (avoids "no such file or directory").
+    # group_add:
+    #   - dialout
+    # devices:
+    #   - /dev/ttyUSB0:/dev/ttyUSB0
+    #   - /dev/ttyACM0:/dev/ttyACM0
+
+# Named volumes (persist data between container recreations)
+volumes:
+  dev-home:

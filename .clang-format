@@ -1,0 +1,17 @@
+# Minimal style for STM32/embedded C. clang-format uses this when formatting on save.
+BasedOnStyle: LLVM
+Language: Cpp
+
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# K&R style: brace on same line for functions/control
+BreakBeforeBraces: Attach
+
+# One statement per line; keep short blocks on one line when reasonable
+AllowShortBlocksOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+
+# Align with typical embedded/C style
+ColumnLimit: 0

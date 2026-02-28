@@ -1,0 +1,20 @@
+/**
+ * @file app.h
+ * @brief Application layer – your code lives here.
+ */
+
+#ifndef APP_H
+#define APP_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void app_init(void);
+void app_run(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* APP_H */
