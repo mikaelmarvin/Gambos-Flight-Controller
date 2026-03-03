@@ -1,6 +1,6 @@
 /**
  * @file app.c
- * @brief Application implementation.
+ * @brief Application implementation for custom PCB.
  * Add your application logic here; call app_init() from main after HAL/RTOS init.
  */
 

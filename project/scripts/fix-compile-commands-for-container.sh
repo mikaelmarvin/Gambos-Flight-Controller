@@ -7,15 +7,15 @@
 
 set -e
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-CC_JSON="${REPO_ROOT}/project/build/Debug/compile_commands.json"
+CC_JSON="${REPO_ROOT}/project/build/custom/compile_commands.json"
 CONTAINER_WORKSPACE="${CONTAINER_WORKSPACE:-/workspace/project/gambos-sw}"
 
 if [[ ! -f "$CC_JSON" ]]; then
-  echo "Not found: $CC_JSON. Run project/scripts/configure.sh first."
+  echo "Not found: $CC_JSON. Run 'cd project && cmake --preset custom' first."
   exit 0
 fi
 
-# Detect host path from first entry (e.g. /home/mikael/gambos-sw/project/build/Debug)
+# Detect host path from first entry (e.g. /home/mikael/gambos-sw/project/build/custom)
 FIRST_DIR=$(grep -oP '"directory":\s*"\K[^"]+' "$CC_JSON" | head -1)
 if [[ -z "$FIRST_DIR" ]]; then
   echo "Could not parse directory from compile_commands.json"
@@ -28,7 +28,7 @@ if [[ "$FIRST_DIR" == /workspace/* ]]; then
   exit 0
 fi
 
-# Derive host repo root: path is like /home/user/gambos-sw/project/build/Debug
+# Derive host repo root: path is like /home/user/gambos-sw/project/build/custom
 # Take everything up to and including "gambos-sw"
 if [[ "$FIRST_DIR" =~ ^(.*/gambos-sw) ]]; then
   HOST_ROOT="${BASH_REMATCH[1]}"

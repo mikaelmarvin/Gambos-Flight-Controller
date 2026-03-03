@@ -10,17 +10,30 @@
             "cacheVariables": {}
         },
         {
-            "name": "Debug",
+            "name": "custom",
             "inherits": "default",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BOARD": "custom"
+            }
+        },
+        {
+            "name": "devkit",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BOARD": "devkit"
             }
         }
     ],
     "buildPresets": [
         {
-            "name": "Debug",
-            "configurePreset": "Debug"
+            "name": "custom",
+            "configurePreset": "custom"
+        },
+        {
+            "name": "devkit",
+            "configurePreset": "devkit"
         }
     ]
 }

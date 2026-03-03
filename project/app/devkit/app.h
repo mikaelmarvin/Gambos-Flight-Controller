@@ -1,6 +1,6 @@
 /**
  * @file app.h
- * @brief Application layer – your code lives here.
+ * @brief Application layer – devkit (test code).
  */
 
 #ifndef APP_H

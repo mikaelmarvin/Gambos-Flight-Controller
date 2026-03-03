@@ -1,5 +1,5 @@
 #!/bin/bash
-# Build the Debug target. Run from repo root.
+# Build the custom target. Run from repo root.
 set -e
 cd "$(dirname "$0")/.."
-cmake --build build/Debug -- -j
+cmake --build build/custom -- -j

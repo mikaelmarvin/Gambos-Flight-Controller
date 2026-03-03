@@ -21,6 +21,13 @@ endif()
 # Set the project name
 set(CMAKE_PROJECT_NAME gambos)
 
+# Board selection: "custom" = your PCB, "devkit" = dev board (e.g. NUCLEO-F446RE)
+set(BOARD "custom" CACHE STRING "Target board: custom or devkit")
+if(NOT BOARD MATCHES "^(custom|devkit)$")
+    message(FATAL_ERROR "BOARD must be 'custom' or 'devkit', got: ${BOARD}")
+endif()
+message(STATUS "Board: ${BOARD}")
+
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
@@ -42,15 +49,15 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
 )
 
-# Add sources to executable
+# Board-specific application (custom = PCB app, devkit = test code)
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    app/app.c
-    # Add more user sources here
+    app/${BOARD}/app.c
+    # Add more board-specific sources under app/${BOARD}/ as needed
 )
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/app
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/${BOARD}
     # Add more user include paths here
 )
 

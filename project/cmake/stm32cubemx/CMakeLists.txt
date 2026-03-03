@@ -1,16 +1,20 @@
 cmake_minimum_required(VERSION 3.22)
 # Enable CMake support for ASM and C languages
 enable_language(C ASM)
+
+# Symmetric board folders: board/<name>/ has Inc/, Src/ (STM32CubeMX convention), optional startup & extras
+set(BOARD_CORE_DIR ${CMAKE_SOURCE_DIR}/board/${BOARD})
+
 # STM32CubeMX generated symbols (macros)
-set(MX_Defines_Syms 
-	USE_HAL_DRIVER 
+set(MX_Defines_Syms
+	USE_HAL_DRIVER
 	STM32F446xx
     $<$<CONFIG:Debug>:DEBUG>
 )
 
 # STM32CubeMX generated include paths
 set(MX_Include_Dirs
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/inc
+    ${BOARD_CORE_DIR}/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_HAL_Driver/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Third_Party/FreeRTOS/Source/include
@@ -20,26 +24,22 @@ set(MX_Include_Dirs
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/CMSIS/Include
 )
 
-# STM32CubeMX generated application sources
-set(MX_Application_Src
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/main.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/gpio.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/freertos.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/i2c.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/spi.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/tim.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/usart.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/stm32f4xx_it.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/stm32f4xx_hal_msp.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/stm32f4xx_hal_timebase_tim.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/sysmem.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/syscalls.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../startup_stm32f446xx.s
-)
+# Board CubeMX sources: GLOB all .c in board/<name>/Src, exclude system_stm32f4xx.c (in STM32_Drivers)
+file(GLOB MX_Application_Src_C "${BOARD_CORE_DIR}/Src/*.c")
+if(NOT MX_Application_Src_C)
+    message(FATAL_ERROR "Board '${BOARD}' has no sources in ${BOARD_CORE_DIR}/Src/. Add CubeMX-generated files (Core/Inc -> board/${BOARD}/Inc, Core/Src -> board/${BOARD}/Src). See board/README.md.")
+endif()
+list(REMOVE_ITEM MX_Application_Src_C "${BOARD_CORE_DIR}/Src/system_stm32f4xx.c")
+# Startup: board-specific if present, else project default
+if(EXISTS "${BOARD_CORE_DIR}/startup_stm32f446xx.s")
+    set(MX_Application_Src ${MX_Application_Src_C} ${BOARD_CORE_DIR}/startup_stm32f446xx.s)
+else()
+    set(MX_Application_Src ${MX_Application_Src_C} ${CMAKE_SOURCE_DIR}/startup_stm32f446xx.s)
+endif()
 
-# STM32 HAL/LL Drivers
+# STM32 HAL/LL Drivers (system_stm32f4xx.c is board-specific)
 set(STM32_Drivers_Src
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../core/src/system_stm32f4xx.c
+    ${BOARD_CORE_DIR}/Src/system_stm32f4xx.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c
