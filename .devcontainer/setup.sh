@@ -15,8 +15,8 @@ fi
 
 # --- Full setup (postCreate) ---
 
-# 1. Generate build and compile_commands.json
-./project/scripts/configure.sh || true
+# 1. Generate build and compile_commands.json (custom preset)
+(cd project && cmake --preset custom) || true
 
 # 2. Fix paths in compile_commands.json for container
 ./project/scripts/fix-compile-commands-for-container.sh || true

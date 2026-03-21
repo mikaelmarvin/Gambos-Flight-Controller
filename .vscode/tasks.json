@@ -7,7 +7,7 @@
       "command": "cmake",
       "args": [
         "--build",
-        "${workspaceFolder}/project/build/Debug",
+        "${workspaceFolder}/project/build/custom",
         "--",
         "-j"
       ],
@@ -21,7 +21,7 @@
       "command": "cmake",
       "args": [
         "--build",
-        "${workspaceFolder}/project/build/Debug",
+        "${workspaceFolder}/project/build/custom",
         "--target",
         "clean"
       ],
@@ -36,7 +36,7 @@
       "args": [
         "-f", "interface/stlink.cfg",
         "-f", "target/stm32f4x.cfg",
-        "-c", "program ${workspaceFolder}/project/build/Debug/gambos.elf verify reset exit"
+        "-c", "program ${workspaceFolder}/project/build/custom/gambos.elf verify reset exit"
       ],
       "presentation": { "reveal": "always", "panel": "shared" },
       "problemMatcher": []

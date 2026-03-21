@@ -1,0 +1,13 @@
+# Use the matching board's compile_commands so clangd parses with the right
+# flags and include paths. Paths relative to this file (repo root).
+#
+# Default: custom board and app.
+CompileFlags:
+  CompilationDatabase: project/build/custom
+---
+# Devkit files: use build/devkit (so board/devkit/Inc and app/devkit are found).
+# This fragment overrides the default when the open file is under board/devkit or app/devkit.
+If:
+  PathMatch: project/board/devkit/.*|project/app/devkit/.*
+CompileFlags:
+  CompilationDatabase: project/build/devkit
