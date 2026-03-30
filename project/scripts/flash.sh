@@ -1,14 +1,31 @@
-#!/bin/bash
-# Flash gambos.elf to the target via OpenOCD (ST-Link). Run from repo root.
-# Usage: ./project/scripts/flash.sh [custom|devkit]   (default: custom)
-set -e
-REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-BOARD="${1:-custom}"
-if [[ "$BOARD" != "custom" && "$BOARD" != "devkit" ]]; then
-  echo "Usage: $0 [custom|devkit]"
-  exit 1
+#!/usr/bin/env bash
+# Flash gambos.elf via OpenOCD (ST-Link + SWD).
+# Usage: ./project/scripts/flash.sh [preset]
+# Build first: ./project/scripts/build.sh <same preset>
+set -euo pipefail
+PRESET="${1:-custom}"
+case "$PRESET" in
+    custom | devkit)
+        TARGET="stm32f4x.cfg"
+        ;;
+    bluepill)
+        TARGET="stm32f1x.cfg"
+        ;;
+    *)
+        echo "Usage: $0 [custom|devkit|bluepill]" >&2
+        exit 1
+        ;;
+esac
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ELF="${ROOT}/build/${PRESET}/gambos.elf"
+
+if [[ ! -f "$ELF" ]]; then
+    echo "Missing: $ELF" >&2
+    echo "Run: ./project/scripts/build.sh ${PRESET}" >&2
+    exit 1
 fi
-ELF="${REPO_ROOT}/project/build/${BOARD}/gambos.elf"
-[[ -f "$ELF" ]] || { echo "Not found: $ELF. Build first: cd project && cmake --preset $BOARD && cmake --build build/$BOARD -j"; exit 1; }
-openocd -f interface/stlink.cfg -f target/stm32f4x.cfg \
-  -c "program $ELF verify reset exit"
+
+echo "Flashing ${ELF} (${PRESET} / ${TARGET})"
+exec openocd -f interface/stlink.cfg -f "target/${TARGET}" \
+    -c "program ${ELF} verify reset exit"

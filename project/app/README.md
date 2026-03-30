@@ -6,5 +6,6 @@ Application code is **not shared** between boards. Each board has its own app so
 |-------------|-------------|----------------------------|
 | `app/custom/` | `BOARD=custom` | Your product application (custom PCB) |
 | `app/devkit/` | `BOARD=devkit` | Devkit test code, validation, demos   |
+| `app/bluepill/` | `BOARD=bluepill` | Blue Pill (STM32F103) application |
 
-Both provide the same interface (`app_init()`, `app_run()`) so each board’s `main.c` can call them the same way. Add more sources under `app/custom/` or `app/devkit/` as needed; list them in `CMakeLists.txt` under the board-specific `target_sources` section.
+All use `app_init()` (before the RTOS scheduler starts) and `app_run()` (e.g. from the default task). Add more `.c` files as needed and list them in the top-level `CMakeLists.txt` under `target_sources` for `gambos`.
