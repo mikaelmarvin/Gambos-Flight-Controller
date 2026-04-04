@@ -28,7 +28,7 @@
       }
     }
   },
-  "postCreateCommand": "bash -c './.devcontainer/setup.sh'",
-  "postStartCommand": "bash -c './.devcontainer/setup.sh --post-start'",
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postStartCommand": "bash .devcontainer/setup.sh --post-start",
   "remoteUser": "developer"
 }

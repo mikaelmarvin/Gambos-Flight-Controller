@@ -21,14 +21,6 @@ board/
 
 Build: `cmake --preset custom` or `cmake --preset devkit`.
 
-## Blue Pill (`bluepill`) — STM32F103
-
-Different MCU: self-contained CubeMX tree under `board/bluepill/` (`Core/`, `Drivers/`, `Middlewares/` including FreeRTOS, `ARM_CM3` port). Linker script `board/bluepill/STM32F103XX_FLASH.ld`.
-
-Build from `project/` only: `cmake --preset bluepill` (do not use a second `CMakeLists.txt` only under `board/bluepill`).
-
-After regenerating from CubeMX, update source lists in `cmake/stm32cubemx/stm32f1_bluepill_freertos.cmake` if files were added or removed (keep it in sync with `board/bluepill/cmake/stm32cubemx/CMakeLists.txt` from CubeMX, or delete that duplicate once integrated).
-
 ## Application code
 
 Per board under `app/<board>/` — `app_init()` before `osKernelStart`, `app_run()` typically from the default FreeRTOS task.

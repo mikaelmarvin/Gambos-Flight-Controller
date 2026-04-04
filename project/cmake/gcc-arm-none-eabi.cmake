@@ -20,7 +20,7 @@ set(CMAKE_EXECUTABLE_SUFFIX_CXX     ".elf")
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 if(NOT DEFINED BOARD OR BOARD STREQUAL "")
-    set(BOARD "custom" CACHE STRING "Target board: custom, devkit, or bluepill")
+    set(BOARD "custom" CACHE STRING "Target board: custom or devkit")
 endif()
 
 set(_BOARD_FILE "${CMAKE_CURRENT_LIST_DIR}/boards/${BOARD}.cmake")

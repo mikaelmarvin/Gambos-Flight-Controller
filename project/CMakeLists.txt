@@ -21,10 +21,10 @@ endif()
 # Set the project name
 set(CMAKE_PROJECT_NAME gambos)
 
-# Board selection: custom/devkit = F446 symmetric layout; bluepill = STM32F103 (see board/README.md)
-set(BOARD "custom" CACHE STRING "Target board: custom, devkit, or bluepill")
-if(NOT BOARD MATCHES "^(custom|devkit|bluepill)$")
-    message(FATAL_ERROR "BOARD must be 'custom', 'devkit', or 'bluepill', got: ${BOARD}")
+# Board selection: custom/devkit = F446 symmetric layout (see board/README.md)
+set(BOARD "custom" CACHE STRING "Target board: custom or devkit")
+if(NOT BOARD MATCHES "^(custom|devkit)$")
+    message(FATAL_ERROR "BOARD must be 'custom' or 'devkit', got: ${BOARD}")
 endif()
 message(STATUS "Board: ${BOARD}")
 
@@ -58,6 +58,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/app/${BOARD}
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_drivers/nrf24
     # Add more user include paths here
 )
 

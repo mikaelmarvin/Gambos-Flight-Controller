@@ -1,6 +1,9 @@
 # docker-compose.yml: Orchestrates containers and their configuration
 # Run with: docker compose up -d
 # Stop with: docker compose down
+#
+# USB (ST-Link, adapters): requires Linux /dev/bus/usb on the host. On Windows + WSL2,
+# attach the device with usbipd-win on the host first; WSL must expose USB (see Microsoft docs).
 
 services:
   # Service name - you'll reference this as 'dev-env'
@@ -24,6 +27,8 @@ services:
       - ../:/workspace/project:rw
       # Optional: mount home for persistent config
       - dev-home:/home/developer
+      # USB bus (ST-Link, CMSIS-DAP, etc. via libusb / OpenOCD)
+      - /dev/bus/usb:/dev/bus/usb
     
     # Working directory when you exec into container
     working_dir: /workspace/project
@@ -36,15 +41,12 @@ services:
     ports:
       - "3333:3333"   # GDB server
       - "4444:4444"   # OpenOCD telnet
-    
-    # USB access for programmers/debuggers (ST-Link, J-Link, serial adapters).
-    # Uncomment below when device is attached to WSL2 (usbipd-win). Commented out so the
-    # container can start when no device is present (avoids "no such file or directory").
-    # group_add:
-    #   - dialout
-    # devices:
-    #   - /dev/ttyUSB0:/dev/ttyUSB0
-    #   - /dev/ttyACM0:/dev/ttyACM0
+
+    # USB from host → container (ST-Link, USB serial). Needs Linux host with /dev/bus/usb.
+    # Security: full device access; acceptable for a local dev container only.
+    privileged: true
+    group_add:
+      - dialout
 
 # Named volumes (persist data between container recreations)
 volumes:

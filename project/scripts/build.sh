@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Configure (if needed) and build. Run from repo: ./project/scripts/build.sh [preset]
-# Presets: custom (default), devkit, bluepill
+# Presets: custom (default), devkit
 set -euo pipefail
 PRESET="${1:-custom}"
 case "$PRESET" in
-    custom | devkit | bluepill) ;;
+    custom | devkit) ;;
     *)
-        echo "Usage: $0 [custom|devkit|bluepill]" >&2
+        echo "Usage: $0 [custom|devkit]" >&2
         exit 1
         ;;
 esac

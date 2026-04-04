@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Remove a preset build directory (or all of project/build). Reconfigure with build.sh or cmake --preset.
 # Usage: ./project/scripts/pristine.sh [preset|all]
-#   preset — custom | devkit | bluepill (default: custom)
+#   preset — custom | devkit (default: custom)
 #   all    — delete entire project/build/
 set -euo pipefail
 MODE="${1:-custom}"
@@ -16,9 +16,9 @@ fi
 
 PRESET="$MODE"
 case "$PRESET" in
-    custom | devkit | bluepill) ;;
+    custom | devkit) ;;
     *)
-        echo "Usage: $0 [custom|devkit|bluepill|all]" >&2
+        echo "Usage: $0 [custom|devkit|all]" >&2
         exit 1
         ;;
 esac

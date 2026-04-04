@@ -13,5 +13,10 @@ BreakBeforeBraces: Attach
 AllowShortBlocksOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 
-# Align with typical embedded/C style
-ColumnLimit: 0
+# Break long declarations/calls instead of infinite lines (0 = no wrap).
+ColumnLimit: 100
+
+# One parameter/argument per line when wrapping (readability for long SPI/HAL-style APIs).
+BinPackParameters: false
+BinPackArguments: false
+AllowAllParametersOfDeclarationOnNextLine: true

@@ -1,6 +1,17 @@
-# STM32F446 + FreeRTOS: symmetric board/<name>/{Inc,Src}; shared Drivers/ and Middlewares/ at project root
+# STM32F446 + FreeRTOS: board/<name> uses either Inc/Src (copy from CubeMX) or Core/Inc + Core/Src (default CubeMX tree).
+# Shared Drivers/ and Middlewares/ at project root.
 
 set(BOARD_CORE_DIR ${CMAKE_SOURCE_DIR}/board/${BOARD})
+
+if(IS_DIRECTORY "${BOARD_CORE_DIR}/Src")
+    set(MX_BOARD_INC_DIR "${BOARD_CORE_DIR}/Inc")
+    set(MX_BOARD_SRC_DIR "${BOARD_CORE_DIR}/Src")
+elseif(IS_DIRECTORY "${BOARD_CORE_DIR}/Core/Src")
+    set(MX_BOARD_INC_DIR "${BOARD_CORE_DIR}/Core/Inc")
+    set(MX_BOARD_SRC_DIR "${BOARD_CORE_DIR}/Core/Src")
+else()
+    message(FATAL_ERROR "Board '${BOARD}': expected ${BOARD_CORE_DIR}/Src/ or ${BOARD_CORE_DIR}/Core/Src/ (CubeMX). See board/README.md.")
+endif()
 
 set(MX_Defines_Syms
 	USE_HAL_DRIVER
@@ -9,7 +20,7 @@ set(MX_Defines_Syms
 )
 
 set(MX_Include_Dirs
-    ${BOARD_CORE_DIR}/Inc
+    ${MX_BOARD_INC_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_HAL_Driver/Inc
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Middlewares/Third_Party/FreeRTOS/Source/include
@@ -19,11 +30,11 @@ set(MX_Include_Dirs
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/CMSIS/Include
 )
 
-file(GLOB MX_Application_Src_C "${BOARD_CORE_DIR}/Src/*.c")
+file(GLOB MX_Application_Src_C "${MX_BOARD_SRC_DIR}/*.c")
 if(NOT MX_Application_Src_C)
-    message(FATAL_ERROR "Board '${BOARD}' has no sources in ${BOARD_CORE_DIR}/Src/. Add CubeMX-generated files (Core/Inc -> board/${BOARD}/Inc, Core/Src -> board/${BOARD}/Src). See board/README.md.")
+    message(FATAL_ERROR "Board '${BOARD}' has no application sources under ${MX_BOARD_SRC_DIR}/. See board/README.md.")
 endif()
-list(REMOVE_ITEM MX_Application_Src_C "${BOARD_CORE_DIR}/Src/system_stm32f4xx.c")
+list(REMOVE_ITEM MX_Application_Src_C "${MX_BOARD_SRC_DIR}/system_stm32f4xx.c")
 if(EXISTS "${BOARD_CORE_DIR}/startup_stm32f446xx.s")
     set(MX_Application_Src ${MX_Application_Src_C} ${BOARD_CORE_DIR}/startup_stm32f446xx.s)
 else()
@@ -31,7 +42,7 @@ else()
 endif()
 
 set(STM32_Drivers_Src
-    ${BOARD_CORE_DIR}/Src/system_stm32f4xx.c
+    ${MX_BOARD_SRC_DIR}/system_stm32f4xx.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c

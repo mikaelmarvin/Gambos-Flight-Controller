@@ -4,9 +4,9 @@
 set -euo pipefail
 PRESET="${1:-custom}"
 case "$PRESET" in
-    custom | devkit | bluepill) ;;
+    custom | devkit) ;;
     *)
-        echo "Usage: $0 [custom|devkit|bluepill]" >&2
+        echo "Usage: $0 [custom|devkit]" >&2
         exit 1
         ;;
 esac

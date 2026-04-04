@@ -8,11 +8,8 @@ case "$PRESET" in
     custom | devkit)
         TARGET="stm32f4x.cfg"
         ;;
-    bluepill)
-        TARGET="stm32f1x.cfg"
-        ;;
     *)
-        echo "Usage: $0 [custom|devkit|bluepill]" >&2
+        echo "Usage: $0 [custom|devkit]" >&2
         exit 1
         ;;
 esac
