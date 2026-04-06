@@ -70,9 +70,8 @@
 #define NRF24_SETUP_AW_5 0x03U
 
 /* --- SETUP_RETR (0x04) --- */
-#define NRF24_SETUP_RETR_ARD_SHIFT 4U /* auto retransmit delay */
-#define NRF24_SETUP_RETR_ARD_MASK 0xF0U
-#define NRF24_SETUP_RETR_ARC_MASK 0x0FU /* auto retransmit count */
+#define NRF24_SETUP_RETR_ARD_1000us 0x03U
+#define NRF24_SETUP_RETR_ARC_5 0x05U
 
 /* --- RF_CH (0x05) — channel 0–127 (usable band depends on region) --- */
 #define NRF24_RF_CH_MASK 0x7FU
@@ -82,14 +81,16 @@
 #define NRF24_RF_SETUP_RF_DR_LOW (1U << 5) /* with RF_DR: 250 kbps mode */
 #define NRF24_RF_SETUP_RF_DR (1U << 3)     /* 0 = 1 Mbps, 1 = 2 Mbps (when RF_DR_LOW=0) */
 #define NRF24_RF_SETUP_RF_PWR_SHIFT 1U
-#define NRF24_RF_SETUP_RF_PWR_MASK 0x06U
+#define NRF24_RF_SETUP_RF_PWR_0dBm 0x06U
+#define NRF24_RF_SETUP_RF_PWR_6dBm 0x04U
+#define NRF24_RF_SETUP_RF_PWR_12dBm 0x02U
+#define NRF24_RF_SETUP_RF_PWR_MASK 0x00U
 #define NRF24_RF_SETUP_LNA_HCURR (1U << 0)
 
 /* --- STATUS (0x07) — also returned on any SPI write; NOP reads it --- */
 #define NRF24_STATUS_RX_DR (1U << 6)
 #define NRF24_STATUS_TX_DS (1U << 5)
 #define NRF24_STATUS_MAX_RT (1U << 4)
-#define NRF24_STATUS_RX_P_NO_SHIFT 1U
 #define NRF24_STATUS_RX_P_NO_MASK 0x0EU
 #define NRF24_STATUS_TX_FULL (1U << 0)
 

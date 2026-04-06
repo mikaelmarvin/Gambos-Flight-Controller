@@ -1,60 +1,43 @@
 #include "nrf24_ll.h"
-
 #include "nrf24_commands.h"
-#include "nrf24_handler.h"
-#include "spi.h"
-#include "stm32f1xx_hal.h"
+#include <string.h>
 
-#define NRF24_SPI_TIMEOUT_MS 100U
+uint8_t nrf24_read_reg(const uint8_t reg) {
+    // Clocking the first byte gets the STATUS register on MISO, while the next byte gets the
+    // gets the register value
+    uint8_t tx[2] = {NRF24_CMD_R_REG(reg), NRF24_CMD_NOP};
+    uint8_t rx[2];
 
-static bool nrf24_ll_spi_exchange(const uint8_t *tx, uint8_t *rx, size_t len)
-{
-  static bool handler_ready;
-
-  if (len == 0U || len > 65535U) {
-    return false;
-  }
-  if (!handler_ready) {
-    nrf24_handler_spi_init();
-    handler_ready = true;
-  }
-
-  if (HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t *)tx, rx, (uint16_t)len) != HAL_OK) {
-    return false;
-  }
-
-  nrf24_handler_spi_wait_dma_done(NRF24_SPI_TIMEOUT_MS);
-
-  if (HAL_SPI_GetState(&hspi1) != HAL_SPI_STATE_READY) {
-    (void)HAL_SPI_Abort(&hspi1);
-    return false;
-  }
-  return true;
+    nrf24_spi_exchange(tx, rx, 2U);
+    // Return only the value of the register
+    return rx[1];
 }
 
-uint8_t nrf24_ll_get_status(void)
-{
-  uint8_t tx[1] = { NRF24_CMD_NOP };
-  uint8_t rx[1];
-  if (!nrf24_ll_spi_exchange(tx, rx, 1U)) {
-    return 0xFFU;
-  }
-  return rx[0];
+bool nrf24_write_reg(const uint8_t reg, const uint8_t value) {
+    uint8_t tx[2] = {NRF24_CMD_W_REG(reg), value};
+    uint8_t rx[2];
+    return nrf24_spi_exchange(tx, rx, 2U);
 }
 
-uint8_t nrf24_ll_read_reg(uint8_t reg)
-{
-  uint8_t tx[2] = { NRF24_CMD_R_REG(reg), NRF24_CMD_NOP };
-  uint8_t rx[2];
-  if (!nrf24_ll_spi_exchange(tx, rx, 2U)) {
-    return 0xFFU;
-  }
-  return rx[1];
+bool nrf24_write_reg_array(const uint8_t reg, const uint8_t *value, const uint8_t length) {
+    uint8_t tx[length + 1];
+    tx[0] = NRF24_CMD_W_REG(reg);
+    memcpy(&tx[1], value, length);
+    uint8_t rx[length + 1];
+
+    // Must make sure the order is correct in the array the value pointer is pointing to
+    return nrf24_spi_exchange(tx, rx, length + 1U);
 }
 
-bool nrf24_ll_write_reg(uint8_t reg, uint8_t value)
-{
-  uint8_t tx[2] = { NRF24_CMD_W_REG(reg), value };
-  uint8_t rx[2];
-  return nrf24_ll_spi_exchange(tx, rx, 2U);
+bool nrf24_command(const uint8_t command) {
+    uint8_t tx[1] = {command};
+    uint8_t rx[1];
+    return nrf24_spi_exchange(tx, rx, 1U);
+}
+
+uint8_t nrf24_read_status(void) {
+    uint8_t tx[1] = {NRF24_CMD_NOP};
+    uint8_t rx[1];
+    nrf24_spi_exchange(tx, rx, 1U);
+    return rx[0];
 }
