@@ -54,6 +54,13 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     app/${BOARD}/app.c
     # Add more board-specific sources under app/${BOARD}/ as needed
 )
+if(BOARD STREQUAL "devkit")
+    target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+        app/devkit/tx_handler/tx_handler.c
+        app/devkit/retarget_print.c
+        app/devkit/log.c
+    )
+endif()
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE

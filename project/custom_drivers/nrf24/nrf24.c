@@ -25,12 +25,9 @@ bool nrf24_init(const nrf24_primary_role_t primary_role, const nrf24_address_t s
     config |= NRF24_RF_SETUP_RF_PWR_0dBm;
     nrf24_write_reg(NRF24_REG_RF_SETUP, config);
 
-    // Enable dynamic payload length and disable payload with ACK and disable noACK command
+    // Disable dynamic payload length, payload with ACK and noACK command
     // (NRF24_CMD_W_TX_PAYLOAD_NO_ACK)
-    nrf24_write_reg(NRF24_REG_FEATURE, NRF24_FEATURE_EN_DPL);
-
-    // Enable dynamic payload length for pipe 0
-    nrf24_write_reg(NRF24_REG_DYNPD, 0x01);
+    nrf24_write_reg(NRF24_REG_FEATURE, 0x00);
 
     // Enable auto-ack only for pipe 0
     nrf24_write_reg(NRF24_REG_EN_AA, NRF24_ENAA_P0);

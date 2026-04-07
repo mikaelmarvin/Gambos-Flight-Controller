@@ -26,7 +26,10 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
 
+#include "log.h"
+#include "tx_handler/tx_handler.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,7 +55,7 @@
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
     .name = "defaultTask",
-    .stack_size = 128 * 4,
+    .stack_size = 2048,
     .priority = (osPriority_t)osPriorityNormal,
 };
 
@@ -96,7 +99,7 @@ void MX_FREERTOS_Init(void) {
     defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
     /* USER CODE BEGIN RTOS_THREADS */
-    /* add threads, ... */
+    tx_handler_start();
     /* USER CODE END RTOS_THREADS */
 
     /* USER CODE BEGIN RTOS_EVENTS */
@@ -113,9 +116,12 @@ void MX_FREERTOS_Init(void) {
 /* USER CODE END Header_StartDefaultTask */
 void StartDefaultTask(void *argument) {
     /* USER CODE BEGIN StartDefaultTask */
-    /* Infinite loop */
+    (void)argument;
+    (void)setvbuf(stdout, NULL, _IONBF, 0);
+    LOG("\r\n=== gambos devkit: default task (115200 8N1) ===\r\n");
     for (;;) {
-        osDelay(1);
+        LOG("heartbeat\r\n");
+        osDelay(1000);
     }
     /* USER CODE END StartDefaultTask */
 }
