@@ -1,46 +1,97 @@
-#!/bin/bash
-# Rewrite compile_commands.json so all paths use the container workspace path.
-# This makes clangd (and Go to Definition / headers) work when developing
-# inside the dev container. Run from repo root; safe to run multiple times.
-# If compile_commands.json was built on the host (e.g. /home/user/gambos-sw),
-# this script rewrites it to /workspace/project/gambos-sw.
+#!/usr/bin/env bash
+# Rewrite compile_commands.json so paths use the container workspace.
+# Helps clangd / Go to Definition when the tree was configured on the host
+# (e.g. /home/user/gambos-sw) and you open it under /workspace/project/gambos-sw.
+# Run from repo root; safe to run multiple times.
+#
+# Usage: ./project/scripts/fix-compile-commands-for-container.sh [custom|devkit|all]
+#   custom | devkit — only that preset under project/build/<preset>/
+#   all (default)  — update each of project/build/custom and project/build/devkit
+#                    when compile_commands.json exists
+#
+# Override destination: CONTAINER_WORKSPACE=/path ./project/scripts/...
 
-set -e
+set -euo pipefail
+
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
-CC_JSON="${REPO_ROOT}/project/build/custom/compile_commands.json"
 CONTAINER_WORKSPACE="${CONTAINER_WORKSPACE:-/workspace/project/gambos-sw}"
+MODE="${1:-all}"
 
-if [[ ! -f "$CC_JSON" ]]; then
-  echo "Not found: $CC_JSON. Run 'cd project && cmake --preset custom' first."
-  exit 0
-fi
+usage() {
+	echo "Usage: $0 [custom|devkit|all]" >&2
+	echo "  Rewrite compile_commands.json under project/build/<preset>/ to use" >&2
+	echo "  CONTAINER_WORKSPACE (default: ${CONTAINER_WORKSPACE})." >&2
+	exit 2
+}
 
-# Detect host path from first entry (e.g. /home/mikael/gambos-sw/project/build/custom)
-FIRST_DIR=$(grep -oP '"directory":\s*"\K[^"]+' "$CC_JSON" | head -1)
-if [[ -z "$FIRST_DIR" ]]; then
-  echo "Could not parse directory from compile_commands.json"
-  exit 1
-fi
+case "$MODE" in
+custom | devkit | all) ;;
+-h | --help)
+	echo "Usage: $0 [custom|devkit|all]" >&2
+	echo "  Default: all — fixes project/build/custom and project/build/devkit when present." >&2
+	exit 0
+	;;
+*) usage ;;
+esac
 
-# If already using container path, nothing to do
-if [[ "$FIRST_DIR" == /workspace/* ]]; then
-  echo "compile_commands.json already uses container paths."
-  exit 0
-fi
+# Args: path to compile_commands.json, label for messages
+# Returns: 0 on success or benign skip, 1 on parse / rewrite error
+fix_one() {
+	local cc_json="$1"
+	local label="$2"
 
-# Derive host repo root: path is like /home/user/gambos-sw/project/build/custom
-# Take everything up to and including "gambos-sw"
-if [[ "$FIRST_DIR" =~ ^(.*/gambos-sw) ]]; then
-  HOST_ROOT="${BASH_REMATCH[1]}"
+	if [[ ! -f "$cc_json" ]]; then
+		echo "Skip ${label}: not found (${cc_json})"
+		return 0
+	fi
+
+	local first_dir
+	# -m1: single match avoids grep|head SIGPIPE under pipefail
+	first_dir=$(grep -oPm1 '"directory":\s*"\K[^"]+' "$cc_json" || true)
+	if [[ -z "$first_dir" ]]; then
+		echo "Could not parse directory from: ${cc_json}" >&2
+		return 1
+	fi
+
+	if [[ "$first_dir" == /workspace/* ]]; then
+		echo "OK ${label}: already uses container paths."
+		return 0
+	fi
+
+	local host_root
+	if [[ "$first_dir" =~ ^(.*/gambos-sw) ]]; then
+		host_root="${BASH_REMATCH[1]}"
+	else
+		echo "Could not detect host repo root from: ${first_dir} (${cc_json})" >&2
+		return 1
+	fi
+
+	if [[ "$host_root" == "$CONTAINER_WORKSPACE" ]]; then
+		echo "OK ${label}: already uses container paths."
+		return 0
+	fi
+
+	sed -i "s|${host_root}|${CONTAINER_WORKSPACE}|g" "$cc_json"
+	echo "Updated ${label}: ${host_root} -> ${CONTAINER_WORKSPACE}"
+	return 0
+}
+
+ERR=0
+
+if [[ "$MODE" == "all" ]]; then
+	fix_one "${REPO_ROOT}/project/build/custom/compile_commands.json" "custom" || ERR=1
+	fix_one "${REPO_ROOT}/project/build/devkit/compile_commands.json" "devkit" || ERR=1
 else
-  echo "Could not detect host repo root from: $FIRST_DIR"
-  exit 1
+	cc_json="${REPO_ROOT}/project/build/${MODE}/compile_commands.json"
+	if [[ ! -f "$cc_json" ]]; then
+		echo "Not found: ${cc_json}. Run: cd project && cmake --preset ${MODE}" >&2
+		exit 0
+	fi
+	fix_one "$cc_json" "$MODE" || ERR=1
 fi
 
-if [[ "$HOST_ROOT" == "$CONTAINER_WORKSPACE" ]]; then
-  echo "compile_commands.json already uses container paths."
-  exit 0
+if [[ "$ERR" -ne 0 ]]; then
+	exit 1
 fi
 
-sed -i "s|${HOST_ROOT}|${CONTAINER_WORKSPACE}|g" "$CC_JSON"
-echo "Updated compile_commands.json ($HOST_ROOT -> $CONTAINER_WORKSPACE). Reload the window (Ctrl+Shift+P -> Developer: Reload Window) so clangd picks it up."
+echo "Done. Reload the window (Ctrl+Shift+P -> Developer: Reload Window) so clangd picks up changes."
