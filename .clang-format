@@ -14,7 +14,7 @@ AllowShortBlocksOnASingleLine: Empty
 AllowShortIfStatementsOnASingleLine: Never
 
 # Break long declarations/calls instead of infinite lines (0 = no wrap).
-ColumnLimit: 100
+ColumnLimit: 70
 
 # One parameter/argument per line when wrapping (readability for long SPI/HAL-style APIs).
 BinPackParameters: false
