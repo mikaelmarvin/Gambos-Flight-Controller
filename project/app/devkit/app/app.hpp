@@ -1,10 +1,10 @@
 /**
- * @file app.h
+ * @file app.hpp
  * @brief Application layer – devkit (test code).
  */
 
-#ifndef APP_H
-#define APP_H
+#ifndef GAMBOS_APP_HPP
+#define GAMBOS_APP_HPP
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,4 +17,4 @@ void app_run(void);
 }
 #endif
 
-#endif /* APP_H */
+#endif /* GAMBOS_APP_HPP */

@@ -29,7 +29,7 @@
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 
-#include "log.h"
+#include "log.hpp"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

@@ -12,6 +12,10 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -31,12 +35,9 @@ message(STATUS "Board: ${BOARD}")
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-# Core project settings
-project(${CMAKE_PROJECT_NAME})
+# Core project settings (C++17 for app code; HAL/Cube stays C)
+project(${CMAKE_PROJECT_NAME} LANGUAGES C CXX ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
-
-# Enable CMake support for ASM and C languages
-enable_language(C ASM)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
@@ -49,17 +50,11 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
 )
 
-# Board-specific application (custom = PCB app, devkit = test code)
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    app/${BOARD}/app.c
-    # Add more board-specific sources under app/${BOARD}/ as needed
-)
+# Board-specific application (custom = PCB app; devkit = app/devkit/CMakeLists.txt)
 if(BOARD STREQUAL "devkit")
-    target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-        app/devkit/tx_handler/tx_handler.c
-        app/devkit/retarget_print.c
-        app/devkit/log.c
-    )
+    add_subdirectory(app/devkit)
+else()
+    target_sources(${CMAKE_PROJECT_NAME} PRIVATE app/${BOARD}/app.c)
 endif()
 
 # Add include paths

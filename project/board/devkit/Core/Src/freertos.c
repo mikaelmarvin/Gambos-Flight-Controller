@@ -9,45 +9,51 @@
  * Copyright (c) 2026 STMicroelectronics.
  * All rights reserved.
  *
- * This software is licensed under terms that can be found in the LICENSE file
- * in the root directory of this software component.
- * If no LICENSE file comes with this software, it is provided AS-IS.
+ * This software is licensed under terms that can be found in the
+ *LICENSE file in the root directory of this software component. If no
+ *LICENSE file comes with this software, it is provided AS-IS.
  *
  ******************************************************************************
  */
 /* USER CODE END Header */
 
-/* Includes ------------------------------------------------------------------*/
+/* Includes
+ * ------------------------------------------------------------------*/
 #include "FreeRTOS.h"
 #include "cmsis_os.h"
 #include "main.h"
 #include "task.h"
 
-
-/* Private includes ----------------------------------------------------------*/
+/* Private includes
+ * ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 
-#include "log.h"
-#include "tx_handler/tx_handler.h"
+#include "log.hpp"
+
+void tx_handler_start(void);
 /* USER CODE END Includes */
 
-/* Private typedef -----------------------------------------------------------*/
+/* Private typedef
+ * -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
 
-/* Private define ------------------------------------------------------------*/
+/* Private define
+ * ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 
 /* USER CODE END PD */
 
-/* Private macro -------------------------------------------------------------*/
+/* Private macro
+ * -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
 /* USER CODE END PM */
 
-/* Private variables ---------------------------------------------------------*/
+/* Private variables
+ * ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
@@ -59,7 +65,8 @@ const osThreadAttr_t defaultTask_attributes = {
     .priority = (osPriority_t)osPriorityNormal,
 };
 
-/* Private function prototypes -----------------------------------------------*/
+/* Private function prototypes
+ * -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
@@ -96,10 +103,11 @@ void MX_FREERTOS_Init(void) {
 
     /* Create the thread(s) */
     /* creation of defaultTask */
-    defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+    defaultTaskHandle =
+        osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
     /* USER CODE BEGIN RTOS_THREADS */
-    tx_handler_start();
+
     /* USER CODE END RTOS_THREADS */
 
     /* USER CODE BEGIN RTOS_EVENTS */
@@ -126,7 +134,8 @@ void StartDefaultTask(void *argument) {
     /* USER CODE END StartDefaultTask */
 }
 
-/* Private application code --------------------------------------------------*/
+/* Private application code
+ * --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 
 /* USER CODE END Application */
