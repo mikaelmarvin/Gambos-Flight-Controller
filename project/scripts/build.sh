@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Configure (if needed) and build. Run from repo: ./project/scripts/build.sh [preset]
-# Presets: custom (default), devkit
+#
+# Presets: devkit (default, app/devkit), custom (app/custom/app.c)
 set -euo pipefail
-PRESET="${1:-custom}"
+PRESET="${1:-devkit}"
 case "$PRESET" in
     custom | devkit) ;;
     *)
