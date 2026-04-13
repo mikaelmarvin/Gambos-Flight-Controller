@@ -15,25 +15,25 @@ namespace {
 constexpr uint32_t kTxHandlerTaskStackSize = 256U;
 constexpr uint32_t kTxHandlerTaskPriority = (tskIDLE_PRIORITY + 1U);
 
+void OnButtonTopic(const topics::ButtonInfo &button_info) {
+    (void)button_info;
+    LOG("This is from a subscriber!!\r\n");
+}
+
 } // namespace
 
 bool TxHandler::Initialize(void) {
-    Messaging::Subscribe<ButtonInfo>(
-        [](const ButtonInfo &button_info) {
-            (void)button_info;
-            LOG("This is from a subscriber!!");
-        });
-
+    (void)Messaging::Subscribe<topics::ButtonInfo>(OnButtonTopic);
     return true;
 }
 
 void TxHandler::Start(void) {
-    (void)xTaskCreate(&TxHandler::TaskFunction,
-                      "tx_handler",
-                      kTxHandlerTaskStackSize,
-                      this,
-                      kTxHandlerTaskPriority,
-                      NULL);
+    configASSERT(xTaskCreate(&TxHandler::TaskFunction,
+                             "tx_handler",
+                             kTxHandlerTaskStackSize,
+                             this,
+                             kTxHandlerTaskPriority,
+                             NULL) == pdPASS);
 }
 
 void TxHandler::TaskFunction(void *pvParameters) {
@@ -41,13 +41,7 @@ void TxHandler::TaskFunction(void *pvParameters) {
     (void)self;
 
     for (;;) {
+        LOG("Hello from tx_handler\r\n");
         vTaskDelay(pdMS_TO_TICKS(1000U));
     }
-}
-
-static TxHandler g_tx_handler;
-
-extern "C" void tx_handler_start(void) {
-    (void)g_tx_handler.Initialize();
-    g_tx_handler.Start();
 }

@@ -27,11 +27,9 @@
 /* Private includes
  * ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
+#include "app/app.hpp"
+#include "usart.h"
 
-#include "log.hpp"
-
-void tx_handler_start(void);
 /* USER CODE END Includes */
 
 /* Private typedef
@@ -61,7 +59,8 @@ void tx_handler_start(void);
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
     .name = "defaultTask",
-    .stack_size = 2048,
+    /* Bytes (CMSIS-RTOS v2). 512 was too small: printf/LOG in app_run() overflows. */
+    .stack_size = 8192U,
     .priority = (osPriority_t)osPriorityNormal,
 };
 
@@ -125,12 +124,14 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument) {
     /* USER CODE BEGIN StartDefaultTask */
     (void)argument;
-    (void)setvbuf(stdout, NULL, _IONBF, 0);
-    LOG("\r\n=== gambos devkit: default task (115200 8N1) ===\r\n");
-    for (;;) {
-        LOG("heartbeat\r\n");
-        osDelay(1000);
+    /* Raw UART (no printf): proves default task + scheduler are running */
+    {
+        static const uint8_t k_alive[] =
+            "\r\n[rtos] default task alive (HAL_UART, no libc)\r\n";
+        (void)HAL_UART_Transmit(&huart2, k_alive, sizeof(k_alive) - 1U,
+                                HAL_MAX_DELAY);
     }
+    app_run();
     /* USER CODE END StartDefaultTask */
 }
 

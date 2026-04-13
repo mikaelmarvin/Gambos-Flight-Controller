@@ -3,6 +3,7 @@
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/app/app.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/button_handler/button_handler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tx_handler/tx_handler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/retarget_print.cpp
 )

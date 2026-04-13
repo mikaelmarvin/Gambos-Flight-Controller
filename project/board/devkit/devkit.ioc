@@ -1,7 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
-CAD.formats=
-CAD.pinconfig=
-CAD.provider=
+CAD.formats=[]
+CAD.pinconfig=Dual
+CAD.provider=Component Search Engine
 Dma.Request0=SPI2_RX
 Dma.Request1=SPI2_TX
 Dma.RequestsNb=2
@@ -69,6 +69,7 @@ NVIC.BusFault_IRQn=true\:0\:0\:false\:false\:true\:false\:true\:false\:false
 NVIC.DMA1_Stream3_IRQn=true\:5\:0\:false\:false\:true\:true\:false\:true\:true
 NVIC.DMA1_Stream4_IRQn=true\:5\:0\:false\:false\:true\:true\:false\:true\:true
 NVIC.DebugMonitor_IRQn=true\:0\:0\:false\:false\:true\:false\:true\:false\:false
+NVIC.EXTI15_10_IRQn=true\:5\:0\:false\:false\:true\:true\:true\:true\:true
 NVIC.ForceEnableDMAVector=true
 NVIC.HardFault_IRQn=true\:0\:0\:false\:false\:true\:false\:true\:false\:false
 NVIC.MemoryManagement_IRQn=true\:0\:0\:false\:false\:true\:false\:true\:false\:false
@@ -249,3 +250,4 @@ VP_SYS_VS_tim1.Mode=TIM1
 VP_SYS_VS_tim1.Signal=SYS_VS_tim1
 board=NUCLEO-F446RE
 boardIOC=true
+rtos.0.ip=FREERTOS

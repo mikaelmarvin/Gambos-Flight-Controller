@@ -46,9 +46,13 @@ class Messaging {
     }
 };
 
+namespace topics {
+
 struct ButtonInfo {
     uint8_t button_id;
     uint8_t button_state;
 };
+
+} // namespace topics
 
 #endif /* MESSAGING_HPP */
