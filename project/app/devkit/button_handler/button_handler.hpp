@@ -12,7 +12,7 @@ class ButtonHandler {
     bool Initialize(void);
     void Start(void);
 
-    static void CallbackFromISR(uint16_t GPIO_Pin);
+    static void CallbackFromISR(void);
 
   private:
     static void TaskFunction(void *pvParameters);

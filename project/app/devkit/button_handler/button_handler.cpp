@@ -68,11 +68,7 @@ void ButtonHandler::TaskFunction(void *pvParameters) {
     }
 }
 
-void ButtonHandler::CallbackFromISR(uint16_t GPIO_Pin) {
-    if (GPIO_Pin != B1_Pin) {
-        return;
-    }
-
+void ButtonHandler::CallbackFromISR(void) {
     if (ButtonHandler::button_semaphore == nullptr) {
         return;
     }
@@ -84,9 +80,8 @@ void ButtonHandler::CallbackFromISR(uint16_t GPIO_Pin) {
 }
 
 extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-    /* Visual proof the HAL hook + NVIC path run (no UART). */
     if (GPIO_Pin == B1_Pin) {
-        HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+        ButtonHandler::CallbackFromISR();
+        return;
     }
-    ButtonHandler::CallbackFromISR(GPIO_Pin);
 }
