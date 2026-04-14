@@ -12,6 +12,10 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -21,15 +25,19 @@ endif()
 # Set the project name
 set(CMAKE_PROJECT_NAME gambos)
 
+# Board selection: custom/devkit = F446 symmetric layout (see board/README.md)
+set(BOARD "custom" CACHE STRING "Target board: custom or devkit")
+if(NOT BOARD MATCHES "^(custom|devkit)$")
+    message(FATAL_ERROR "BOARD must be 'custom' or 'devkit', got: ${BOARD}")
+endif()
+message(STATUS "Board: ${BOARD}")
+
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-# Core project settings
-project(${CMAKE_PROJECT_NAME})
+# Core project settings (C++17 for app code; HAL/Cube stays C)
+project(${CMAKE_PROJECT_NAME} LANGUAGES C CXX ASM)
 message("Build type: " ${CMAKE_BUILD_TYPE})
-
-# Enable CMake support for ASM and C languages
-enable_language(C ASM)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
@@ -42,15 +50,17 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
 )
 
-# Add sources to executable
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    app/app.c
-    # Add more user sources here
-)
+# Board-specific application (custom = PCB app; devkit = app/devkit/CMakeLists.txt)
+if(BOARD STREQUAL "devkit")
+    add_subdirectory(app/devkit)
+else()
+    target_sources(${CMAKE_PROJECT_NAME} PRIVATE app/${BOARD}/app.c)
+endif()
 
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/app
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/${BOARD}
+    ${CMAKE_CURRENT_SOURCE_DIR}/custom_drivers/nrf24
     # Add more user include paths here
 )
 

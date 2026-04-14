@@ -1,33 +1,38 @@
 #!/bin/bash
 # Single entry point for devcontainer setup.
 # - Run with no args (postCreate): configure build, fix compile_commands paths, add Starship to .bashrc.
-# - Run with --post-start: only fix compile_commands paths (called on every container start).
+# - Run with --post-start: fix compile_commands paths + ensure Starship in ~/.bashrc (every start).
 
 set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$REPO_ROOT"
 
+ensure_starship_bashrc() {
+    # Idempotent: persistent dev-home volumes may predate image skel or omit this block.
+    local line='[ -n "$BASH_VERSION" ] && command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"'
+    if ! grep -q 'starship init bash' "${HOME}/.bashrc" 2>/dev/null; then
+        echo "" >> "${HOME}/.bashrc"
+        echo "# Starship prompt (gambos-sw devcontainer)" >> "${HOME}/.bashrc"
+        echo "$line" >> "${HOME}/.bashrc"
+        echo "Added Starship to ~/.bashrc"
+    fi
+}
+
 if [[ "${1:-}" == "--post-start" ]]; then
-    # Only fix compile_commands paths (container may have started with host-built paths)
-    ./project/scripts/fix-compile-commands-for-container.sh
+    bash project/scripts/fix-compile-commands-for-container.sh
+    ensure_starship_bashrc || true
     exit 0
 fi
 
 # --- Full setup (postCreate) ---
 
-# 1. Generate build and compile_commands.json
-./project/scripts/configure.sh || true
+# 1. Generate build and compile_commands.json (custom preset)
+(cd project && cmake --preset custom) || true
 
 # 2. Fix paths in compile_commands.json for container
-./project/scripts/fix-compile-commands-for-container.sh || true
+bash project/scripts/fix-compile-commands-for-container.sh || true
 
-# 3. Add Starship prompt to ~/.bashrc (idempotent)
-STARSHIP_LINE='[ -n "$BASH_VERSION" ] && command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"'
-if ! grep -q 'starship init bash' ~/.bashrc 2>/dev/null; then
-    echo "" >> ~/.bashrc
-    echo "# Starship prompt (gambos-sw devcontainer)" >> ~/.bashrc
-    echo "$STARSHIP_LINE" >> ~/.bashrc
-    echo "Added Starship to ~/.bashrc"
-fi
+# 3. Starship in ~/.bashrc (idempotent; also runs on every postStart for old volumes)
+ensure_starship_bashrc || true
 
 echo "Devcontainer setup done. Open a new terminal for Starship prompt."

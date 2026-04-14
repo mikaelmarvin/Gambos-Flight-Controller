@@ -1,5 +1,6 @@
 # Build
 project/build/
+project/.cache/
 *.elf
 *.bin
 *.hex

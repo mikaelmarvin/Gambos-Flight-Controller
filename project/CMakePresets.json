@@ -6,33 +6,34 @@
             "hidden": true,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/${presetName}",
-		    "toolchainFile": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
+            "toolchainFile": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
+            "cacheVariables": {}
+        },
+        {
+            "name": "custom",
+            "inherits": "default",
             "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BOARD": "custom"
             }
         },
         {
-            "name": "Debug",
+            "name": "devkit",
             "inherits": "default",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "Release",
-            "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BOARD": "devkit"
             }
         }
     ],
     "buildPresets": [
         {
-            "name": "Debug",
-            "configurePreset": "Debug"
+            "name": "custom",
+            "configurePreset": "custom"
         },
         {
-            "name": "Release",
-            "configurePreset": "Release"
+            "name": "devkit",
+            "configurePreset": "devkit"
         }
     ]
 }
