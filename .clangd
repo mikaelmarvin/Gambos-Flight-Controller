@@ -41,3 +41,27 @@ CompileFlags:
     - /usr/lib/arm-none-eabi/include/c++/10.3.1/arm-none-eabi
     - -isystem
     - /usr/lib/arm-none-eabi/include/c++/10.3.1/backward
+
+# Shared drivers: compile_commands from devkit build; explicit -I matches CMake custom_drivers target.
+---
+If:
+  PathMatch: project/custom_drivers/.*
+CompileFlags:
+  CompilationDatabase: project/build/devkit
+  Add:
+    - -I
+    - project/custom_drivers
+    - -I
+    - project/custom_drivers/nrf24l01p
+    - -isystem
+    - /usr/lib/gcc/arm-none-eabi/10.3.1/include
+    - -isystem
+    - /usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed
+    - -isystem
+    - /usr/include/newlib
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1/arm-none-eabi
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1/backward

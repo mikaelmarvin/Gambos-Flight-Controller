@@ -4,13 +4,8 @@
     {
       "label": "Build",
       "type": "shell",
-      "command": "cmake",
-      "args": [
-        "--build",
-        "${workspaceFolder}/project/build/custom",
-        "--",
-        "-j"
-      ],
+      "command": "bash",
+      "args": ["${workspaceFolder}/project/scripts/build.sh", "custom"],
       "group": { "kind": "build", "isDefault": true },
       "presentation": { "reveal": "silent", "panel": "shared" },
       "problemMatcher": ["$gcc"]
@@ -18,13 +13,8 @@
     {
       "label": "Clean",
       "type": "shell",
-      "command": "cmake",
-      "args": [
-        "--build",
-        "${workspaceFolder}/project/build/custom",
-        "--target",
-        "clean"
-      ],
+      "command": "bash",
+      "args": ["${workspaceFolder}/project/scripts/clean.sh", "custom"],
       "group": "build",
       "presentation": { "reveal": "silent", "panel": "shared" },
       "problemMatcher": []

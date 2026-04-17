@@ -26,8 +26,10 @@ fi
 
 # --- Full setup (postCreate) ---
 
-# 1. Generate build and compile_commands.json (custom preset)
-(cd project && cmake --preset custom) || true
+# 1. Generate build dirs + compile_commands.json for both presets (matches .clangd path routing:
+#    app/board custom → build/custom, devkit → build/devkit). Same as build.sh per preset.
+bash project/scripts/build.sh custom || true
+bash project/scripts/build.sh devkit || true
 
 # 2. Fix paths in compile_commands.json for container
 bash project/scripts/fix-compile-commands-for-container.sh || true
