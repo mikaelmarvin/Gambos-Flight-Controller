@@ -45,6 +45,9 @@ add_executable(${CMAKE_PROJECT_NAME})
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
 
+# Custom device drivers (static lib; link into firmware below)
+add_subdirectory(custom_drivers)
+
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined library search paths
@@ -60,8 +63,6 @@ endif()
 # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/app/${BOARD}
-    ${CMAKE_CURRENT_SOURCE_DIR}/custom_drivers/nrf24
-    # Add more user include paths here
 )
 
 # Add project symbols (macros)
@@ -72,9 +73,8 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 
-# Add linked libraries
+# Add linked libraries (plain signature — must match stm32cubemx / stm32f4_freertos.cmake)
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
-
-    # Add user defined libraries
+    custom_drivers
 )

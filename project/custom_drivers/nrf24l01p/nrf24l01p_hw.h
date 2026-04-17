@@ -1,16 +1,21 @@
 /**
- * @file nrf24_reg.h
- * @brief nRF24L01+ register map and bit masks (Nordic datasheet §9).
+ * @file nrf24l01p_hw.h
+ * @brief nRF24L01+ register map, bit masks (datasheet §9), and SPI command opcodes (Table 20 / §8.3.1).
  *
- * Only the main radio; optional features (DYNPD/FEATURE) included for + variant.
+ * Note: R/W register commands embed a 5-bit register address in the low bits — use NRF24_CMD_R_REG /
+ * NRF24_CMD_W_REG. Table 20 does not define a separate ACTIVATE (0x50) SPI command; FEATURE-related
+ * behavior is configured via the FEATURE register per the product specification.
  */
 
-#ifndef NRF24_REG_H
-#define NRF24_REG_H
+#ifndef NRF24L01P_HW_H
+#define NRF24L01P_HW_H
 
 #include <stdint.h>
 
-/* Register addresses (5-bit, used with R_REG/W_REG) */
+/* -------------------------------------------------------------------------- */
+/* Register addresses (5-bit, used with R_REG/W_REG) — datasheet §9            */
+/* -------------------------------------------------------------------------- */
+
 #define NRF24_REG_CONFIG 0x00U
 #define NRF24_REG_EN_AA 0x01U
 #define NRF24_REG_EN_RXADDR 0x02U
@@ -114,4 +119,28 @@
 #define NRF24_FEATURE_EN_ACK_PAY (1U << 1)
 #define NRF24_FEATURE_EN_DYN_ACK (1U << 0) /* W_TX_PAYLOAD_NO_ACK */
 
-#endif /* NRF24_REG_H */
+/* -------------------------------------------------------------------------- */
+/* SPI command opcodes — Table 20 / §8.3.1                                     */
+/* -------------------------------------------------------------------------- */
+
+/* Base for register read/write: 000A AAAA / 001A AAAA (5-bit address AAAAA) */
+#define NRF24_CMD_R_REG(reg) ((uint8_t)(0x00U | ((uint8_t)(reg)&0x1FU)))
+#define NRF24_CMD_W_REG(reg) ((uint8_t)(0x20U | ((uint8_t)(reg)&0x1FU)))
+
+/* FIFO and payload commands (fixed opcodes) */
+#define NRF24_CMD_R_RX_PAYLOAD 0x61U
+#define NRF24_CMD_W_TX_PAYLOAD 0xA0U
+#define NRF24_CMD_FLUSH_TX 0xE1U
+#define NRF24_CMD_FLUSH_RX 0xE2U
+#define NRF24_CMD_REUSE_TX_PL 0xE3U
+#define NRF24_CMD_R_RX_PL_WID 0x60U
+#define NRF24_CMD_W_TX_PAYLOAD_NO_ACK 0xB0U
+#define NRF24_CMD_NOP 0xFFU
+
+/**
+ * ACK payload: opcode 1010 1PPP (PPP = pipe 0–5, Table 20).
+ * @param pipe 0–5
+ */
+#define NRF24_CMD_W_ACK_PAYLOAD(pipe) ((uint8_t)(0xA8U | ((uint8_t)(pipe)&0x07U)))
+
+#endif /* NRF24L01P_HW_H */

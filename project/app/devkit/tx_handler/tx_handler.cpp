@@ -15,15 +15,15 @@ namespace {
 constexpr uint32_t kTxHandlerTaskStackSize = 256U;
 constexpr uint32_t kTxHandlerTaskPriority = (tskIDLE_PRIORITY + 1U);
 
-void OnButtonTopic(const topics::ButtonInfo &button_info) {
-    (void)button_info;
-    LOG("This is from a subscriber!!\r\n");
-}
-
 } // namespace
 
 bool TxHandler::Initialize(void) {
-    (void)Messaging::Subscribe<topics::ButtonInfo>(OnButtonTopic);
+    Messaging::Subscribe<topics::ButtonInfo>(
+        [](const topics::ButtonInfo &button_info) {
+            LOG("Button pressed: %u\r\n", button_info.button_state);
+        });
+
+    nrf24l01p_.Init(Nrf24l01p::PrimaryRole::Ptx);
     return true;
 }
 
