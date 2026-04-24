@@ -54,7 +54,7 @@ RUN curl -sS https://starship.rs/install.sh | sh -s -- -y -b /usr/local/bin
 # Bake Starship into /etc/skel before useradd so /home/developer gets it from the image.
 # When dev-home volume is first populated from the image, .bashrc includes this.
 RUN echo '' >> /etc/skel/.bashrc \
-    && echo '# Starship prompt (gambos-sw image)' >> /etc/skel/.bashrc \
+    && echo '# Starship prompt (gambos image)' >> /etc/skel/.bashrc \
     && echo '[ -n "$BASH_VERSION" ] && command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"' >> /etc/skel/.bashrc
 
 # Install Python packages commonly used in embedded development

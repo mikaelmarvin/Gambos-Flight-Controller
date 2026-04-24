@@ -5,7 +5,7 @@
       "label": "Build",
       "type": "shell",
       "command": "bash",
-      "args": ["${workspaceFolder}/project/scripts/build.sh", "custom"],
+      "args": ["${workspaceFolder}/software/project/scripts/build.sh", "custom"],
       "group": { "kind": "build", "isDefault": true },
       "presentation": { "reveal": "silent", "panel": "shared" },
       "problemMatcher": ["$gcc"]
@@ -14,7 +14,7 @@
       "label": "Clean",
       "type": "shell",
       "command": "bash",
-      "args": ["${workspaceFolder}/project/scripts/clean.sh", "custom"],
+      "args": ["${workspaceFolder}/software/project/scripts/clean.sh", "custom"],
       "group": "build",
       "presentation": { "reveal": "silent", "panel": "shared" },
       "problemMatcher": []
@@ -26,7 +26,7 @@
       "args": [
         "-f", "interface/stlink.cfg",
         "-f", "target/stm32f4x.cfg",
-        "-c", "program ${workspaceFolder}/project/build/custom/gambos.elf verify reset exit"
+        "-c", "program ${workspaceFolder}/software/project/build/custom/gambos.elf verify reset exit"
       ],
       "presentation": { "reveal": "always", "panel": "shared" },
       "problemMatcher": []

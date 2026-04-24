@@ -1,6 +1,6 @@
 # Build
-project/build/
-project/.cache/
+software/project/build/
+software/project/.cache/
 *.elf
 *.bin
 *.hex
