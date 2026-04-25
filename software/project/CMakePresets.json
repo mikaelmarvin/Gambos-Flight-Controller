@@ -1,0 +1,27 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "default",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "toolchainFile": "${sourceDir}/build/${presetName}/generated/toolchain.cmake",
+            "cacheVariables": {}
+        },
+        {
+            "name": "devkit",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BOARD": "devkit"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "devkit",
+            "configurePreset": "devkit"
+        }
+    ]
+}

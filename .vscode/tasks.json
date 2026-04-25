@@ -4,13 +4,8 @@
     {
       "label": "Build",
       "type": "shell",
-      "command": "cmake",
-      "args": [
-        "--build",
-        "${workspaceFolder}/project/build/custom",
-        "--",
-        "-j"
-      ],
+      "command": "bash",
+      "args": ["${workspaceFolder}/software/project/scripts/build.sh", "devkit"],
       "group": { "kind": "build", "isDefault": true },
       "presentation": { "reveal": "silent", "panel": "shared" },
       "problemMatcher": ["$gcc"]
@@ -18,13 +13,8 @@
     {
       "label": "Clean",
       "type": "shell",
-      "command": "cmake",
-      "args": [
-        "--build",
-        "${workspaceFolder}/project/build/custom",
-        "--target",
-        "clean"
-      ],
+      "command": "bash",
+      "args": ["${workspaceFolder}/software/project/scripts/clean.sh", "devkit"],
       "group": "build",
       "presentation": { "reveal": "silent", "panel": "shared" },
       "problemMatcher": []
@@ -36,7 +26,7 @@
       "args": [
         "-f", "interface/stlink.cfg",
         "-f", "target/stm32f4x.cfg",
-        "-c", "program ${workspaceFolder}/project/build/custom/gambos.elf verify reset exit"
+        "-c", "program ${workspaceFolder}/software/project/build/devkit/gambos.elf verify reset exit"
       ],
       "presentation": { "reveal": "always", "panel": "shared" },
       "problemMatcher": []

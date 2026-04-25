@@ -19,7 +19,7 @@
         "[cpp]": {
           "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
         },
-        "C_Cpp.default.compileCommands": "${workspaceFolder}/project/build/custom/compile_commands.json",
+        "C_Cpp.default.compileCommands": "${workspaceFolder}/software/project/build/devkit/compile_commands.json",
         "C_Cpp.intelliSenseEngine": "disabled",
         "C_Cpp.errorSquiggles": "disabled",
         "clangd.arguments": [

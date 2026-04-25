@@ -7,8 +7,9 @@
       "request": "launch",
       "servertype": "openocd",
       "cwd": "${workspaceFolder}",
-      "executable": "${workspaceFolder}/project/build/custom/gambos.elf",
+      "executable": "${workspaceFolder}/software/project/build/devkit/gambos.elf",
       "device": "STM32F446RE",
+      "svdFile": "${workspaceFolder}/software/STM32F446.svd",
       "configFiles": [
         "interface/stlink.cfg",
         "target/stm32f4x.cfg"
@@ -21,8 +22,9 @@
       "type": "cortex-debug",
       "request": "attach",
       "servertype": "openocd",
-      "executable": "${workspaceFolder}/project/build/custom/gambos.elf",
+      "executable": "${workspaceFolder}/software/project/build/devkit/gambos.elf",
       "device": "STM32F446RE",
+      "svdFile": "${workspaceFolder}/software/STM32F446.svd",
       "configFiles": [
         "interface/stlink.cfg",
         "target/stm32f4x.cfg"

@@ -1,0 +1,52 @@
+# Extra system includes for clangd (arm-none-eabi newlib lives outside project -I flags).
+# Adjust GCC version in paths if `arm-none-eabi-gcc -E -v` shows a different 10.3.1.
+#
+# Restart clangd after editing (Command Palette → "clangd: Restart language server").
+
+---
+# Same newlib/gcc paths (arm-none-eabi toolchain); devkit compile_commands.
+If:
+  PathMatch: project/custom_drivers/.*
+CompileFlags:
+  CompilationDatabase: project/build/devkit
+  Add:
+    - -I
+    - project/custom_drivers
+    - -I
+    - project/custom_drivers/nrf24l01p
+    - -isystem
+    - /usr/lib/gcc/arm-none-eabi/10.3.1/include
+    - -isystem
+    - /usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed
+    - -isystem
+    - /usr/include/newlib
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1/arm-none-eabi
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1/backward
+
+---
+If:
+  PathMatch: project/.*
+CompileFlags:
+  CompilationDatabase: project/build/devkit
+  Add:
+    - -isystem
+    - /usr/lib/gcc/arm-none-eabi/10.3.1/include
+    - -isystem
+    - /usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed
+    - -isystem
+    - /usr/include/newlib
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1/arm-none-eabi
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1/backward
+
+# Hide inline parameter-name labels (clangd inlay hints); they are not part of the source.
+---
+InlayHints:
+  ParameterNames: No

@@ -12,25 +12,25 @@ ensure_starship_bashrc() {
     local line='[ -n "$BASH_VERSION" ] && command -v starship >/dev/null 2>&1 && eval "$(starship init bash)"'
     if ! grep -q 'starship init bash' "${HOME}/.bashrc" 2>/dev/null; then
         echo "" >> "${HOME}/.bashrc"
-        echo "# Starship prompt (gambos-sw devcontainer)" >> "${HOME}/.bashrc"
+        echo "# Starship prompt (gambos devcontainer)" >> "${HOME}/.bashrc"
         echo "$line" >> "${HOME}/.bashrc"
         echo "Added Starship to ~/.bashrc"
     fi
 }
 
 if [[ "${1:-}" == "--post-start" ]]; then
-    bash project/scripts/fix-compile-commands-for-container.sh
+    bash software/project/scripts/fix-compile-commands-for-container.sh
     ensure_starship_bashrc || true
     exit 0
 fi
 
 # --- Full setup (postCreate) ---
 
-# 1. Generate build and compile_commands.json (custom preset)
-(cd project && cmake --preset custom) || true
+# 1. Configure + build devkit (compile_commands.json for clangd).
+bash software/project/scripts/build.sh devkit
 
 # 2. Fix paths in compile_commands.json for container
-bash project/scripts/fix-compile-commands-for-container.sh || true
+bash software/project/scripts/fix-compile-commands-for-container.sh || true
 
 # 3. Starship in ~/.bashrc (idempotent; also runs on every postStart for old volumes)
 ensure_starship_bashrc || true
