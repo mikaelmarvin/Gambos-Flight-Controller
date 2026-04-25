@@ -7,7 +7,7 @@
       "request": "launch",
       "servertype": "openocd",
       "cwd": "${workspaceFolder}",
-      "executable": "${workspaceFolder}/software/project/build/custom/gambos.elf",
+      "executable": "${workspaceFolder}/software/project/build/devkit/gambos.elf",
       "device": "STM32F446RE",
       "svdFile": "${workspaceFolder}/software/STM32F446.svd",
       "configFiles": [
@@ -22,7 +22,7 @@
       "type": "cortex-debug",
       "request": "attach",
       "servertype": "openocd",
-      "executable": "${workspaceFolder}/software/project/build/custom/gambos.elf",
+      "executable": "${workspaceFolder}/software/project/build/devkit/gambos.elf",
       "device": "STM32F446RE",
       "svdFile": "${workspaceFolder}/software/STM32F446.svd",
       "configFiles": [
