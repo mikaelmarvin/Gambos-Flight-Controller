@@ -1,33 +1,31 @@
 # Board support
 
-## F446 boards (`custom`, `devkit`)
+## F446 devkit
 
-Same folder layout; shared `Drivers/` and `Middlewares/` at the project root.
+CubeMX output lives under **`board/devkit/`**: **`Core/`** (or `Inc`/`Src`), **`Drivers/`**, **`Middlewares/`**, `.ioc`, and the **Cube-generated CMake** tree (`CMakeLists.txt`, **`cmake/`**).
 
+### Two CMake entry points (both valid)
+
+| Where you configure | Purpose |
+|---------------------|--------|
+| **`software/project/`** (this repo) | Builds firmware target **`gambos`**. `scripts/gen-board-sources.sh` reads Cube-generated files under `board/devkit/cmake/` and writes generated inputs under `build/devkit/generated/` (`toolchain.cmake`, `cubemx_paths.cmake`). Top `CMakeLists.txt` then consumes those generated files plus `app/${BOARD}/` and `custom_drivers`. |
+| **`board/devkit/`** as CMake source root | STM32CubeIDE / Cube “generated project” flow: uses **`board/devkit/CMakeLists.txt`** and **`board/devkit/cmake/`** as shipped by Cube. |
+
+Do not hand-edit Cube’s **`board/devkit/CMakeLists.txt`** or **`board/devkit/cmake/`** for the `gambos` build; they are treated as generated input.
+
+- **startup** — optional in `board/devkit/`; otherwise `software/project/startup_stm32f446xx.s` is used.
+- **Linker script** — `board/devkit/STM32F446XX_FLASH.ld` (path is parsed from Cube toolchain and emitted into `build/devkit/generated/toolchain.cmake`).
+
+Build **gambos** from `software/project/`:
+
+```bash
+./scripts/build.sh devkit
 ```
-board/
-  custom/          # Custom PCB
-    Inc/            # CubeMX Core/Inc
-    Src/            # CubeMX Core/Src
-    ...
-  devkit/           # e.g. NUCLEO-F446RE
-    Inc/
-    Src/
-```
 
-- Copy CubeMX `Core/Inc` → `board/<name>/Inc`, `Core/Src` → `board/<name>/Src`.
-- **startup_*.s** – Optional; else the project root startup is used (F446).
-- **\*.ld** – Optional; else `STM32F446XX_FLASH.ld` at project root.
+Direct `cmake --preset devkit` works only after generated inputs already exist under `build/devkit/generated/`.
 
-Build: `cmake --preset custom` or `cmake --preset devkit`.
+HAL/RTOS source list is parsed from Cube-generated `board/devkit/cmake/stm32cubemx/CMakeLists.txt`.
 
 ## Application code
 
-Per board under `app/<board>/` — `app_init()` before `osKernelStart`, `app_run()` typically from the default FreeRTOS task.
-
-See `app/README.md`.
-
-## Adding another board
-
-- **Same MCU family as `custom`:** extend `cmake/stm32f4_freertos.cmake` (or split by name), add `cmake/boards/<name>.cmake`, presets, and `app/<name>/`.
-- **Different MCU:** add `cmake/boards/<name>.cmake`, a `cmake/stm32cubemx/<variant>.cmake` with HAL/RTOS paths, wire it in `cmake/stm32cubemx/CMakeLists.txt`, and `app/<name>/`.
+Firmware app code: `app/devkit/` — see `app/README.md`.

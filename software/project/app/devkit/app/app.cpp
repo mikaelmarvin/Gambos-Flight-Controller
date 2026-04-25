@@ -29,13 +29,16 @@ extern "C" void app_init(void) {
 
 extern "C" void app_run(void) {
     {
-        static const uint8_t k_app[] = "\r\n[app] app_run entered (HAL_UART before printf)\r\n";
-        (void)HAL_UART_Transmit(&huart2, k_app, sizeof(k_app) - 1U, HAL_MAX_DELAY);
+        static const uint8_t k_app[] =
+            "\r\n[app] app_run entered (HAL_UART before printf)\r\n";
+        (void)HAL_UART_Transmit(
+            &huart2, k_app, sizeof(k_app) - 1U, HAL_MAX_DELAY);
     }
     LOG("app_run: starting tasks\r\n");
     g_button_handler.Start();
     g_tx_handler.Start();
-    LOG("app_run: default task idle (button=B1/PC13, LD2 toggles on EXTI)\r\n");
+    LOG("app_run: default task idle (button=B1/PC13, LD2 toggles on "
+        "EXTI)\r\n");
 
     for (;;) {
         vTaskDelay(portMAX_DELAY);

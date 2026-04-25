@@ -4,10 +4,9 @@
 # (e.g. /home/user/gambos) and you open it under /workspace/project/gambos.
 # Run from repo root; safe to run multiple times.
 #
-# Usage: ./software/project/scripts/fix-compile-commands-for-container.sh [custom|devkit|all]
-#   custom | devkit — only that preset under software/project/build/<preset>/
-#   all (default)  — update each of software/project/build/custom and .../devkit
-#                    when compile_commands.json exists
+# Usage: ./software/project/scripts/fix-compile-commands-for-container.sh [devkit|all]
+#   devkit (default) — software/project/build/devkit/compile_commands.json
+#   all              — same as devkit (single preset)
 #
 # Override destination: CONTAINER_WORKSPACE=/path ./software/project/scripts/...
 
@@ -18,17 +17,17 @@ CONTAINER_WORKSPACE="${CONTAINER_WORKSPACE:-/workspace/project/gambos}"
 MODE="${1:-all}"
 
 usage() {
-	echo "Usage: $0 [custom|devkit|all]" >&2
-	echo "  Rewrite compile_commands.json under software/project/build/<preset>/ to use" >&2
+	echo "Usage: $0 [devkit|all]" >&2
+	echo "  Rewrite compile_commands.json under software/project/build/devkit/ to use" >&2
 	echo "  CONTAINER_WORKSPACE (default: ${CONTAINER_WORKSPACE})." >&2
 	exit 2
 }
 
 case "$MODE" in
-custom | devkit | all) ;;
+devkit | all) ;;
 -h | --help)
-	echo "Usage: $0 [custom|devkit|all]" >&2
-	echo "  Default: all — fixes software/project/build/custom and software/project/build/devkit when present." >&2
+	echo "Usage: $0 [devkit|all]" >&2
+	echo "  Default: all — fixes software/project/build/devkit/compile_commands.json when present." >&2
 	exit 0
 	;;
 *) usage ;;
@@ -80,18 +79,7 @@ fix_one() {
 }
 
 ERR=0
-
-if [[ "$MODE" == "all" ]]; then
-	fix_one "${REPO_ROOT}/software/project/build/custom/compile_commands.json" "custom" || ERR=1
-	fix_one "${REPO_ROOT}/software/project/build/devkit/compile_commands.json" "devkit" || ERR=1
-else
-	cc_json="${REPO_ROOT}/software/project/build/${MODE}/compile_commands.json"
-	if [[ ! -f "$cc_json" ]]; then
-		echo "Not found: ${cc_json}. Run: cd software/project && cmake --preset ${MODE}" >&2
-		exit 0
-	fi
-	fix_one "$cc_json" "$MODE" || ERR=1
-fi
+fix_one "${REPO_ROOT}/software/project/build/devkit/compile_commands.json" "devkit" || ERR=1
 
 if [[ "$ERR" -ne 0 ]]; then
 	exit 1

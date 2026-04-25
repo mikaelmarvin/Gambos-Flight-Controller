@@ -14,7 +14,7 @@ STM32 firmware for the Gambos project — built with CMake, developed in a **Dev
 ## First-time setup (after clone)
 
 1. **Open the repo in the editor** and choose **“Reopen in Container”** (or **Dev Containers: Reopen in Container**).
-2. Wait for the image to build and **post-create** to finish. The container runs `.devcontainer/setup.sh`, which runs **`./software/project/scripts/build.sh`** for **both** `custom` and `devkit` (so **`software/.clangd`** has a database for each tree) and fixes `compile_commands.json` paths for clangd.
+2. Wait for the image to build and **post-create** to finish. The container runs `.devcontainer/setup.sh`, which runs **`./software/project/scripts/build.sh devkit`** and fixes `compile_commands.json` paths for clangd.
 3. **Open a new terminal** so the shell prompt (Starship) and `PATH` are correct.
 
 If anything fails, run **“Dev Containers: Rebuild Container”** once.
@@ -24,9 +24,8 @@ If anything fails, run **“Dev Containers: Rebuild Container”** once.
 **Use the build script** (from the **repository root**):
 
 ```bash
-./software/project/scripts/build.sh              # default preset: devkit
-./software/project/scripts/build.sh custom       # F446 custom PCB
-./software/project/scripts/build.sh devkit       # F446 dev kit (e.g. NUCLEO)
+./software/project/scripts/build.sh              # devkit (default)
+./software/project/scripts/build.sh devkit     # same
 ```
 
 From this directory (`software/`) you can instead run:
@@ -35,14 +34,7 @@ From this directory (`software/`) you can instead run:
 ./project/scripts/build.sh
 ```
 
-Presets:
-
-| Preset | Board |
-|--------|--------|
-| `custom` | F446 custom PCB |
-| `devkit` | F446 dev kit (e.g. NUCLEO) |
-
-Artifacts: `software/project/build/<preset>/gambos.elf`.
+Artifacts: `software/project/build/devkit/gambos.elf`.
 
 **ARM GCC** (`arm-none-eabi-gcc`) is installed in the container image.
 
@@ -58,20 +50,18 @@ cmake --build build/devkit --parallel
 
 | Script | Purpose |
 |--------|---------|
-| `./software/project/scripts/build.sh [preset]` | Configure (if needed) + build (default preset: `devkit`) |
-| `./software/project/scripts/clean.sh [preset]` | CMake `clean` for that preset’s `build/<preset>/` |
-| `./software/project/scripts/pristine.sh [preset\|all]` | Delete `build/<preset>/`, or `all` to remove all of `software/project/build/` |
-| `./software/project/scripts/probe.sh [preset]` | OpenOCD: ST-Link + MCU (STM32F4 for `custom`/`devkit`) |
-| `./software/project/scripts/flash.sh [preset]` | OpenOCD: program `build/<preset>/gambos.elf` (build first) |
-
-Presets: `custom`, `devkit` (same as CMake).
+| `./software/project/scripts/build.sh [devkit]` | Configure (if needed) + build |
+| `./software/project/scripts/clean.sh [devkit]` | CMake `clean` for `build/devkit/` |
+| `./software/project/scripts/pristine.sh [devkit\|all]` | Delete `build/devkit/`, or `all` to remove all of `software/project/build/` |
+| `./software/project/scripts/probe.sh` | OpenOCD: ST-Link + MCU (STM32F4) |
+| `./software/project/scripts/flash.sh` | OpenOCD: program `build/devkit/gambos.elf` (build first) |
 
 ## Editor / clangd (IntelliSense)
 
-- `compile_commands.json` is generated under `software/project/build/<preset>/` when you configure that preset.
+- `compile_commands.json` is generated under `software/project/build/devkit/` when you configure the devkit preset.
 - CMSIS-SVD for register view in Cortex-Debug: **`software/STM32F446.svd`** (referenced from `.vscode/launch.json`).
-- **`software/.clangd`** picks the right compilation database per folder (`custom` default, override for `devkit` paths).  
-- If you work on **devkit**, run `./software/project/scripts/build.sh devkit` once so the matching `compile_commands.json` exists, then **restart clangd** (command palette: **clangd: Restart language server**).
+- **`software/.clangd`** points firmware sources at the devkit compilation database.
+- If clangd is stale, run `./software/project/scripts/build.sh` once, then **restart clangd** (command palette: **clangd: Restart language server**).
 
 ## ST-Link / USB (Linux host)
 
@@ -96,27 +86,26 @@ Then **reopen the Dev Container**.
 After a successful build, from the **repo root**:
 
 ```bash
-./software/project/scripts/flash.sh custom      # or devkit
+./software/project/scripts/flash.sh
 ```
 
 Equivalent manual `openocd` lines (paths depend on your workspace location):
 
-**F446 (`custom` / `devkit`):** `interface/stlink.cfg` + `target/stm32f4x.cfg` + `program …/software/project/build/<preset>/gambos.elf verify reset exit`
+**F446 devkit:** `interface/stlink.cfg` + `target/stm32f4x.cfg` + `program …/software/project/build/devkit/gambos.elf verify reset exit`
 
-Probe only: `./software/project/scripts/probe.sh [preset]`
+Probe only: `./software/project/scripts/probe.sh`
 
 ## Repo layout (short)
 
 | Path | Purpose |
 |------|---------|
-| `software/project/CMakeLists.txt` | Top-level CMake; `BOARD` selects the target. |
-| `software/project/cmake/boards/` | Per-board CPU flags and linker scripts. |
-| `software/project/cmake/stm32cubemx/` | CubeMX / HAL / FreeRTOS wiring. |
-| `software/project/board/<name>/` | Board-specific CubeMX output. |
-| `software/project/app/<name>/` | Board-specific application (`app_init` / `app_run`). |
-| `.devcontainer/` (repo root) | Dev Container definition and setup script. |
-| `software/.clangd` | clangd compilation-database routing per board folder. |
-| `software/STM32F446.svd` | CMSIS-SVD for STM32F446 (peripherals in the debugger). |
+| `software/project/CMakeLists.txt` | Top-level CMake |
+| `software/project/scripts/gen-board-sources.sh` | Generates build inputs from Cube CMake (`build/<preset>/generated/*.cmake`) |
+| `software/project/board/devkit/` | Board-specific CubeMX output |
+| `software/project/app/devkit/` | Devkit application |
+| `.devcontainer/` (repo root) | Dev Container definition and setup script |
+| `software/.clangd` | clangd compilation database routing |
+| `software/STM32F446.svd` | CMSIS-SVD for STM32F446 (peripherals in the debugger) |
 
 More detail: `software/project/board/README.md`, `software/project/app/README.md`.
 
@@ -126,7 +115,7 @@ Keep these in the repo (already tracked):
 
 - **`.devcontainer/`** — container definition and `setup.sh`
 - **`Dockerfile`**, **`docker-compose.yml`** — image and USB settings
-- **`software/project/CMakePresets.json`**, **`software/project/cmake/`** — build system
+- **`software/project/CMakePresets.json`**, **`software/project/CMakeLists.txt`**, **`software/project/scripts/`** — build system
 - **`software/.clangd`**, **`software/.clang-format`** — editor / formatter for firmware
 
 Avoid committing **`software/project/build/`** or editor caches — they belong in `.gitignore`.
@@ -135,7 +124,7 @@ Avoid committing **`software/project/build/`** or editor caches — they belong 
 
 | Issue | What to try |
 |--------|-------------|
-| clangd errors in `app/devkit` | `./software/project/scripts/build.sh devkit` (or `cd software/project && cmake --preset devkit`), restart clangd. |
+| clangd errors in `app/devkit` | `./software/project/scripts/build.sh` (or `cd software/project && cmake --preset devkit`), restart clangd. |
 | `compile_commands` paths wrong in container | `docker compose` runs `setup.sh --post-start` to rewrite paths. |
 | OpenOCD cannot see ST-Link | Host: `lsusb`; Linux + Docker: recreate container after compose changes; check `privileged` and `/dev/bus/usb` mount. |
 | CMake cannot find preset | Prefer `./software/project/scripts/build.sh` from repo root, or run `cmake` from **`software/project/`**. |

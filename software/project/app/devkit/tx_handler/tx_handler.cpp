@@ -15,16 +15,19 @@ namespace {
 constexpr uint32_t kTxHandlerTaskStackSize = 256U;
 constexpr uint32_t kTxHandlerTaskPriority = (tskIDLE_PRIORITY + 1U);
 
-// Semaphore for coordinating spi calls
 StaticSemaphore_t spi_semaphore_buffer;
-SemaphoreHandle_t spi_semaphore;
-
-void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
-    (void)hspi;
-    xSemaphoreGive(spi_semaphore);
-}
+SemaphoreHandle_t spi_semaphore = nullptr;
 
 } // namespace
+
+extern "C" void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
+    (void)hspi;
+    BaseType_t hpw = pdFALSE;
+    if (spi_semaphore != nullptr) {
+        (void)xSemaphoreGiveFromISR(spi_semaphore, &hpw);
+        portYIELD_FROM_ISR(hpw);
+    }
+}
 
 bool TxHandler::Initialize(void) {
     Messaging::Subscribe<topics::ButtonInfo>([](const topics::ButtonInfo &button_info) {
@@ -38,8 +41,6 @@ bool TxHandler::Initialize(void) {
     if (spi_semaphore == NULL) {
         return false;
     }
-
-    HAL_SPI_RegisterCallback(&hspi2, HAL_SPI_TX_RX_COMPLETE_CB_ID, HAL_SPI_TxRxCpltCallback);
 
     return true;
 }

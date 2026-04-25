@@ -4,48 +4,9 @@
 # Restart clangd after editing (Command Palette → "clangd: Restart language server").
 
 ---
-# Same newlib/gcc paths for both boards (arm-none-eabi toolchain).
+# Same newlib/gcc paths (arm-none-eabi toolchain); devkit compile_commands.
 If:
-  PathMatch: software/project/board/custom/.*|software/project/app/custom/.*
-CompileFlags:
-  CompilationDatabase: project/build/custom
-  Add:
-    - -isystem
-    - /usr/lib/gcc/arm-none-eabi/10.3.1/include
-    - -isystem
-    - /usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed
-    - -isystem
-    - /usr/include/newlib
-    - -isystem
-    - /usr/lib/arm-none-eabi/include/c++/10.3.1
-    - -isystem
-    - /usr/lib/arm-none-eabi/include/c++/10.3.1/arm-none-eabi
-    - -isystem
-    - /usr/lib/arm-none-eabi/include/c++/10.3.1/backward
-
----
-If:
-  PathMatch: software/project/board/devkit/.*|software/project/app/devkit/.*
-CompileFlags:
-  CompilationDatabase: project/build/devkit
-  Add:
-    - -isystem
-    - /usr/lib/gcc/arm-none-eabi/10.3.1/include
-    - -isystem
-    - /usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed
-    - -isystem
-    - /usr/include/newlib
-    - -isystem
-    - /usr/lib/arm-none-eabi/include/c++/10.3.1
-    - -isystem
-    - /usr/lib/arm-none-eabi/include/c++/10.3.1/arm-none-eabi
-    - -isystem
-    - /usr/lib/arm-none-eabi/include/c++/10.3.1/backward
-
-# Shared drivers: compile_commands from devkit build; explicit -I matches CMake custom_drivers target.
----
-If:
-  PathMatch: software/project/custom_drivers/.*
+  PathMatch: project/custom_drivers/.*
 CompileFlags:
   CompilationDatabase: project/build/devkit
   Add:
@@ -53,6 +14,25 @@ CompileFlags:
     - project/custom_drivers
     - -I
     - project/custom_drivers/nrf24l01p
+    - -isystem
+    - /usr/lib/gcc/arm-none-eabi/10.3.1/include
+    - -isystem
+    - /usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed
+    - -isystem
+    - /usr/include/newlib
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1/arm-none-eabi
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1/backward
+
+---
+If:
+  PathMatch: project/.*
+CompileFlags:
+  CompilationDatabase: project/build/devkit
+  Add:
     - -isystem
     - /usr/lib/gcc/arm-none-eabi/10.3.1/include
     - -isystem
