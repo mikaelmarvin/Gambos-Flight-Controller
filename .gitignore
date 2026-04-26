@@ -22,3 +22,5 @@ software/project/.cache/
 # OS
 .DS_Store
 Thumbs.db
+
+**/.history/

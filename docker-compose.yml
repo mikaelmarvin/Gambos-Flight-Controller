@@ -13,9 +13,6 @@ services:
       context: .
       dockerfile: Dockerfile
     
-    # Container name
-    container_name: gambos-dev
-    
     # Keep container running (don't exit after CMD)
     stdin_open: true
     tty: true

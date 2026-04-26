@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Rewrite compile_commands.json so paths use the container workspace.
 # Helps clangd / Go to Definition when the tree was configured on the host
-# (e.g. /home/user/gambos) and you open it under /workspace/project/gambos.
+# (e.g. /home/user/repo) and you open it under /workspace/project/<repo>.
 # Run from repo root; safe to run multiple times.
 #
 # Usage: ./software/project/scripts/fix-compile-commands-for-container.sh [devkit|all]
@@ -13,7 +13,8 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
-CONTAINER_WORKSPACE="${CONTAINER_WORKSPACE:-/workspace/project/gambos}"
+REPO_DIRNAME="$(basename "$REPO_ROOT")"
+CONTAINER_WORKSPACE="${CONTAINER_WORKSPACE:-/workspace/project/${REPO_DIRNAME}}"
 MODE="${1:-all}"
 
 usage() {

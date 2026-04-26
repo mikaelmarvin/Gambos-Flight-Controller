@@ -1,8 +1,8 @@
 {
-  "name": "gambos-dev",
+  "name": "gambos",
   "dockerComposeFile": "../docker-compose.yml",
   "service": "dev-env",
-  "workspaceFolder": "/workspace/project/gambos-sw",
+  "workspaceFolder": "/workspace/project/${localWorkspaceFolderBasename}",
   "customizations": {
     "vscode": {
       "extensions": [
