@@ -9,4 +9,4 @@ Monorepo for the Gambos project: **hardware** (schematics, PCBs, mechanical) and
 
 Development (Docker, ST-Link, build scripts) is unchanged in spirit; commands now live under `software/project/`. See **software/README.md** for prerequisites, `./software/project/scripts/build.sh`, and the Dev Container workflow.
 
-After renaming the repository on the host (for example from `gambos-sw` to `gambos`), ensure the dev container **`workspaceFolder`** in `.devcontainer/devcontainer.json` matches the folder name under your compose mount (default in-repo: `/workspace/project/gambos`).
+The dev container `workspaceFolder` is name-agnostic (`/workspace/project/${localWorkspaceFolderBasename}`), so repository renames do not require manual edits.
