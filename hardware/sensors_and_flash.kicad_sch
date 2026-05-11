@@ -2954,7 +2954,7 @@
 		)
 		(uuid "2b4d5931-f9cb-4a0a-b5a2-7e30dc800e7d")
 	)
-	(text "Pressure and humidity"
+	(text "Pressure and temperature"
 		(exclude_from_sim no)
 		(at 144.526 81.788 0)
 		(effects
