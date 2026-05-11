@@ -24,8 +24,8 @@ This is a portfolio-oriented engineering project focused on:
 
 | Directory                | Purpose                                                                                  |
 | ------------------------ | ---------------------------------------------------------------------------------------- |
-| `[hardware/](hardware/)` | KiCad project files, schematics, PCB layout, libraries, 3D models, and generated Gerbers |
-| `[software/](software/)` | STM32 firmware project, build scripts, dev container workflow, debug/flash scripts       |
+| `hardware/` | KiCad project files, schematics, PCB layout, libraries, 3D models, and generated Gerbers |
+| `software/` | STM32 firmware project, build scripts, dev container workflow, debug/flash scripts       |
 
 
 ## Start here

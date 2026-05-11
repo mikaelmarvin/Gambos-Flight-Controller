@@ -20,7 +20,9 @@ endif()
 
 set(CMAKE_PROJECT_NAME gambos)
 
-set(BOARD "devkit" CACHE STRING "Target board" FORCE)
+if(NOT BOARD)
+    set(BOARD "devkit" CACHE STRING "Target board")
+endif()
 message(STATUS "Board: ${BOARD}")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
