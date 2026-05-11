@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Configure (if needed) and build. Run from repo: ./software/project/scripts/build.sh [devkit]
+# Configure (if needed) and build. Run from repo: ./software/project/scripts/build.sh [devkit|custom]
 set -euo pipefail
 PRESET="${1:-devkit}"
-if [[ "$PRESET" != "devkit" ]]; then
-    echo "Usage: $0 [devkit]" >&2
+if [[ "$PRESET" != "devkit" && "$PRESET" != "custom" ]]; then
+    echo "Usage: $0 [devkit|custom]" >&2
     exit 1
 fi
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
