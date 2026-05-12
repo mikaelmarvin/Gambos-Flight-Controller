@@ -11,6 +11,15 @@
       "problemMatcher": ["$gcc"]
     },
     {
+      "label": "Build (custom)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["${workspaceFolder}/software/project/scripts/build.sh", "custom"],
+      "group": "build",
+      "presentation": { "reveal": "silent", "panel": "shared" },
+      "problemMatcher": ["$gcc"]
+    },
+    {
       "label": "Clean",
       "type": "shell",
       "command": "bash",
@@ -28,6 +37,22 @@
         "-f", "target/stm32f4x.cfg",
         "-c", "program ${workspaceFolder}/software/project/build/devkit/gambos.elf verify reset exit"
       ],
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Flash (J-Link)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["${workspaceFolder}/software/project/scripts/flash-jlink.sh"],
+      "presentation": { "reveal": "always", "panel": "shared" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Flash (J-Link, custom)",
+      "type": "shell",
+      "command": "bash",
+      "args": ["${workspaceFolder}/software/project/scripts/flash-jlink.sh", "custom"],
       "presentation": { "reveal": "always", "panel": "shared" },
       "problemMatcher": []
     },
