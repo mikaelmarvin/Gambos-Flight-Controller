@@ -21,17 +21,19 @@ If anything fails, run **“Dev Containers: Rebuild Container”** once.
 
 ## Build firmware
 
+**`build.sh`** requires **`devkit`** or **`custom`** as its argument (no default).
+
 **Use the build script** (from the **repository root**):
 
 ```bash
-./software/project/scripts/build.sh              # devkit (default)
-./software/project/scripts/build.sh devkit     # same
+./software/project/scripts/build.sh devkit
+./software/project/scripts/build.sh custom
 ```
 
 From this directory (`software/`) you can instead run:
 
 ```bash
-./project/scripts/build.sh
+./project/scripts/build.sh devkit    # or custom
 ```
 
 Artifacts: `software/project/build/devkit/gambos.elf`.
@@ -48,22 +50,22 @@ cmake --build build/devkit --parallel
 
 ### Other scripts (run from repo root)
 
+Full table (debugger × board): **`software/project/scripts/README.md`**.
+
 | Script | Purpose |
 |--------|---------|
-| `./software/project/scripts/build.sh [devkit]` | Configure (if needed) + build |
-| `./software/project/scripts/clean.sh [devkit]` | CMake `clean` for `build/devkit/` |
+| `./software/project/scripts/build.sh devkit\|custom` | Configure (if needed) + build (**argument required**) |
+| `./software/project/scripts/clean.sh devkit\|custom` | CMake `clean` for `build/<preset>/` (**argument required**) |
 | `./software/project/scripts/pristine.sh [devkit\|custom\|all]` | Delete `build/devkit/`, `build/custom/`, or all of `software/project/build/` |
-| `./software/project/scripts/probe.sh` | OpenOCD: ST-Link + MCU (STM32F4) |
-| `./software/project/scripts/flash.sh` | OpenOCD: program `build/devkit/gambos.elf` (build first) |
-| `./software/project/scripts/probe-jlink.sh` | J-Link: probe MCU over SWD (`JLinkExe`, OpenOCD fallback) |
-| `./software/project/scripts/flash-jlink.sh` | J-Link: program `build/devkit/gambos.elf` (`JLinkExe`, OpenOCD fallback) |
+| `./software/project/scripts/flash.sh devkit\|custom` | Program firmware (**required:** `devkit` = ST-Link, `custom` = J-Link) |
+| `./software/project/scripts/probe.sh devkit\|custom` | Probe SWD (**required:** same arguments as `flash.sh`) |
 
 ## Editor / clangd (IntelliSense)
 
 - `compile_commands.json` is generated under `software/project/build/devkit/` when you configure the devkit preset.
 - CMSIS-SVD for register view in Cortex-Debug: **`software/STM32F446.svd`** (referenced from `.vscode/launch.json`).
 - **`software/.clangd`** points firmware sources at the devkit compilation database.
-- If clangd is stale, run `./software/project/scripts/build.sh` once, then **restart clangd** (command palette: **clangd: Restart language server**).
+- If clangd is stale, run `./software/project/scripts/build.sh devkit` once (or `custom` if you use that preset), then **restart clangd** (command palette: **clangd: Restart language server**).
 
 ## ST-Link / USB (Linux host)
 
@@ -83,40 +85,42 @@ docker compose down && docker compose up -d --build
 
 Then **reopen the Dev Container**.
 
-## Flash with OpenOCD (from the container)
+## Flash / probe (from the container)
 
-After a successful build, from the **repo root**:
+Use **`software/project/scripts/README.md`** for the full matrix. Short version:
 
-```bash
-./software/project/scripts/flash.sh
-```
+**`flash.sh`** and **`probe.sh`** require **`devkit`** or **`custom`** as the first argument (no default).
 
-Equivalent manual `openocd` lines (paths depend on your workspace location):
+| Argument | Hardware | Debugger |
+|----------|----------|----------|
+| **`devkit`** | Nucleo-F446RE | On-board **ST-Link** (OpenOCD) |
+| **`custom`** | Gambos PCB | **SEGGER J-Link** (`JLinkExe`, OpenOCD fallback) |
 
-**F446 devkit:** `interface/stlink.cfg` + `target/stm32f4x.cfg` + `program …/software/project/build/devkit/gambos.elf verify reset exit`
+Build the matching preset first (`build.sh devkit` or `build.sh custom`).
 
-Probe only: `./software/project/scripts/probe.sh`
+### Devkit (OpenOCD + ST-Link)
 
-## Flash with SEGGER J-Link (from the container)
-
-The Docker image installs **SEGGER J-Link** (`JLinkExe` on `PATH`) so flashing works reliably with a J-Link probe. Ubuntu’s OpenOCD build often fails to open J-Link from Docker (`No J-Link device found`) even when `lsusb` shows the adapter; the SEGGER tools use the same USB passthrough and typically “just work”.
-
-After a successful firmware build, from the **repository root**:
+After `./software/project/scripts/build.sh devkit`:
 
 ```bash
-./software/project/scripts/probe-jlink.sh   # optional: confirm attach
-./software/project/scripts/flash-jlink.sh
+./software/project/scripts/probe.sh devkit    # optional
+./software/project/scripts/flash.sh devkit
 ```
 
-Optional environment overrides:
+### Custom board (J-Link)
 
-- `GAMBOS_JLINK_DEVICE` — default `STM32F446RE` (SEGGER device name string).
-- `GAMBOS_JLINK_SPEED` — SWD clock in kHz (default `4000`).
-- `GAMBOS_FLASH_ELF` — path to an ELF if not using `build/devkit/gambos.elf`.
+After `./software/project/scripts/build.sh custom`:
 
-If `JLinkExe` is missing (image built before this change), **`flash-jlink.sh`** falls back to OpenOCD using `software/project/openocd/interface-jlink-swd.cfg` (J-Link + SWD before `target/stm32f4x.cfg`).
+```bash
+./software/project/scripts/probe.sh custom    # optional
+./software/project/scripts/flash.sh custom
+```
 
-**Rebuild the Dev Container** after pulling these changes so the Dockerfile layer that installs SEGGER runs (`Dev Containers: Rebuild Container`).
+Optional environment variables: `GAMBOS_JLINK_DEVICE`, `GAMBOS_JLINK_SPEED`, `GAMBOS_FLASH_ELF`.
+
+If `JLinkExe` is missing, **`flash.sh custom`** / **`probe.sh custom`** fall back to OpenOCD with `software/project/openocd/interface-jlink-swd.cfg`.
+
+**Rebuild the Dev Container** after Dockerfile changes so SEGGER installs.
 
 ## Repo layout (short)
 
@@ -129,7 +133,8 @@ If `JLinkExe` is missing (image built before this change), **`flash-jlink.sh`** 
 | `.devcontainer/` (repo root) | Dev Container definition and setup script |
 | `software/.clangd` | clangd compilation database routing |
 | `software/STM32F446.svd` | CMSIS-SVD for STM32F446 (peripherals in the debugger) |
-| `software/project/openocd/` | OpenOCD snippets (e.g. J-Link + SWD) used by `flash-jlink.sh` fallback |
+| `software/project/scripts/README.md` | Probe/flash matrix: devkit ST-Link vs custom J-Link |
+| `software/project/openocd/` | OpenOCD snippets (J-Link + SWD) used when **`flash.sh custom`** uses OpenOCD fallback |
 
 More detail: `software/project/board/README.md`, `software/project/app/README.md`.
 
@@ -148,8 +153,8 @@ Avoid committing **`software/project/build/`** or editor caches — they belong 
 
 | Issue | What to try |
 |--------|-------------|
-| clangd errors in `app/devkit` | `./software/project/scripts/build.sh` (or `cd software/project && cmake --preset devkit`), restart clangd. |
+| clangd errors in `app/devkit` | `./software/project/scripts/build.sh devkit` (or `cmake --preset devkit` from `software/project/`), restart clangd. |
 | `compile_commands` paths wrong in container | `docker compose` runs `setup.sh --post-start` to rewrite paths. |
 | OpenOCD cannot see ST-Link | Host: `lsusb`; Linux + Docker: recreate container after compose changes; check `privileged` and `/dev/bus/usb` mount. |
-| J-Link / `flash-jlink.sh` fails after pulling updates | **Rebuild Container** so SEGGER installs from the Dockerfile; close other tools using J-Link (`JLinkExe`, Ozone). Only one client may attach to the probe at a time. |
-| CMake cannot find preset | Prefer `./software/project/scripts/build.sh` from repo root, or run `cmake` from **`software/project/`**. |
+| J-Link / `flash.sh custom` fails after pulling updates | **Rebuild Container** so SEGGER installs from the Dockerfile; close other tools using J-Link (`JLinkExe`, Ozone). Only one client may attach to the probe at a time. |
+| CMake cannot find preset | Run `./software/project/scripts/build.sh devkit` or `build.sh custom` from repo root, or run `cmake` from **`software/project/`**. |

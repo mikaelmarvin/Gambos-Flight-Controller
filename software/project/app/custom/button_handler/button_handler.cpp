@@ -20,7 +20,8 @@ SemaphoreHandle_t ButtonHandler::button_semaphore;
 
 namespace {
 
-constexpr uint32_t kButtonHandlerTaskStackSize = 512U;
+constexpr uint32_t kButtonHandlerTaskStackSize =
+    1536U; /* nested printf via Messaging::Publish → subscriber LOG */
 constexpr uint32_t kButtonHandlerTaskPriority =
     (tskIDLE_PRIORITY + 2U);
 constexpr uint32_t kButtonHandlerTaskDelay = 20U;
@@ -61,8 +62,8 @@ void ButtonHandler::TaskFunction(void *pvParameters) {
         topic.button_id = static_cast<uint8_t>(ButtonId::USER_BUTTON);
         topic.button_state = pressed;
 
-        (void)Messaging::Publish<topics::ButtonInfo>(topic);
         LOG("B1 pressed=%u\r\n", (unsigned)pressed);
+        (void)Messaging::Publish<topics::ButtonInfo>(topic);
 
         vTaskDelay(pdMS_TO_TICKS(kButtonHandlerTaskDelay));
     }
