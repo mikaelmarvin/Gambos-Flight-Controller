@@ -23,21 +23,14 @@ TxHandler g_tx_handler;
 } // namespace
 
 extern "C" void app_init(void) {
-    (void)g_button_handler.Initialize();
-    (void)g_tx_handler.Initialize();
+    configASSERT(g_button_handler.Initialize());
+    configASSERT(g_tx_handler.Initialize());
 }
 
 extern "C" void app_run(void) {
-    {
-        static const uint8_t k_app[] =
-            "\r\n[app] app_run entered (UART4 / HAL_UART before printf)\r\n";
-        (void)HAL_UART_Transmit(
-            &huart4, k_app, sizeof(k_app) - 1U, HAL_MAX_DELAY);
-    }
     LOG("app_run: starting tasks\r\n");
     g_button_handler.Start();
     g_tx_handler.Start();
-    LOG("app_run: default task idle (USR_BTN/PC0 EXTI, LEDs on PA9–11)\r\n");
 
     for (;;) {
         vTaskDelay(portMAX_DELAY);

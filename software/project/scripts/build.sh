@@ -1,11 +1,25 @@
 #!/usr/bin/env bash
-# Configure (if needed) and build. Run from repo: ./software/project/scripts/build.sh [devkit|custom]
+# Configure (if needed) + build. First argument is required (no default).
+#
+# Usage:
+#   ./software/project/scripts/build.sh devkit
+#   ./software/project/scripts/build.sh custom
+#
+# Flash/probe use the same preset name: ./software/project/scripts/flash.sh devkit|custom
+#
 set -euo pipefail
-PRESET="${1:-devkit}"
-if [[ "$PRESET" != "devkit" && "$PRESET" != "custom" ]]; then
-    echo "Usage: $0 [devkit|custom]" >&2
+
+usage() {
+    echo "Usage: $0 devkit | custom" >&2
+    echo "  devkit  — Nucleo-F446RE preset" >&2
+    echo "  custom  — Gambos PCB preset" >&2
     exit 1
-fi
+}
+
+[[ $# -eq 1 ]] || usage
+[[ "${1}" == "devkit" || "${1}" == "custom" ]] || usage
+
+PRESET="$1"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 GEN_DIR="${ROOT}/build/${PRESET}/generated"
