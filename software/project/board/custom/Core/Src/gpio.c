@@ -62,7 +62,7 @@ void MX_GPIO_Init(void) {
     /*Configure GPIO pin : USR_BTN_Pin (EXTI for button_handler) */
     GPIO_InitStruct.Pin = USR_BTN_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(USR_BTN_GPIO_Port, &GPIO_InitStruct);
 
     /*Configure GPIO pins : NRF24_CS_Pin NRF24_CE_Pin FLASH_CS_Pin
