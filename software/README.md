@@ -56,7 +56,7 @@ Full table (debugger × board): **`software/project/scripts/README.md`**.
 |--------|---------|
 | `./software/project/scripts/build.sh devkit\|custom` | Configure (if needed) + build (**argument required**) |
 | `./software/project/scripts/clean.sh devkit\|custom` | CMake `clean` for `build/<preset>/` (**argument required**) |
-| `./software/project/scripts/pristine.sh [devkit\|custom\|all]` | Delete `build/devkit/`, `build/custom/`, or all of `software/project/build/` |
+| `./software/project/scripts/pristine.sh [devkit\|custom\|all]` | With **no argument** or **`all`**: delete all of `software/project/build/`. With **`devkit`** or **`custom`**: delete only that preset folder. |
 | `./software/project/scripts/flash.sh devkit\|custom` | Program firmware (**required:** `devkit` = ST-Link, `custom` = J-Link) |
 | `./software/project/scripts/probe.sh devkit\|custom` | Probe SWD (**required:** same arguments as `flash.sh`) |
 
@@ -66,6 +66,32 @@ Full table (debugger × board): **`software/project/scripts/README.md`**.
 - CMSIS-SVD for register view in Cortex-Debug: **`software/STM32F446.svd`** (referenced from `.vscode/launch.json`).
 - **`software/.clangd`** points firmware sources at the devkit compilation database.
 - If clangd is stale, run `./software/project/scripts/build.sh devkit` once (or `custom` if you use that preset), then **restart clangd** (command palette: **clangd: Restart language server**).
+
+## Debugging (VS Code / Cortex-Debug)
+
+Build, clean, pristine, flash, and probe are done only via **`software/project/scripts/`** (terminal). **`.vscode/tasks.json`** is intentionally empty so the editor does not duplicate those workflows.
+
+**`.vscode/launch.json`** exists **only** for **Cortex-Debug**: Run and Debug (**F5**). Install **Cortex-Debug** (`marus25.cortex-debug`) — it is listed in `.devcontainer/devcontainer.json`.
+
+| Configuration | Preset | Probe | Purpose |
+|---------------|--------|-------|---------|
+| **Debug devkit (ST-Link / OpenOCD)** | devkit | Nucleo ST-Link | Starts OpenOCD + GDB; loads symbols from `build/devkit/gambos.elf`; stops at `main`. |
+| **Attach devkit (ST-Link / OpenOCD)** | devkit | ST-Link | Attaches to the running MCU (build/flash in terminal first if firmware changed). |
+| **Debug custom (J-Link)** | custom | SEGGER J-Link | SEGGER GDB Server + GDB; symbols from `build/custom/gambos.elf`. |
+| **Attach custom (J-Link)** | custom | J-Link | Attach only. |
+
+**Before F5**
+
+1. In a terminal: **`./software/project/scripts/build.sh devkit`** or **`build.sh custom`** so the ELF exists and matches your code.
+2. Optionally **`flash.sh`** / **`probe.sh`** with the same preset if you want to verify outside the debugger.
+3. USB probe visible in the container (`lsusb`; compose mounts `/dev/bus/usb`).
+4. For **J-Link**, the container needs SEGGER tools (**`JLinkGDBServerCLExe`** for debug). Close anything else using the probe (**`JLinkExe`**, another debug session).
+
+If Cortex-Debug reports **`jlink: GDB Server Quit Unexpectedly`**, open the **Terminal** panel and select the **gdb-server** (or SEGGER) terminal — the real reason is printed there. When the log shows **J-Link is connected** but **Could not connect to target**, the probe works over USB; fix **target power**, **SWD wiring** (SWDIO, SWCLK, GND), and **reset**/**BOOT** before changing IDE settings. If wiring is good but the link is flaky, add J-Link **`serverArgs`** in **`.vscode/launch.json`** (see [SEGGER command-line options](https://wiki.segger.com/J-Link_GDB_Server)), for example a slower clock: `"serverArgs": ["-speed", "1000"]`.
+
+**Symbols / peripherals**
+
+- **`software/STM32F446.svd`** — peripheral registers in Cortex-Debug (paths are set in `launch.json`).
 
 ## ST-Link / USB (Linux host)
 
@@ -130,6 +156,8 @@ If `JLinkExe` is missing, **`flash.sh custom`** / **`probe.sh custom`** fall bac
 | `software/project/scripts/gen-board-sources.sh` | Generates build inputs from Cube CMake (`build/<preset>/generated/*.cmake`) |
 | `software/project/board/devkit/` | Board-specific CubeMX output |
 | `software/project/app/devkit/` | Devkit application |
+| `.vscode/launch.json` | Cortex-Debug only — Run/Debug (**F5**); no build/flash tasks |
+| `.vscode/tasks.json` | Empty — build/flash/clean use **`software/project/scripts/`** in the terminal |
 | `.devcontainer/` (repo root) | Dev Container definition and setup script |
 | `software/.clangd` | clangd compilation database routing |
 | `software/STM32F446.svd` | CMSIS-SVD for STM32F446 (peripherals in the debugger) |
