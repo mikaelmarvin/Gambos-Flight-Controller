@@ -30,7 +30,8 @@ Optional env:
 |--------|------|
 | `build.sh devkit` / `build.sh custom` | Configure + compile (**argument required**) → `build/<preset>/gambos.elf` |
 | `clean.sh devkit` / `clean.sh custom` | CMake `clean` (**argument required**) |
-| `pristine.sh [devkit\|custom\|all]` | Delete `build/<preset>/` or all of `build/` |
+| `pristine.sh` / `pristine.sh all` | Delete entire `build/` |
+| `pristine.sh devkit` / `pristine.sh custom` | Delete only `build/devkit/` or `build/custom/` |
 | `gen-board-sources.sh` | Called by `build.sh` |
 | `fix-compile-commands-for-container.sh` | Dev Container path fix for `compile_commands.json` |
 

@@ -61,7 +61,7 @@ void TxHandler::TaskFunction(void *pvParameters) {
     TxHandler *const self = static_cast<TxHandler *>(pvParameters);
     (void)self;
 
-    self->_nrf24l01p.Init(Nrf24l01p::PrimaryRole::Ptx);
+    // self->_nrf24l01p.Init(Nrf24l01p::PrimaryRole::Ptx);
 
     for (;;) {
         LOG("Hello from tx_handler\r\n");

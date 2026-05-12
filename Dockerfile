@@ -48,6 +48,10 @@ RUN apt-get update && apt-get install -y \
     # Clean up apt cache to reduce image size
     && rm -rf /var/lib/apt/lists/*
 
+# Ubuntu's gcc-arm-none-eabi does not install arm-none-eabi-gdb; gdb-multiarch debugs Cortex-M.
+# Provide the usual name so Cortex-Debug and CLI workflows match ARM docs.
+RUN ln -sf /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb
+
 # Install Starship prompt (cross-shell, git branch, colors, etc.)
 RUN curl -sS https://starship.rs/install.sh | sh -s -- -y -b /usr/local/bin
 
