@@ -63,6 +63,28 @@ RUN pip3 install --no-cache-dir \
     intelhex \
     pyelftools
 
+# SEGGER J-Link Software Pack (JLinkExe): reliable flashing from the container over USB.
+# Ubuntu's OpenOCD + libjaylink often fails to open J-Link ("No J-Link device found") even when
+# /dev/bus/usb sees the probe; the official SEGGER stack works with the same compose USB passthrough.
+# License: download POST accepts SEGGER's click-through license (same as manual install).
+# J-Link postinst runs udevadm to reload rules; Docker has no udevd, so real udevadm fails.
+# dpkg maintainer scripts often omit /usr/local/bin from PATH; /usr/bin/udevadm is always found.
+RUN set -eux; \
+    ARCH="$(dpkg --print-architecture)"; \
+    case "$ARCH" in \
+        amd64) JLINK_DEB_URL="https://www.segger.com/downloads/jlink/JLink_Linux_x86_64.deb" ;; \
+        arm64) JLINK_DEB_URL="https://www.segger.com/downloads/jlink/JLink_Linux_arm64.deb" ;; \
+        *) echo "Skipping SEGGER J-Link install: no .deb for architecture ${ARCH}"; JLINK_DEB_URL="" ;; \
+    esac; \
+    if [ -n "${JLINK_DEB_URL}" ]; then \
+        apt-get update; \
+        printf '%s\n' '#!/bin/sh' 'exit 0' > /usr/bin/udevadm && chmod 755 /usr/bin/udevadm; \
+        wget --quiet --post-data "accept_license_agreement=accepted" -O /tmp/JLink.deb "${JLINK_DEB_URL}"; \
+        apt-get install -y --no-install-recommends /tmp/JLink.deb; \
+        rm -f /tmp/JLink.deb /usr/bin/udevadm; \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
+
 # Create a non-root user for development (best practice)
 # Running as root in containers is a security risk
 RUN useradd -m -s /bin/bash developer && \

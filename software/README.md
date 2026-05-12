@@ -52,9 +52,11 @@ cmake --build build/devkit --parallel
 |--------|---------|
 | `./software/project/scripts/build.sh [devkit]` | Configure (if needed) + build |
 | `./software/project/scripts/clean.sh [devkit]` | CMake `clean` for `build/devkit/` |
-| `./software/project/scripts/pristine.sh [devkit\|all]` | Delete `build/devkit/`, or `all` to remove all of `software/project/build/` |
+| `./software/project/scripts/pristine.sh [devkit\|custom\|all]` | Delete `build/devkit/`, `build/custom/`, or all of `software/project/build/` |
 | `./software/project/scripts/probe.sh` | OpenOCD: ST-Link + MCU (STM32F4) |
 | `./software/project/scripts/flash.sh` | OpenOCD: program `build/devkit/gambos.elf` (build first) |
+| `./software/project/scripts/probe-jlink.sh` | J-Link: probe MCU over SWD (`JLinkExe`, OpenOCD fallback) |
+| `./software/project/scripts/flash-jlink.sh` | J-Link: program `build/devkit/gambos.elf` (`JLinkExe`, OpenOCD fallback) |
 
 ## Editor / clangd (IntelliSense)
 
@@ -65,7 +67,7 @@ cmake --build build/devkit --parallel
 
 ## ST-Link / USB (Linux host)
 
-The compose file passes **`/dev/bus/usb`** and runs the service **`privileged: true`** so OpenOCD can use the ST-Link from inside the container.
+The compose file passes **`/dev/bus/usb`** and runs the service **`privileged: true`** so OpenOCD or SEGGER tools can use USB debug probes from inside the container.
 
 On **Ubuntu**, add your user to **`dialout`** on the host if you use USB serial adapters (log out and back in):
 
@@ -95,6 +97,27 @@ Equivalent manual `openocd` lines (paths depend on your workspace location):
 
 Probe only: `./software/project/scripts/probe.sh`
 
+## Flash with SEGGER J-Link (from the container)
+
+The Docker image installs **SEGGER J-Link** (`JLinkExe` on `PATH`) so flashing works reliably with a J-Link probe. Ubuntu’s OpenOCD build often fails to open J-Link from Docker (`No J-Link device found`) even when `lsusb` shows the adapter; the SEGGER tools use the same USB passthrough and typically “just work”.
+
+After a successful firmware build, from the **repository root**:
+
+```bash
+./software/project/scripts/probe-jlink.sh   # optional: confirm attach
+./software/project/scripts/flash-jlink.sh
+```
+
+Optional environment overrides:
+
+- `GAMBOS_JLINK_DEVICE` — default `STM32F446RE` (SEGGER device name string).
+- `GAMBOS_JLINK_SPEED` — SWD clock in kHz (default `4000`).
+- `GAMBOS_FLASH_ELF` — path to an ELF if not using `build/devkit/gambos.elf`.
+
+If `JLinkExe` is missing (image built before this change), **`flash-jlink.sh`** falls back to OpenOCD using `software/project/openocd/interface-jlink-swd.cfg` (J-Link + SWD before `target/stm32f4x.cfg`).
+
+**Rebuild the Dev Container** after pulling these changes so the Dockerfile layer that installs SEGGER runs (`Dev Containers: Rebuild Container`).
+
 ## Repo layout (short)
 
 | Path | Purpose |
@@ -106,6 +129,7 @@ Probe only: `./software/project/scripts/probe.sh`
 | `.devcontainer/` (repo root) | Dev Container definition and setup script |
 | `software/.clangd` | clangd compilation database routing |
 | `software/STM32F446.svd` | CMSIS-SVD for STM32F446 (peripherals in the debugger) |
+| `software/project/openocd/` | OpenOCD snippets (e.g. J-Link + SWD) used by `flash-jlink.sh` fallback |
 
 More detail: `software/project/board/README.md`, `software/project/app/README.md`.
 
@@ -127,4 +151,5 @@ Avoid committing **`software/project/build/`** or editor caches — they belong 
 | clangd errors in `app/devkit` | `./software/project/scripts/build.sh` (or `cd software/project && cmake --preset devkit`), restart clangd. |
 | `compile_commands` paths wrong in container | `docker compose` runs `setup.sh --post-start` to rewrite paths. |
 | OpenOCD cannot see ST-Link | Host: `lsusb`; Linux + Docker: recreate container after compose changes; check `privileged` and `/dev/bus/usb` mount. |
+| J-Link / `flash-jlink.sh` fails after pulling updates | **Rebuild Container** so SEGGER installs from the Dockerfile; close other tools using J-Link (`JLinkExe`, Ozone). Only one client may attach to the probe at a time. |
 | CMake cannot find preset | Prefer `./software/project/scripts/build.sh` from repo root, or run `cmake` from **`software/project/`**. |
