@@ -1,41 +1,46 @@
-# Hardware Overview
+# Hardware overview
 
 ## Purpose
 
-The Gambos hardware is a custom STM32F446-based flight controller board designed as a portfolio embedded project.
-It is intended to support end-to-end engineering workflow: schematic design, PCB layout, manufacturing, assembly, and staged bring-up.
+The Gambos hardware is a custom **STM32F446** flight controller designed as a portfolio embedded project. It supports an end-to-end workflow: schematic design, PCB layout, manufacturing, assembly, and staged bring-up.
 
-## Current Revision Status
+## Current revision status
 
-- PCB revision: Rev A (first manufactured version)
-- Manufacturing: completed
-- Assembly: pending
-- Bring-up: pending (planned staged validation)
+| Item | Status |
+|------|--------|
+| PCB revision | Rev A (first manufactured version) |
+| Manufacturing | Complete |
+| Assembly | Pending |
+| Bring-up | Pending (planned staged validation) |
 
-## Main Hardware Blocks
+## Main hardware blocks
 
-- **MCU core**: STM32F446 microcontroller and supporting clock/reset/debug circuitry
-- **Power subsystem**: input regulation and local rails for digital/analog domains
-- **Sensors and storage**: onboard sensor interfaces and non-volatile memory support
-- **Connectivity**: SWD/debug header and external I/O connectors for peripherals/integration
+- **MCU core** — STM32F446, clock/reset, SWD
+- **Power** — ESC BEC input, high-side switch, 3.3 V LDO, servo headers
+- **Sensors and storage** — I2C IMU/mag/barometer; SPI flash + microSD
+- **User I/O** — nRF24L01+, button, LEDs
+- **Actuation** — PWM servos and ESC motor output
 
-## Design Goals
+## Design goals
 
-- Create a realistic custom embedded board from scratch
-- Keep subsystem boundaries clear for easier debugging and iteration
-- Support reliable firmware development with repeatable bring-up checkpoints
-- Produce documentation and validation artifacts suitable for portfolio review
+- Realistic custom board from scratch, not a module stack
+- Clear subsystem boundaries for debug and iteration
+- Repeatable firmware bring-up checkpoints
+- Documentation suitable for portfolio review
 
-## Repository Pointers
+## Detailed documentation
 
-- KiCad project and manufacturing files: `hardware/`
-- Assembly planning: `docs/hardware/assembly-plan.md`
-- Bring-up procedure: `docs/hardware/bringup-plan.md`
-- Validation checklist: `docs/hardware/test-matrix.md`
+1. [Introduction](introduction.md)
+2. [System architecture](architecture.md)
+3. [Physical design](physical-design.md)
+4. [Power](power.md)
+5. [Storage](storage.md)
+6. [Sensing](sensing.md)
+7. [User interface](user-interface.md)
+8. [Future improvements](future-improvements.md)
 
-## Next Steps
+## Repository pointers
 
-1. Assemble Rev A boards and perform visual/electrical inspection
-2. Validate power rails and debug access (SWD/clock/reset)
-3. Run staged peripheral checks and log results
-4. Capture photos, measurements, and known issues for Rev B planning
+- KiCad project: [`hardware/gambos-pcb.kicad_pro`](../../hardware/gambos-pcb.kicad_pro)
+- Firmware: [`software/`](../../software/)
+- Documentation hub: [`docs/index.md`](../index.md)
