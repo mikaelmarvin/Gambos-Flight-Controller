@@ -2,13 +2,15 @@
 
 ## Block diagram
 
-![System block diagram](../assets/block-diagram.png)
+<p align="center">
+  <img src="../assets/block-diagram.png" alt="System block diagram" width="576" height="432">
+</p>
 
 ## Digital communication
 
 ### Sensors (I2C)
 
-All primary flight sensors (accelerometer, gyroscope, magnetometer, barometer) share one **I2C** bus. This keeps routing and pin usage simple; bandwidth is sufficient at the planned sample rates given separate **SPI** buses for storage and RF.
+All primary flight sensors (accelerometer, gyroscope, magnetometer, barometer) share one **I2C** bus. This keeps routing and pin usage simple; bandwidth is sufficient at the planned sample rates.
 
 ### Non-volatile storage (SPI1)
 

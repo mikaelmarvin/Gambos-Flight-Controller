@@ -6,8 +6,8 @@ Technical documentation for the Gambos flight controller: custom hardware (KiCad
 
 | Area | Status |
 |------|--------|
-| Hardware design | Complete (Rev A manufactured) |
-| Assembly / bring-up | In progress |
+| Hardware design and assembly | Complete (v1.0 manufactured) |
+| Bring-up | In progress |
 | Firmware | In progress (devkit + custom board) |
 
 ## Hardware

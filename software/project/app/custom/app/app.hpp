@@ -1,6 +1,6 @@
 /**
  * @file app.hpp
- * @brief Application layer – custom Rev A board (test code).
+ * @brief Application layer – custom v1.0 board (test code).
  */
 
 #ifndef GAMBOS_APP_HPP
