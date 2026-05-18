@@ -15,8 +15,7 @@ This is a portfolio-oriented engineering project focused on:
 ## Current status
 
 - Hardware design files and manufacturing outputs are in the repository
-- PCBs have been ordered
-- Assembly and bring-up are the next phase
+- PCB is assemblied, bring-up is partially done
 - Firmware build environment is set up and documented
 
 ## Repository structure
@@ -30,8 +29,9 @@ This is a portfolio-oriented engineering project focused on:
 
 ## Start here
 
-- Hardware assets: open `hardware/gambos-pcb.kicad_pro` in KiCad
-- Firmware setup/build/flash: see `[software/README.md](software/README.md)`
+- **Documentation:** [docs/index.md](docs/index.md) — hardware design write-up, architecture, subsystem pages
+- **Hardware (KiCad):** open `hardware/gambos-pcb.kicad_pro`
+- **Firmware setup/build/flash:** [software/README.md](software/README.md)
 - Board and app internals: `software/project/board/README.md` and `software/project/app/README.md`
 
 ## Engineering highlights
@@ -42,8 +42,6 @@ This is a portfolio-oriented engineering project focused on:
 - Reproducible development environment via Docker/Dev Container
 
 ## Next milestones
-
-- Assemble and inspect first PCB revision
 - Execute staged bring-up (power rails, SWD/debug access, clocks, peripherals)
 - Publish validation artifacts (photos, measurements, test notes)
 
