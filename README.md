@@ -1,7 +1,7 @@
 # The Gambos Flight Controller Project
 
 Custom embedded system project built to practice and demonstrate complete hardware + firmware workflow:
-from schematic and PCB design to STM32 firmware bring-up.
+from schematic and PCB design to STM32 firmware bring-up, applying state estimation and control theory.
 
 ## Why this repository exists
 
@@ -15,7 +15,7 @@ This is a portfolio-oriented engineering project focused on:
 ## Current status
 
 - Hardware design files and manufacturing outputs are in the repository
-- PCB is assemblied, bring-up is partially done
+- PCB is assembled, bring-up is partially done
 - Firmware build environment is set up and documented
 
 ## Repository structure

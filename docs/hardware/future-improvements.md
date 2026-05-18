@@ -4,10 +4,10 @@ Planned work for hardware, firmware, and documentation. Update this page as item
 
 ## Hardware
 
-- [ ] Rev A assembly and staged bring-up (rails, SWD, clocks, I2C sensor scan)
+- [ ] v1.0 assembly and staged bring-up (rails, SWD, clocks, I2C sensor scan)
 - [ ] Power-section simulation and measured waveforms (PMOS switch, soft-start, LDO load step)
 - [ ] Validation matrix with photos and scope captures in `docs/hardware/` (or linked from bring-up notes)
-- [ ] Rev B fixes from bring-up (if any)
+- [ ] v1.1 fixes from bring-up (if any)
 
 ## Firmware
 

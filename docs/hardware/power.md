@@ -21,7 +21,7 @@ The FET is sized for **~750 mA** per servo stall and brief **~5 A** aggregate sp
 
 At the intended gate drive, **R<sub>DS(on)</sub>** is on the order of **10 mΩ**, so conduction loss stays acceptable even during short high-current events.
 
-> **TODO:** Add gate-drive / soft-start simulation plots and measured rail waveforms after Rev A bring-up.
+> **TODO:** Add gate-drive / soft-start simulation plots and measured rail waveforms after v1.0 bring-up.
 
 ## Related documentation
 

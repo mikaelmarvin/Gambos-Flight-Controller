@@ -8,7 +8,7 @@ The Gambos hardware is a custom **STM32F446** flight controller designed as a po
 
 | Item | Status |
 |------|--------|
-| PCB revision | Rev A (first manufactured version) |
+| PCB revision | v1.0 (first manufactured version; silkscreen `GAMBOS-v1.0`) |
 | Manufacturing | Complete |
 | Assembly | Pending |
 | Bring-up | Pending (planned staged validation) |

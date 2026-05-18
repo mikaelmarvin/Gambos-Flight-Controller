@@ -4,7 +4,7 @@
 #
 # Usage:
 #   ./software/project/scripts/flash.sh devkit    # build/devkit/gambos.elf via OpenOCD + ST-Link
-#   ./software/project/scripts/flash.sh custom    # build/custom/gambos.elf via J-Link (JLinkExe preferred)
+#   ./software/project/scripts/flash.sh custom    # build/custom/gambos.elf via JLinkExe
 #
 # Prerequisites: ./software/project/scripts/build.sh devkit   OR   ... build.sh custom
 #
@@ -27,8 +27,6 @@ BOARD="$1"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DEVICE="${GAMBOS_JLINK_DEVICE:-STM32F446RE}"
 SPEED="${GAMBOS_JLINK_SPEED:-4000}"
-OPENOCD_BOARD="${ROOT}/openocd"
-OPENOCD_SYSTEM="/usr/share/openocd/scripts"
 
 if [[ -n "${GAMBOS_FLASH_ELF:-}" ]]; then
     ELF="${GAMBOS_FLASH_ELF}"
@@ -49,7 +47,12 @@ flash_devkit() {
         -c "program ${ELF} verify reset exit"
 }
 
-flash_custom_jlink_exe() {
+flash_custom() {
+    if ! command -v JLinkExe >/dev/null 2>&1; then
+        echo "JLinkExe not found. Rebuild the Dev Container (SEGGER J-Link is installed from the Dockerfile on amd64/arm64)." >&2
+        exit 1
+    fi
+
     local tmp
     tmp="$(mktemp)"
     cleanup() { rm -f "$tmp"; }
@@ -69,26 +72,7 @@ EOF
     exec JLinkExe -NoGui 1 -ExitOnError 1 -CommandFile "$tmp"
 }
 
-flash_custom_openocd() {
-    echo "JLinkExe not found — flashing via OpenOCD (J-Link + SWD)." >&2
-    echo "Rebuild the Dev Container so the Dockerfile installs SEGGER J-Link if possible." >&2
-    exec openocd \
-        -s "${OPENOCD_BOARD}" \
-        -s "${OPENOCD_SYSTEM}" \
-        -f "interface-jlink-swd.cfg" \
-        -f "target/stm32f4x.cfg" \
-        -c "program ${ELF} verify reset exit"
-}
-
 case "$BOARD" in
-    devkit)
-        flash_devkit
-        ;;
-    custom)
-        if command -v JLinkExe >/dev/null 2>&1; then
-            flash_custom_jlink_exe
-        else
-            flash_custom_openocd
-        fi
-        ;;
+    devkit) flash_devkit ;;
+    custom) flash_custom ;;
 esac

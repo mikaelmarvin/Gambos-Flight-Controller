@@ -26,8 +26,8 @@ fi
 
 # --- Full setup (postCreate) ---
 
-# 1. Configure + build devkit (compile_commands.json for clangd).
-bash software/project/scripts/build.sh devkit
+# 1. Configure + build custom (compile_commands.json for clangd).
+bash software/project/scripts/build.sh custom
 
 # 2. Fix paths in compile_commands.json for container
 bash software/project/scripts/fix-compile-commands-for-container.sh || true
