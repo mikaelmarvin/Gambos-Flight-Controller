@@ -1,34 +1,44 @@
 #!/usr/bin/env bash
 # Rewrite compile_commands.json so paths use the container workspace.
 # Helps clangd / Go to Definition when the tree was configured on the host
-# (e.g. /home/user/repo) and you open it under /workspace/project/<repo>.
+# (e.g. /home/user/repo) and you open it under a bind-mounted path (e.g. /workspace/gambos).
 # Run from repo root; safe to run multiple times.
 #
-# Usage: ./software/project/scripts/fix-compile-commands-for-container.sh [devkit|all]
-#   devkit (default) — software/project/build/devkit/compile_commands.json
-#   all              — same as devkit (single preset)
+# Usage: ./software/project/scripts/fix-compile-commands-for-container.sh [devkit|custom|all]
+#   devkit           — software/project/build/devkit/compile_commands.json
+#   custom           — software/project/build/custom/compile_commands.json
+#   all (default)    — both devkit and custom
 #
 # Override destination: CONTAINER_WORKSPACE=/path ./software/project/scripts/...
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
-REPO_DIRNAME="$(basename "$REPO_ROOT")"
-CONTAINER_WORKSPACE="${CONTAINER_WORKSPACE:-/workspace/project/${REPO_DIRNAME}}"
+CONTAINER_WORKSPACE="${CONTAINER_WORKSPACE:-$REPO_ROOT}"
 MODE="${1:-all}"
 
+print_help() {
+	local stream="${1:-stdout}"
+	local out="/dev/stdout"
+	[[ "$stream" == "stderr" ]] && out="/dev/stderr"
+
+	cat >"$out" <<EOF
+Usage: $0 [devkit|custom|all]
+  Rewrite compile_commands.json under software/project/build/{devkit,custom}/ to use
+  CONTAINER_WORKSPACE (default: ${CONTAINER_WORKSPACE}).
+  Default mode: all
+EOF
+}
+
 usage() {
-	echo "Usage: $0 [devkit|all]" >&2
-	echo "  Rewrite compile_commands.json under software/project/build/devkit/ to use" >&2
-	echo "  CONTAINER_WORKSPACE (default: ${CONTAINER_WORKSPACE})." >&2
+	print_help stderr
 	exit 2
 }
 
 case "$MODE" in
-devkit | all) ;;
+devkit | custom | all) ;;
 -h | --help)
-	echo "Usage: $0 [devkit|all]" >&2
-	echo "  Default: all — fixes software/project/build/devkit/compile_commands.json when present." >&2
+	print_help
 	exit 0
 	;;
 *) usage ;;
@@ -53,8 +63,9 @@ fix_one() {
 		return 1
 	fi
 
+	local ok_msg="OK ${label}: already uses container paths."
 	if [[ "$first_dir" == /workspace/* ]]; then
-		echo "OK ${label}: already uses container paths."
+		echo "$ok_msg"
 		return 0
 	fi
 
@@ -70,7 +81,7 @@ fix_one() {
 	fi
 
 	if [[ "$host_root" == "$CONTAINER_WORKSPACE" ]]; then
-		echo "OK ${label}: already uses container paths."
+		echo "$ok_msg"
 		return 0
 	fi
 
@@ -80,7 +91,16 @@ fix_one() {
 }
 
 ERR=0
-fix_one "${REPO_ROOT}/software/project/build/devkit/compile_commands.json" "devkit" || ERR=1
+targets=()
+case "$MODE" in
+devkit) targets=("devkit") ;;
+custom) targets=("custom") ;;
+all) targets=("devkit" "custom") ;;
+esac
+
+for target in "${targets[@]}"; do
+	fix_one "${REPO_ROOT}/software/project/build/${target}/compile_commands.json" "${target}" || ERR=1
+done
 
 if [[ "$ERR" -ne 0 ]]; then
 	exit 1

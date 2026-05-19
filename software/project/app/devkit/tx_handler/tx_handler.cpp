@@ -3,7 +3,7 @@
  * @brief nRF24 / TX path — FreeRTOS task (native API).
  */
 
-#include "tx_handler/tx_handler.hpp"
+#include "tx_handler.hpp"
 #include "log.hpp"
 #include "messaging/messaging.hpp"
 
@@ -30,14 +30,16 @@ extern "C" void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
 }
 
 bool TxHandler::Initialize(void) {
-    Messaging::Subscribe<topics::ButtonInfo>([](const topics::ButtonInfo &button_info) {
-        LOG("Button pressed: %u\r\n", button_info.button_state);
-    });
+    Messaging::Subscribe<topics::ButtonInfo>(
+        [](const topics::ButtonInfo &button_info) {
+            LOG("Button pressed: %u\r\n", button_info.button_state);
+        });
 
     _nrf24l01p.RegisterCePin(GPIOA, GPIO_PIN_5);
     _nrf24l01p.RegisterCsnPin(GPIOA, GPIO_PIN_6);
 
-    spi_semaphore = xSemaphoreCreateBinaryStatic(&spi_semaphore_buffer);
+    spi_semaphore =
+        xSemaphoreCreateBinaryStatic(&spi_semaphore_buffer);
     if (spi_semaphore == NULL) {
         return false;
     }
@@ -46,13 +48,12 @@ bool TxHandler::Initialize(void) {
 }
 
 void TxHandler::Start(void) {
-    configASSERT(
-        xTaskCreate(
-            &TxHandler::TaskFunction, "tx_handler", kTxHandlerTaskStackSize, this, kTxHandlerTaskPriority,
-            NULL
-        )
-        == pdPASS
-    );
+    configASSERT(xTaskCreate(&TxHandler::TaskFunction,
+                             "tx_handler",
+                             kTxHandlerTaskStackSize,
+                             this,
+                             kTxHandlerTaskPriority,
+                             NULL) == pdPASS);
 }
 
 void TxHandler::TaskFunction(void *pvParameters) {
