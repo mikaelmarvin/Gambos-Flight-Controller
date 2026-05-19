@@ -1,17 +1,26 @@
 #!/usr/bin/env bash
-# Run CMake clean target for the devkit build directory.
-# Usage: ./software/project/scripts/clean.sh [devkit]
+# Run CMake clean for one preset. First argument is required (no default).
+#
+# Usage:
+#   ./software/project/scripts/clean.sh devkit
+#   ./software/project/scripts/clean.sh custom
+#
 set -euo pipefail
-PRESET="${1:-devkit}"
-if [[ "$PRESET" != "devkit" ]]; then
-    echo "Usage: $0 [devkit]" >&2
+
+usage() {
+    echo "Usage: $0 devkit | custom" >&2
     exit 1
-fi
+}
+
+[[ $# -eq 1 ]] || usage
+[[ "${1}" == "devkit" || "${1}" == "custom" ]] || usage
+
+PRESET="$1"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 BUILD="build/${PRESET}"
 if [[ ! -d "$BUILD" ]]; then
-    echo "Nothing to clean: ${BUILD} missing (run build.sh first)." >&2
+    echo "Nothing to clean: ${BUILD} missing (run build.sh ${PRESET} first)." >&2
     exit 0
 fi
 cmake --build "$BUILD" --target clean

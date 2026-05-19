@@ -16,12 +16,24 @@
                 "CMAKE_BUILD_TYPE": "Debug",
                 "BOARD": "devkit"
             }
+        },
+        {
+            "name": "custom",
+            "inherits": "default",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BOARD": "custom"
+            }
         }
     ],
     "buildPresets": [
         {
             "name": "devkit",
             "configurePreset": "devkit"
+        },
+        {
+            "name": "custom",
+            "configurePreset": "custom"
         }
     ]
 }

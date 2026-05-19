@@ -24,3 +24,7 @@ software/project/.cache/
 Thumbs.db
 
 **/.history/
+
+# Hardware (KiCad history / local zip backups — not tracked)
+hardware/.history/
+hardware/gambos-pcb-backups/
