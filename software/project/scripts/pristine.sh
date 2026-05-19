@@ -1,23 +1,48 @@
 #!/usr/bin/env bash
-# Remove the devkit build directory (or all of software/project/build). Reconfigure with build.sh or cmake --preset.
-# Usage: ./software/project/scripts/pristine.sh [devkit|all]
-#   devkit (default) — delete software/project/build/devkit/
-#   all              — delete entire software/project/build/
+# Remove CMake build output under software/project/build/.
+#
+# Usage:
+#   ./software/project/scripts/pristine.sh              # delete entire build/ (all presets)
+#   ./software/project/scripts/pristine.sh all           # same as no argument
+#   ./software/project/scripts/pristine.sh devkit        # only build/devkit/
+#   ./software/project/scripts/pristine.sh custom        # only build/custom/
+#
+# Then reconfigure with: ./software/project/scripts/build.sh devkit | custom
+#
 set -euo pipefail
-MODE="${1:-devkit}"
+
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-if [[ "$MODE" == "all" ]]; then
+usage() {
+    echo "Usage: $0 [ devkit | custom | all ]" >&2
+    echo "  (no argument) or all  — remove entire software/project/build/" >&2
+    echo "  devkit                — remove only build/devkit/" >&2
+    echo "  custom                — remove only build/custom/" >&2
+    exit 1
+}
+
+if [[ $# -eq 0 ]]; then
     rm -rf build
-    echo "OK: removed software/project/build/. Run: cmake --preset devkit (from software/project/)"
+    echo "OK: removed software/project/build/ (all presets)."
+    echo "Run: ./software/project/scripts/build.sh devkit   # or custom"
     exit 0
 fi
 
-if [[ "$MODE" != "devkit" ]]; then
-    echo "Usage: $0 [devkit|all]" >&2
-    exit 1
-fi
+[[ $# -eq 1 ]] || usage
 
-rm -rf "build/${MODE}"
-echo "OK: removed build/${MODE}. Run: ./software/project/scripts/build.sh"
+case "$1" in
+    all)
+        rm -rf build
+        echo "OK: removed software/project/build/ (all presets)."
+        echo "Run: ./software/project/scripts/build.sh devkit   # or custom"
+        ;;
+    devkit | custom)
+        rm -rf "build/${1}"
+        echo "OK: removed build/${1}/."
+        echo "Run: ./software/project/scripts/build.sh ${1}"
+        ;;
+    *)
+        usage
+        ;;
+esac

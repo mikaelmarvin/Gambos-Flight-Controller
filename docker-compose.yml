@@ -2,8 +2,13 @@
 # Run with: docker compose up -d
 # Stop with: docker compose down
 #
-# USB (ST-Link, adapters): requires Linux /dev/bus/usb on the host. On Windows + WSL2,
+# Dev Containers: bind-mount the repo root (.) so the path matches .devcontainer workspaceFolder.
+# (Avoid ../ mounts — Compose project directory can differ and break "Reopen in Container".)
+#
+# USB (ST-Link, SEGGER J-Link, adapters): requires Linux /dev/bus/usb on the host. On Windows + WSL2,
 # attach the device with usbipd-win on the host first; WSL must expose USB (see Microsoft docs).
+
+name: gambos
 
 services:
   # Service name - you'll reference this as 'dev-env'
@@ -20,15 +25,15 @@ services:
     # Mount your project directory into container
     # Format: host_path:container_path
     volumes:
-      # Mount entire project (so changes reflect immediately)
-      - ../:/workspace/project:rw
+      # Repo root (directory of this compose file) → fixed in-container path (see devcontainer.json)
+      - .:/workspace/gambos:rw
       # Optional: mount home for persistent config
       - dev-home:/home/developer
-      # USB bus (ST-Link, CMSIS-DAP, etc. via libusb / OpenOCD)
+      # USB bus (ST-Link, J-Link, CMSIS-DAP, etc.)
       - /dev/bus/usb:/dev/bus/usb
     
     # Working directory when you exec into container
-    working_dir: /workspace/project
+    working_dir: /workspace/gambos
     
     # Environment variables
     environment:
