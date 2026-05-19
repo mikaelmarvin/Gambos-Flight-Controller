@@ -2,7 +2,8 @@
   "name": "gambos",
   "dockerComposeFile": "../docker-compose.yml",
   "service": "dev-env",
-  "workspaceFolder": "/workspace/project/${localWorkspaceFolderBasename}",
+  "workspaceFolder": "/workspace/gambos",
+  "updateRemoteUserUID": true,
   "customizations": {
     "vscode": {
       "extensions": [
@@ -19,7 +20,7 @@
         "[cpp]": {
           "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
         },
-        "C_Cpp.default.compileCommands": "${workspaceFolder}/software/project/build/devkit/compile_commands.json",
+        "C_Cpp.default.compileCommands": "${workspaceFolder}/software/project/compile_commands.json",
         "C_Cpp.intelliSenseEngine": "disabled",
         "C_Cpp.errorSquiggles": "disabled",
         "clangd.arguments": [

@@ -719,7 +719,7 @@
         "uuid": "d80510cd-8677-4100-826a-dea5fdab36f5"
       }
     ],
-    "used_designators": "TP8",
+    "used_designators": "SW1,D2-4,C28,#PWR35-36,#PWR42,R6-9,R13,TP8",
     "variants": []
   },
   "sheets": [

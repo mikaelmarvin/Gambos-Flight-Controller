@@ -48,6 +48,10 @@ RUN apt-get update && apt-get install -y \
     # Clean up apt cache to reduce image size
     && rm -rf /var/lib/apt/lists/*
 
+# Ubuntu's gcc-arm-none-eabi does not install arm-none-eabi-gdb; gdb-multiarch debugs Cortex-M.
+# Provide the usual name so Cortex-Debug and CLI workflows match ARM docs.
+RUN ln -sf /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb
+
 # Install Starship prompt (cross-shell, git branch, colors, etc.)
 RUN curl -sS https://starship.rs/install.sh | sh -s -- -y -b /usr/local/bin
 
@@ -62,6 +66,26 @@ RUN pip3 install --no-cache-dir \
     pyserial \
     intelhex \
     pyelftools
+
+# SEGGER J-Link Software Pack (JLinkExe): flash/probe for the custom Gambos PCB over USB.
+# License: download POST accepts SEGGER's click-through license (same as manual install).
+# J-Link postinst runs udevadm to reload rules; Docker has no udevd, so real udevadm fails.
+# dpkg maintainer scripts often omit /usr/local/bin from PATH; /usr/bin/udevadm is always found.
+RUN set -eux; \
+    ARCH="$(dpkg --print-architecture)"; \
+    case "$ARCH" in \
+        amd64) JLINK_DEB_URL="https://www.segger.com/downloads/jlink/JLink_Linux_x86_64.deb" ;; \
+        arm64) JLINK_DEB_URL="https://www.segger.com/downloads/jlink/JLink_Linux_arm64.deb" ;; \
+        *) echo "Skipping SEGGER J-Link install: no .deb for architecture ${ARCH}"; JLINK_DEB_URL="" ;; \
+    esac; \
+    if [ -n "${JLINK_DEB_URL}" ]; then \
+        apt-get update; \
+        printf '%s\n' '#!/bin/sh' 'exit 0' > /usr/bin/udevadm && chmod 755 /usr/bin/udevadm; \
+        wget --quiet --post-data "accept_license_agreement=accepted" -O /tmp/JLink.deb "${JLINK_DEB_URL}"; \
+        apt-get install -y --no-install-recommends /tmp/JLink.deb; \
+        rm -f /tmp/JLink.deb /usr/bin/udevadm; \
+        rm -rf /var/lib/apt/lists/*; \
+    fi
 
 # Create a non-root user for development (best practice)
 # Running as root in containers is a security risk
