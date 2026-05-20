@@ -2,7 +2,7 @@
 
 ## Block diagram
 
-
+![System block diagram](../assets/block-diagram.png)
 
 ## Digital communication
 

@@ -1,24 +1,39 @@
 # Software overview
 
-Firmware for Gambos lives under [`software/`](../../software/). The project targets:
+Firmware for Gambos lives under [`software/`](../../software/).
 
-- **STM32F446** on the custom board (`custom` build target)
-- **STM32F446 Nucleo/devkit** for early development (`devkit` build target)
-
-## Stack
-
-- **CMake** build with board/application split
-- **FreeRTOS**
-- **Dev Container** at repo root for reproducible builds (see top-level [README](../../README.md))
+| | |
+| --- | --- |
+| **MCU** | STM32F446 — Nucleo (`devkit`) and Gambos PCB (`custom`) |
+| **Build** | CMake, FreeRTOS, STM32 HAL |
+| **Status** | Build/flash workflow documented; flight-stack architecture docs not written yet |
 
 ## Getting started
 
-Full build, flash, and debug instructions:
+**[software/README.md](../../software/README.md)** — Dev Container, build, flash, and debug scripts.
 
-**[software/README.md](../../software/README.md)**
+## Software architecture *(documentation in progress)*
+
+Expand these sections on this page (or add linked pages) as the stack matures. The [repository README](../../README.md) lists the same placeholders for recruiters landing on the repo root.
+
+#### Firmware layout
+
+*(pending — `board/` vs `app/`, CMake presets)*
+
+#### RTOS and tasks
+
+*(pending)*
+
+#### Drivers and peripherals
+
+*(pending)*
+
+#### Estimation and control
+
+*(pending)*
 
 ## Related documentation
 
-- [Gambos board](../hardware/gambos-board.md)
+- [Repository README](../../README.md)
 - [System architecture](../hardware/architecture.md)
 - [Future improvements](../hardware/future-improvements.md)
