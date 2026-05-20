@@ -1,47 +1,114 @@
-# The Gambos Flight Controller Project
+# Gambos flight controller
 
-Custom embedded system project built to practice and demonstrate complete hardware + firmware workflow:
-from schematic and PCB design to STM32 firmware bring-up, applying state estimation and control theory.
+Custom **STM32F446** flight-controller PCB and firmware — schematic through layout, manufacture, assembly, bring-up, application and driver development.
 
-## Why this repository exists
-
-This is a portfolio-oriented engineering project focused on:
-
-- Designing a real custom board in KiCad
-- Building firmware for STM32F446 with CMake + FreeRTOS
-- Managing an end-to-end embedded workflow in a reproducible Dev Container setup
-- Driven by curiosity
-
-## Current status
-
-- Hardware design files and manufacturing outputs are in the repository
-- PCB is assembled, bring-up is partially done
-- Firmware build environment is set up and documented
-
-## Repository structure
+## At a glance
 
 
-| Directory                | Purpose                                                                                  |
-| ------------------------ | ---------------------------------------------------------------------------------------- |
-| `hardware/` | KiCad project files, schematics, PCB layout, libraries, 3D models, and generated Gerbers |
-| `software/` | STM32 firmware project, build scripts, dev container workflow, debug/flash scripts       |
+|               |                                                                        |
+| ------------- | ---------------------------------------------------------------------- |
+| **MCU**       | STM32F446RET6 (Cortex-M4 + FPU)                                        |
+| **Sensors**   | Accelerometer, gyroscope, magnetometer, barometer, temperature         |
+| **Storage**   | External SPI flash + microSD                                           |
+| **Actuation** | 5× hobby servo PWM, ESC motor PWM                                      |
+| **Wireless**  | nRF24L01+ telemetry / command link                                     |
+| **Debug**     | SWD + UART (SEGGER J-Link)                             |
+| **PCB**       | 4-layer, 75 × 50 mm — KiCad, manufactured**v1.0**                      |
+| **Firmware**  | CMake, FreeRTOS —`devkit` and `custom` targets                         |
+| **Status**    | v1.0 built; hardware bring-up in progress; flight software in progress |
 
 
-## Start here
+## System overview (hardware)
 
-- **Documentation:** [docs/index.md](docs/index.md) — start with [Gambos board](docs/hardware/gambos-board.md), then subsystem pages in order
-- **Hardware (KiCad):** open `hardware/gambos-pcb.kicad_pro`
-- **Firmware setup/build/flash:** [software/README.md](software/README.md)
-- Board and app internals: `software/project/board/README.md` and `software/project/app/README.md`
+<p align="center">
+  <img src="docs/assets/block-diagram.png" alt="System block diagram" width="480">
+</p>
 
-## Engineering highlights
+Buses, actuation, and interfaces are described in [System architecture](docs/hardware/architecture.md).
 
-- STM32F446-based firmware project with a structured CMake build
-- FreeRTOS-based software stack and board/application separation for easier code generation flow
-- Custom hardware design split by subsystem (MCU, power, sensors/flash, connectors)
-- Reproducible development environment via Docker/Dev Container
+## Bring-up setup
 
-## Next milestones
-- Execute staged bring-up (power rails, SWD/debug access, clocks, peripherals)
-- Publish validation artifacts (photos, measurements, test notes)
+<p align="center">
+  <img src="docs/assets/bringup-setup.jpg" alt="Bring-up setup on the bench" width="480">
+</p>
 
+## Hardware
+
+Custom board in KiCad (not a dev-kit stack), split by subsystem: power, sensing, storage, RF, actuation.
+
+
+| Topic                       | Documentation                                                                        |
+| --------------------------- | ------------------------------------------------------------------------------------ |
+| Architecture, buses, PWM    | [docs/hardware/architecture.md](docs/hardware/architecture.md)                       |
+| Stackup, layout             | [docs/hardware/physical-design.md](docs/hardware/physical-design.md)                 |
+| Power, storage, sensing, UI | [docs/hardware/](docs/hardware/) — see [documentation index](docs/index.md#hardware) |
+| KiCad project               | `[hardware/gambos-pcb.kicad_pro](hardware/gambos-pcb.kicad_pro)`                     |
+
+
+## Software
+
+Firmware targets the **Nucleo-F446RE** (`devkit`) for early work and the **Gambos PCB** (`custom`). Build, flash, and the dev container workflow are documented; the in-flight stack is still being brought up.
+
+
+|            |                                                  |
+| ---------- | ------------------------------------------------ |
+| **RTOS**   | FreeRTOS                                         |
+| **Layout** | `board/` (CubeMX + HAL) and `app/` (application) |
+
+
+### Software architecture *(documentation in progress)*
+
+Sections below are placeholders — fill them in as the stack stabilizes.
+
+#### Firmware layout
+
+
+
+*(pending)*
+
+#### RTOS and tasks
+
+
+
+*(pending)*
+
+#### Drivers and peripherals
+
+
+
+*(pending)*
+
+#### Estimation and control
+
+
+
+*(pending)*
+
+
+| Getting started                    | Link                                             |
+| ---------------------------------- | ------------------------------------------------ |
+| Build, flash, debug, dev container | [software/README.md](software/README.md)         |
+| Software doc hub                   | [docs/software/index.md](docs/software/index.md) |
+
+
+## Documentation
+
+Full index: **[docs/index.md](docs/index.md)**
+
+**Hardware** (read in order after this page):
+
+1. [System architecture](docs/hardware/architecture.md)
+2. [Physical design](docs/hardware/physical-design.md)
+3. [Power](docs/hardware/power.md) → [Storage](docs/hardware/storage.md) → [Sensing](docs/hardware/sensing.md) → [User interface](docs/hardware/user-interface.md)
+4. [Future improvements](docs/hardware/future-improvements.md)
+
+**Software:** [docs/software/index.md](docs/software/index.md) → [software/README.md](software/README.md)
+
+## Repository layout
+
+
+| Directory                | Purpose                                         |
+| ------------------------ | ----------------------------------------------- |
+| `[hardware/](hardware/)` | KiCad project, libraries, manufacturing outputs |
+| `[software/](software/)` | STM32 firmware (CMake, FreeRTOS)                |
+| `[docs/](docs/)`         | Hardware and software documentation, figures    |

@@ -26,4 +26,4 @@ Planned work for hardware, firmware, and documentation. Update this page as item
 
 **Next:** [Documentation index →](../index.md)
 
-[Gambos board](gambos-board.md)
+[Repository README](../../README.md) · [Documentation index](../index.md)
