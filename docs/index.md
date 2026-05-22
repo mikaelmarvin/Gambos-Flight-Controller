@@ -8,7 +8,7 @@ Technical documentation for the Gambos flight controller: custom hardware (KiCad
 
 Subsystem pages (read in order; each links to the next):
 
-1. [System architecture](hardware/architecture.md) — buses, actuation, debug interfaces
+1. [Hardware architecture](hardware/hardware-architecture.md) — buses, actuation, debug interfaces
 2. [Physical design](hardware/physical-design.md) — stackup, dimensions, PCB layout
 3. [Power](hardware/power.md) — input switching, LDO, servo rail
 4. [Storage](hardware/storage.md) — external flash and microSD
@@ -18,7 +18,7 @@ Subsystem pages (read in order; each links to the next):
 
 ## Software
 
-- [Software overview](software/index.md) — hub and placeholders for architecture docs
+- [Software architecture](software/software-architecture.md) — firmware layers and placeholders for stack docs
 - [Build, flash, debug](../software/README.md)
 
 ## Repository entry points

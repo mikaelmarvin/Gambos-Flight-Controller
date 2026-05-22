@@ -1,12 +1,9 @@
 # Physical design
 
-## Stackup and geometry
-
 The board uses a **4-layer stackup** for signal integrity and power distribution:
 
-
 | Layer      | Role           |
-| ---------- | -------------- |
+| ------------| ----------------|
 | 1 (Top)    | Signal / power |
 | 2          | Ground plane   |
 | 3          | Ground plane   |
@@ -17,9 +14,11 @@ Dual internal ground planes give a low-impedance return path. Outer layers use c
 
 **Board size:** 75 × 50 mm
 
-## PCB layout
-
-PCB layout
+<p align="center">
+  <img src="../assets/pcb-routing.png" alt="PCB routing">
+  <br>
+  <sub>Top-layer with copper pour</sub>
+</p>
 
 ---
 
