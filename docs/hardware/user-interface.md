@@ -24,6 +24,6 @@ Three LEDs give visual feedback during power-on, tests, and runtime debug.
 
 ---
 
-**Next:** [Future improvements →](future-improvements.md)
+**Next:** [Roadmap →](roadmap.md)
 
 [Documentation index](../index.md)
