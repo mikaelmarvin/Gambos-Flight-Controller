@@ -61,7 +61,7 @@ Full index: **[docs/index.md](docs/index.md)**
 1. [Hardware architecture](docs/hardware/hardware-architecture.md)
 2. [Physical design](docs/hardware/physical-design.md)
 3. [Power](docs/hardware/power.md) → [Storage](docs/hardware/storage.md) → [Sensing](docs/hardware/sensing.md) → [User interface](docs/hardware/user-interface.md)
-4. [Future improvements](docs/hardware/future-improvements.md)
+4. [Roadmap](docs/hardware/roadmap.md) — v1.0 todos and v1.1+ hardware plans
 
 **Software:** [docs/software/software-architecture.md](docs/software/software-architecture.md) → [software/README.md](software/README.md)
 

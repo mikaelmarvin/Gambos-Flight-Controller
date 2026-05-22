@@ -21,4 +21,4 @@ Expand these sections on this page (or add linked pages) as the stack matures. T
 
 - [Repository README](../../README.md)
 - [Hardware architecture](../hardware/hardware-architecture.md)
-- [Future improvements](../hardware/future-improvements.md)
+- [Roadmap](../hardware/roadmap.md)

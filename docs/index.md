@@ -14,7 +14,7 @@ Subsystem pages (read in order; each links to the next):
 4. [Storage](hardware/storage.md) — external flash and microSD
 5. [Sensing](hardware/sensing.md) — IMU, magnetometer, barometer
 6. [User interface](hardware/user-interface.md) — RF module, button, LEDs
-7. [Future improvements](hardware/future-improvements.md) — planned hardware and firmware work
+7. [Roadmap](hardware/roadmap.md) — v1.0 open work and planned next hardware iterations
 
 ## Software
 
