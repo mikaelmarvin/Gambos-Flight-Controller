@@ -1,4 +1,4 @@
-# System architecture
+# Hardware architecture
 
 ## Block diagram
 

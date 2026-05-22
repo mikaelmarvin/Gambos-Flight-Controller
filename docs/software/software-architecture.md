@@ -1,4 +1,4 @@
-# Software overview
+# Software architecture
 
 Firmware for Gambos lives under [`software/`](../../software/).
 
@@ -16,24 +16,9 @@ Firmware for Gambos lives under [`software/`](../../software/).
 
 Expand these sections on this page (or add linked pages) as the stack matures. The [repository README](../../README.md) lists the same placeholders for recruiters landing on the repo root.
 
-#### Firmware layout
-
-*(pending — `board/` vs `app/`, CMake presets)*
-
-#### RTOS and tasks
-
-*(pending)*
-
-#### Drivers and peripherals
-
-*(pending)*
-
-#### Estimation and control
-
-*(pending)*
 
 ## Related documentation
 
 - [Repository README](../../README.md)
-- [System architecture](../hardware/architecture.md)
+- [Hardware architecture](../hardware/hardware-architecture.md)
 - [Future improvements](../hardware/future-improvements.md)

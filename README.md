@@ -6,90 +6,51 @@ Custom **STM32F446** flight-controller PCB and firmware — schematic through la
 
 
 |               |                                                                        |
-| ------------- | ---------------------------------------------------------------------- |
+| ---------------| ------------------------------------------------------------------------|
 | **MCU**       | STM32F446RET6 (Cortex-M4 + FPU)                                        |
 | **Sensors**   | Accelerometer, gyroscope, magnetometer, barometer, temperature         |
-| **Storage**   | External SPI flash + microSD                                           |
+| **Storage**   | External flash + microSD                                               |
 | **Actuation** | 5× hobby servo PWM, ESC motor PWM                                      |
 | **Wireless**  | nRF24L01+ telemetry / command link                                     |
-| **Debug**     | SWD + UART (SEGGER J-Link)                             |
+| **Debug**     | SWD + UART (SEGGER J-Link)                                             |
 | **PCB**       | 4-layer, 75 × 50 mm — KiCad, manufactured**v1.0**                      |
 | **Firmware**  | CMake, FreeRTOS —`devkit` and `custom` targets                         |
 | **Status**    | v1.0 built; hardware bring-up in progress; flight software in progress |
 
-
-## System overview (hardware)
-
-<p align="center">
-  <img src="docs/assets/block-diagram.png" alt="System block diagram" width="480">
-</p>
-
-Buses, actuation, and interfaces are described in [System architecture](docs/hardware/architecture.md).
-
-## Bring-up setup
+## Render and Bring-up setup
 
 <p align="center">
-  <img src="docs/assets/bringup-setup.jpg" alt="Bring-up setup on the bench" width="480">
+  <table cellspacing="0" cellpadding="12">
+    <tr>
+      <td align="center" valign="top">
+        <img src="docs/assets/3d-pcb-render.png" alt="3D PCB render" style="height:240px; width:auto; max-width:none;">
+        <br>
+        <sub>3D PCB render</sub>
+      </td>
+      <td align="center" valign="top">
+        <img src="docs/assets/bringup-setup.jpg" alt="Bring-up setup on the bench" style="height:240px; width:auto; max-width:none;">
+        <br>
+        <sub>Testing the power section on the bench</sub>
+      </td>
+    </tr>
+  </table>
 </p>
 
-## Hardware
+Render of v1.0 layout in KiCad (left) and early bench bring-up (right), started with the power section before moving to testing other peripherals.
 
-Custom board in KiCad (not a dev-kit stack), split by subsystem: power, sensing, storage, RF, actuation.
+## Hardware block diagram
 
+<p align="center">
+  <img src="docs/assets/block-diagram.png" alt="System block diagram" style="height:312px; width:auto; max-width:none;">
+  <br>
+  <sub>Hardware block diagram</sub>
+</p>
 
-| Topic                       | Documentation                                                                        |
-| --------------------------- | ------------------------------------------------------------------------------------ |
-| Architecture, buses, PWM    | [docs/hardware/architecture.md](docs/hardware/architecture.md)                       |
-| Stackup, layout             | [docs/hardware/physical-design.md](docs/hardware/physical-design.md)                 |
-| Power, storage, sensing, UI | [docs/hardware/](docs/hardware/) — see [documentation index](docs/index.md#hardware) |
-| KiCad project               | `[hardware/gambos-pcb.kicad_pro](hardware/gambos-pcb.kicad_pro)`                     |
+Buses, actuation, and interfaces are described in [Hardware architecture](docs/hardware/hardware-architecture.md).
 
+## Software architecture
 
-## Software
-
-Firmware targets the **Nucleo-F446RE** (`devkit`) for early work and the **Gambos PCB** (`custom`). Build, flash, and the dev container workflow are documented; the in-flight stack is still being brought up.
-
-
-|            |                                                  |
-| ---------- | ------------------------------------------------ |
-| **RTOS**   | FreeRTOS                                         |
-| **Layout** | `board/` (CubeMX + HAL) and `app/` (application) |
-
-
-### Software architecture *(documentation in progress)*
-
-Sections below are placeholders — fill them in as the stack stabilizes.
-
-#### Firmware layout
-
-
-
-*(pending)*
-
-#### RTOS and tasks
-
-
-
-*(pending)*
-
-#### Drivers and peripherals
-
-
-
-*(pending)*
-
-#### Estimation and control
-
-
-
-*(pending)*
-
-
-| Getting started                    | Link                                             |
-| ---------------------------------- | ------------------------------------------------ |
-| Build, flash, debug, dev container | [software/README.md](software/README.md)         |
-| Software doc hub                   | [docs/software/index.md](docs/software/index.md) |
-
+*(diagram pending)* — layer stack, drivers, RTOS tasks, and flight logic are described in [Software architecture](docs/software/software-architecture.md).
 
 ## Documentation
 
@@ -97,12 +58,12 @@ Full index: **[docs/index.md](docs/index.md)**
 
 **Hardware** (read in order after this page):
 
-1. [System architecture](docs/hardware/architecture.md)
+1. [Hardware architecture](docs/hardware/hardware-architecture.md)
 2. [Physical design](docs/hardware/physical-design.md)
 3. [Power](docs/hardware/power.md) → [Storage](docs/hardware/storage.md) → [Sensing](docs/hardware/sensing.md) → [User interface](docs/hardware/user-interface.md)
 4. [Future improvements](docs/hardware/future-improvements.md)
 
-**Software:** [docs/software/index.md](docs/software/index.md) → [software/README.md](software/README.md)
+**Software:** [docs/software/software-architecture.md](docs/software/software-architecture.md) → [software/README.md](software/README.md)
 
 ## Repository layout
 

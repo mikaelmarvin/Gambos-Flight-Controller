@@ -5,12 +5,12 @@ STM32 firmware for the Gambos project — built with CMake, developed in a **Dev
 ## Prerequisites
 
 
-| Requirement                     | Notes                                                                                                                                          |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Git**                         | Clone this repository.                                                                                                                         |
-| **Docker** + **Docker Compose** | Used by the dev container.                                                                                                                     |
-| **Cursor** or **VS Code**       | With the **Dev Containers** extension (`ms-vscode-remote.remote-containers`).                                                                  |
-| **Host OS**                     | **Linux** recommended for **USB** (ST-Link, serial) into the container. |
+| Requirement                     | Notes                                                                         |
+| ---------------------------------| -------------------------------------------------------------------------------|
+| **Git**                         | Clone this repository.                                                        |
+| **Docker** + **Docker Compose** | Used by the dev container.                                                    |
+| **Cursor** or **VS Code**       | With the **Dev Containers** extension (`ms-vscode-remote.remote-containers`). |
+| **Host OS**                     | **Linux** recommended for **USB** (ST-Link, serial) into the container.       |
 
 
 ## First-time setup (after clone)
@@ -24,15 +24,15 @@ STM32 firmware for the Gambos project — built with CMake, developed in a **Dev
 Run from the **repository root** via `software/project/scripts/`. `build.sh`, `clean.sh`, `flash.sh`, and `probe.sh` require `devkit` or `custom` (no default). `pristine.sh` optionally takes a preset or removes all of `build/`.
 
 
-| Argument     | Hardware      | Debugger                                         |
-| ------------ | ------------- | ------------------------------------------------ |
-| `devkit`     | Nucleo-F446RE | On-board **ST-Link** (OpenOCD)                   |
-| `custom`     | Gambos PCB    | **SEGGER J-Link** (`JLinkExe`)                   |
+| Argument | Hardware      | Debugger                       |
+| ----------| ---------------| --------------------------------|
+| `devkit` | Nucleo-F446RE | On-board **ST-Link** (OpenOCD) |
+| `custom` | Gambos PCB    | **SEGGER J-Link** (`JLinkExe`) |
 
 
 
 | Script                            | Role                                              |
-| --------------------------------- | ------------------------------------------------- |
+| -----------------------------------| ---------------------------------------------------|
 | `build.sh <preset>`               | Configure + compile → `build/<preset>/gambos.elf` |
 | `clean.sh <preset>`               | CMake `clean` for one preset                      |
 | `pristine.sh` / `pristine.sh all` | Delete entire `build/`                            |
