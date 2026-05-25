@@ -6,8 +6,10 @@
 #include "tx_handler.hpp"
 #include "log.hpp"
 #include "messaging/messaging.hpp"
+#include "spi.h"
 
 #include "FreeRTOS.h"
+#include "semphr.h"
 #include "task.h"
 
 namespace {
@@ -35,8 +37,10 @@ bool TxHandler::Initialize(void) {
             LOG("Button pressed: %u\r\n", button_info.button_state);
         });
 
-    _nrf24l01p.RegisterCePin(GPIOA, GPIO_PIN_5);
-    _nrf24l01p.RegisterCsnPin(GPIOA, GPIO_PIN_6);
+    if (!_nrf24l01p.RegisterCePin(GPIOA, GPIO_PIN_5) ||
+        !_nrf24l01p.RegisterCsnPin(GPIOA, GPIO_PIN_6)) {
+        return false;
+    }
 
     spi_semaphore =
         xSemaphoreCreateBinaryStatic(&spi_semaphore_buffer);
@@ -44,7 +48,7 @@ bool TxHandler::Initialize(void) {
         return false;
     }
 
-    return true;
+    return _nrf24l01p.Init(&hspi2, Nrf24l01p::PrimaryRole::Ptx);
 }
 
 void TxHandler::Start(void) {
@@ -59,8 +63,6 @@ void TxHandler::Start(void) {
 void TxHandler::TaskFunction(void *pvParameters) {
     TxHandler *const self = static_cast<TxHandler *>(pvParameters);
     (void)self;
-
-    self->_nrf24l01p.Init(Nrf24l01p::PrimaryRole::Ptx);
 
     for (;;) {
         LOG("Hello from tx_handler\r\n");
