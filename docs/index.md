@@ -4,6 +4,8 @@ Technical documentation for the Gambos flight controller: custom hardware (KiCad
 
 **Start here:** [repository README](../README.md) — project overview, block diagram, bring-up, and links into hardware and software docs.
 
+**Schematic (v1.0):** [Gambos PCB schematic (PDF)](gambos-pcb.pdf) — full KiCad export for review.
+
 ## Hardware
 
 Subsystem pages (read in order; each links to the next):
