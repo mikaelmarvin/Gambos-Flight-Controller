@@ -9,3 +9,6 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 add_subdirectory(button_handler)
 add_subdirectory(messaging)
 add_subdirectory(tx_handler)
+add_subdirectory(lsm6dsvtr_handler)
+add_subdirectory(iis2mdctr_handler)
+add_subdirectory(bmp384_handler)

@@ -2,30 +2,24 @@
 
 Technical documentation for the Gambos flight controller: custom hardware (KiCad) and STM32 firmware (CMake + FreeRTOS).
 
-## Project status
-
-| Area | Status |
-|------|--------|
-| Hardware design and assembly | Complete (v1.0 manufactured) |
-| Bring-up | In progress |
-| Firmware | In progress (devkit + custom board) |
+**Start here:** [repository README](../README.md) — project overview, block diagram, bring-up, and links into hardware and software docs.
 
 ## Hardware
 
-1. [Introduction](hardware/introduction.md) — goals and feature summary
-2. [System architecture](hardware/architecture.md) — buses, actuation, debug interfaces
-3. [Physical design](hardware/physical-design.md) — stackup, dimensions, PCB layout
-4. [Power section](hardware/power.md) — input switching, LDO, servo rail
-5. [Storage section](hardware/storage.md) — external flash and microSD
-6. [Sensing section](hardware/sensing.md) — IMU, magnetometer, barometer
-7. [User interface](hardware/user-interface.md) — RF module, button, LEDs
-8. [Future improvements](hardware/future-improvements.md) — planned hardware and firmware work
+Subsystem pages (read in order; each links to the next):
 
-See also [Hardware overview](hardware/hardware_overview.md) for revision status and repository pointers.
+1. [Hardware architecture](hardware/hardware-architecture.md) — buses, actuation, debug interfaces
+2. [Physical design](hardware/physical-design.md) — stackup, dimensions, PCB layout
+3. [Power](hardware/power.md) — input switching, LDO, servo rail
+4. [Storage](hardware/storage.md) — external flash and microSD
+5. [Sensing](hardware/sensing.md) — IMU, magnetometer, barometer
+6. [User interface](hardware/user-interface.md) — RF module, button, LEDs
+7. [Roadmap](hardware/roadmap.md) — v1.0 open work and planned next hardware iterations
 
 ## Software
 
-- [Software overview](software/index.md) — build, flash, and project layout (links to `software/README.md`)
+- [Software architecture](software/software-architecture.md) — firmware layers and placeholders for stack docs
+- [Build, flash, debug](../software/README.md)
 
 ## Repository entry points
 

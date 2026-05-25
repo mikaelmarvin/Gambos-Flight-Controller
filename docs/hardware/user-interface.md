@@ -22,7 +22,8 @@ Hardware **RC debouncing** filters contact bounce. Used for tests, debug workflo
 
 Three LEDs give visual feedback during power-on, tests, and runtime debug.
 
-## Related documentation
+---
 
-- [System architecture](architecture.md)
-- [Firmware overview](../software/index.md)
+**Next:** [Roadmap →](roadmap.md)
+
+[Documentation index](../index.md)

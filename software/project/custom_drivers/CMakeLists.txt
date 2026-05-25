@@ -5,6 +5,9 @@ target_include_directories(custom_drivers PUBLIC
 )
 
 add_subdirectory(nrf24l01p)
+add_subdirectory(lsm6dsvtr)
+add_subdirectory(iis2mdctr)
+add_subdirectory(bmp384)
 
 # CMSIS/HAL headers (GPIO_TypeDef, etc.) for drivers that use STM32 types.
 target_link_libraries(custom_drivers PUBLIC stm32cubemx)

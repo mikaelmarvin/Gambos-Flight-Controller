@@ -19,13 +19,14 @@ Sensors run at different sample rates, so firmware must serialize access (dedica
 ## Routing and layout
 
 - Pull-ups **R33** and **R34** are **4.7 kΩ**, with alternate footprints to tune rise time if needed.
-- Series **0 Ω** parts (**R25**, **R26**) support later SI experiments.
+- Series **0 Ω** parts (**R25**, **R26**) support later testing.
 
 ## PCB layout
 
 ![Sensing PCB layout](../assets/sensing-layout.png)
 
-## Related documentation
+---
 
-- [System architecture](architecture.md)
-- [Storage](storage.md)
+**Next:** [User interface →](user-interface.md)
+
+[Documentation index](../index.md)

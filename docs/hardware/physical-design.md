@@ -1,25 +1,27 @@
 # Physical design
 
-## Stackup and geometry
-
 The board uses a **4-layer stackup** for signal integrity and power distribution:
 
-| Layer | Role |
-|-------|------|
-| 1 (Top) | Signal / power |
-| 2 | Ground plane |
-| 3 | Ground plane |
+| Layer      | Role           |
+| ------------| ----------------|
+| 1 (Top)    | Signal / power |
+| 2          | Ground plane   |
+| 3          | Ground plane   |
 | 4 (Bottom) | Signal / power |
+
 
 Dual internal ground planes give a low-impedance return path. Outer layers use copper pours for thermal spread and to limit warping during reflow and hand soldering.
 
 **Board size:** 75 × 50 mm
 
-## PCB layout
+<p align="center">
+  <img src="../assets/pcb-routing.png" alt="PCB routing">
+  <br>
+  <sub>Top-layer with copper pour</sub>
+</p>
 
-![PCB layout](../assets/pcb-layout.png)
+---
 
-## Related documentation
+**Next:** [Power →](power.md)
 
-- [System architecture](architecture.md)
-- [KiCad project](../../hardware/gambos-pcb.kicad_pro)
+[Documentation index](../index.md)
