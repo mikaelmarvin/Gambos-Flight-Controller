@@ -13,10 +13,10 @@ Custom **STM32F446** flight-controller PCB and firmware — schematic through la
 | **Actuation** | 5× hobby servo PWM, ESC motor PWM                                      |
 | **Wireless**  | nRF24L01+ telemetry / command link                                     |
 | **Debug**     | SWD + UART (SEGGER J-Link)                                             |
-| **PCB**       | 4-layer, 75 × 50 mm — KiCad, manufactured**v1.0**                      |
+| **PCB**       | 4-layer, 75 × 50 mm — KiCad, manufactured **v1.0**                      |
 | **Firmware**  | CMake, FreeRTOS —`devkit` and `custom` targets                         |
 | **Status**    | v1.0 built; hardware bring-up in progress; flight software in progress |
-| **Schematic** | [Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf) — KiCad export, v1.0     |
+| **Schematic** | [Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf) — KiCad export, v1.0 |
 
 ## Schematic (v1.0)
 
