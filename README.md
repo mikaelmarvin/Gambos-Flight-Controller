@@ -16,6 +16,15 @@ Custom **STM32F446** flight-controller PCB and firmware — schematic through la
 | **PCB**       | 4-layer, 75 × 50 mm — KiCad, manufactured**v1.0**                      |
 | **Firmware**  | CMake, FreeRTOS —`devkit` and `custom` targets                         |
 | **Status**    | v1.0 built; hardware bring-up in progress; flight software in progress |
+| **Schematic** | [Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf) — KiCad export, v1.0     |
+
+## Schematic (v1.0)
+
+The full board schematic is published as a PDF:
+
+**[Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf)**
+
+The editable design lives in the KiCad project under [`hardware/`](hardware/); the PDF is an export of that source.
 
 ## Render and Bring-up setup
 
