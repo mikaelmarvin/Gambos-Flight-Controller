@@ -30,7 +30,8 @@ This sequencing keeps firmware bus arbitration simple during flight.
 
 ![Storage PCB layout](../assets/storage-layout.png)
 
-## Related documentation
+---
 
-- [System architecture](architecture.md)
-- [Sensing](sensing.md)
+**Next:** [Sensing →](sensing.md)
+
+[Documentation index](../index.md)

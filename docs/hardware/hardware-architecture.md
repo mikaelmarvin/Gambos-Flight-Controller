@@ -1,10 +1,8 @@
-# System architecture
+# Hardware architecture
 
 ## Block diagram
 
-<p align="center">
-  <img src="../assets/block-diagram.png" alt="System block diagram" width="576" height="432">
-</p>
+![System block diagram](../assets/block-diagram.png)
 
 ## Digital communication
 
@@ -40,7 +38,8 @@ A dedicated header supports flashing, breakpoints, and real-time variable inspec
 
 UART on the debug header streams development logs and telemetry during bring-up.
 
-## Related documentation
+---
 
-- [Physical design](physical-design.md)
-- [Power](power.md) · [Storage](storage.md) · [Sensing](sensing.md) · [User interface](user-interface.md)
+**Next:** [Physical design →](physical-design.md)
+
+[Documentation index](../index.md)

@@ -53,6 +53,29 @@ struct ButtonInfo {
     uint8_t button_state;
 };
 
+struct AccelSample {
+    int16_t x;
+    int16_t y;
+    int16_t z;
+};
+
+struct GyroSample {
+    int16_t x;
+    int16_t y;
+    int16_t z;
+};
+
+struct MagSample {
+    int16_t x;
+    int16_t y;
+    int16_t z;
+};
+
+struct BaroSample {
+    int32_t pressure_pa;
+    int16_t temperature_centi_c;
+};
+
 } // namespace topics
 
 #endif /* MESSAGING_HPP */
