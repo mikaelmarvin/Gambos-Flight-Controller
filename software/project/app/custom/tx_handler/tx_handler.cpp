@@ -10,7 +10,6 @@
 #include "spi.h"
 
 #include "FreeRTOS.h"
-#include "semphr.h"
 #include "task.h"
 
 namespace {
@@ -18,19 +17,7 @@ namespace {
 constexpr uint32_t kTxHandlerTaskStackSize = 256U;
 constexpr uint32_t kTxHandlerTaskPriority = (tskIDLE_PRIORITY + 1U);
 
-StaticSemaphore_t spi_semaphore_buffer;
-SemaphoreHandle_t spi_semaphore = nullptr;
-
 } // namespace
-
-extern "C" void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
-    (void)hspi;
-    BaseType_t hpw = pdFALSE;
-    if (spi_semaphore != nullptr) {
-        (void)xSemaphoreGiveFromISR(spi_semaphore, &hpw);
-        portYIELD_FROM_ISR(hpw);
-    }
-}
 
 bool TxHandler::Initialize(void) {
     Messaging::Subscribe<topics::ButtonInfo>(
@@ -39,13 +26,8 @@ bool TxHandler::Initialize(void) {
         });
 
     if (!_nrf24l01p.RegisterCePin(NRF24_CE_GPIO_Port, NRF24_CE_Pin) ||
-        !_nrf24l01p.RegisterCsnPin(NRF24_CS_GPIO_Port, NRF24_CS_Pin)) {
-        return false;
-    }
-
-    spi_semaphore =
-        xSemaphoreCreateBinaryStatic(&spi_semaphore_buffer);
-    if (spi_semaphore == NULL) {
+        !_nrf24l01p.RegisterCsnPin(NRF24_CS_GPIO_Port,
+                                   NRF24_CS_Pin)) {
         return false;
     }
 
@@ -65,7 +47,7 @@ void TxHandler::TaskFunction(void *pvParameters) {
     TxHandler *const self = static_cast<TxHandler *>(pvParameters);
     (void)self;
 
-    for (;;) {
+    while (true) {
         LOG("Hello from tx_handler\r\n");
         vTaskDelay(pdMS_TO_TICKS(1000U));
     }

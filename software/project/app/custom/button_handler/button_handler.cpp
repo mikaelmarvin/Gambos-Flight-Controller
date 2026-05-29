@@ -46,7 +46,7 @@ void ButtonHandler::Start(void) {
 void ButtonHandler::TaskFunction(void *pvParameters) {
     (void)pvParameters;
 
-    for (;;) {
+    while (true) {
         if (xSemaphoreTake(button_semaphore, portMAX_DELAY) !=
             pdTRUE) {
             continue;

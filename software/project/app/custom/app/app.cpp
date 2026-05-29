@@ -8,6 +8,7 @@
 #include "app/app.hpp"
 #include "bmp384_handler/bmp384_handler.hpp"
 #include "button_handler/button_handler.hpp"
+#include "delayable_work/delayable_work.hpp"
 #include "iis2mdctr_handler/iis2mdctr_handler.hpp"
 #include "log.hpp"
 #include "lsm6dsvtr_handler/lsm6dsvtr_handler.hpp"
@@ -38,13 +39,14 @@ extern "C" void app_init(void) {
 
 extern "C" void app_run(void) {
     LOG("app_run: starting tasks\r\n");
+    DelayableWork::Start();
     g_button_handler.Start();
     g_tx_handler.Start();
     g_lsm6dsvtr_handler.Start();
     g_iis2mdctr_handler.Start();
     g_bmp384_handler.Start();
 
-    for (;;) {
+    while (true) {
         vTaskDelay(portMAX_DELAY);
     }
 }
