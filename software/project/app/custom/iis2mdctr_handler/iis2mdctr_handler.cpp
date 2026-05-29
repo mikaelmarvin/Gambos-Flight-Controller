@@ -4,8 +4,8 @@
  */
 
 #include "iis2mdctr_handler.hpp"
-#include "messaging/messaging.hpp"
 #include "i2c.h"
+#include "messaging/messaging.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -50,7 +50,7 @@ void Iis2mdctrHandler::TaskFunction(void *pvParameters) {
     Iis2mdctrHandler *const self =
         static_cast<Iis2mdctrHandler *>(pvParameters);
 
-    for (;;) {
+    while (true) {
         (void)self->ReadAndPublish();
         vTaskDelay(pdMS_TO_TICKS(kTaskPeriodMs));
     }
