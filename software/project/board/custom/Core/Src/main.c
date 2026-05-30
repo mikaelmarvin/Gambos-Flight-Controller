@@ -27,7 +27,6 @@
 #include "tim.h"
 #include "usart.h"
 
-
 /* Private includes
  * ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -119,10 +118,10 @@ int main(void) {
             &huart4, k_boot, sizeof(k_boot) - 1U, HAL_MAX_DELAY);
         /* Bring-up: blink LED3 ~5×/s so you can prove firmware
          * reached here without UART. */
-        for (uint32_t i = 0U; i < 25U; i++) {
-            HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
-            HAL_Delay(100U);
-        }
+        // for (uint32_t i = 0U; i < 25U; i++) {
+        //     HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+        //     HAL_Delay(100U);
+        // }
     }
     app_init();
     /* USER CODE END 2 */

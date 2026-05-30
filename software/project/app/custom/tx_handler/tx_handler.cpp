@@ -31,10 +31,14 @@ bool TxHandler::Initialize(void) {
         return false;
     }
 
-    return _nrf24l01p.Init(&hspi2, Nrf24l01p::PrimaryRole::Ptx);
+    return true;
 }
 
 void TxHandler::Start(void) {
+    if (!_nrf24l01p.Init(&hspi2, Nrf24l01p::PrimaryRole::Ptx)) {
+        LOG("tx_handler: nRF24 init failed (task still runs)\r\n");
+    }
+
     configASSERT(xTaskCreate(&TxHandler::TaskFunction,
                              "tx_handler",
                              kTxHandlerTaskStackSize,

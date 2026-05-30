@@ -22,29 +22,47 @@
 namespace {
 
 ButtonHandler g_button_handler;
-TxHandler g_tx_handler;
-Lsm6dsvtrHandler g_lsm6dsvtr_handler;
-Iis2mdctrHandler g_iis2mdctr_handler;
-Bmp384Handler g_bmp384_handler;
+// TxHandler g_tx_handler;
+// Lsm6dsvtrHandler g_lsm6dsvtr_handler;
+// Iis2mdctrHandler g_iis2mdctr_handler;
+// Bmp384Handler g_bmp384_handler;
+
+// bool g_tx_handler_ok = false;
+// bool g_lsm6dsvtr_handler_ok = false;
+// bool g_iis2mdctr_handler_ok = false;
+// bool g_bmp384_handler_ok = false;
 
 } // namespace
 
 extern "C" void app_init(void) {
+    /* Must not block on optional peripherals — app_init runs before
+     * osKernelStart(); drivers that use FreeRTOS must init in
+     * Start(). */
     configASSERT(g_button_handler.Initialize());
-    configASSERT(g_tx_handler.Initialize());
-    configASSERT(g_lsm6dsvtr_handler.Initialize());
-    configASSERT(g_iis2mdctr_handler.Initialize());
-    configASSERT(g_bmp384_handler.Initialize());
+    // g_tx_handler_ok = g_tx_handler.Initialize();
+    // g_lsm6dsvtr_handler_ok = g_lsm6dsvtr_handler.Initialize();
+    // g_iis2mdctr_handler_ok = g_iis2mdctr_handler.Initialize();
+    // g_bmp384_handler_ok = g_bmp384_handler.Initialize();
 }
 
 extern "C" void app_run(void) {
     LOG("app_run: starting tasks\r\n");
     DelayableWork::Start();
     g_button_handler.Start();
-    g_tx_handler.Start();
-    g_lsm6dsvtr_handler.Start();
-    g_iis2mdctr_handler.Start();
-    g_bmp384_handler.Start();
+    // if (g_tx_handler_ok) {
+    //     g_tx_handler.Start();
+    // } else {
+    //     LOG("app_run: tx_handler skipped (init failed)\r\n");
+    // }
+    // if (g_lsm6dsvtr_handler_ok) {
+    //     g_lsm6dsvtr_handler.Start();
+    // }
+    // if (g_iis2mdctr_handler_ok) {
+    //     g_iis2mdctr_handler.Start();
+    // }
+    // if (g_bmp384_handler_ok) {
+    //     g_bmp384_handler.Start();
+    // }
 
     while (true) {
         vTaskDelay(portMAX_DELAY);
