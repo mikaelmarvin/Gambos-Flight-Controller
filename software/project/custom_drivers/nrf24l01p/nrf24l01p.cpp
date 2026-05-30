@@ -218,8 +218,8 @@ bool Nrf24l01p::Init(SPI_HandleTypeDef *spi,
         HAL_GPIO_WritePin(_ce_pin_.port, _ce_pin_.pin, GPIO_PIN_SET);
     }
 
-    // This must block the task for 2 ms
-    vTaskDelay(pdMS_TO_TICKS(2));
+    // nRF24 power-up settling time; Init may run before the scheduler starts.
+    HAL_Delay(2U);
     return true;
 }
 

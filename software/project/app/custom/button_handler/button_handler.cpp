@@ -6,6 +6,7 @@
 
 #include "button_handler.hpp"
 #include "common.hpp"
+#include "delayable_work/delayable_work.hpp"
 #include "log.hpp"
 #include "main.h"
 #include "messaging/messaging.hpp"
@@ -29,9 +30,19 @@ constexpr uint32_t kButtonHandlerTaskDelay = 20U;
 } // namespace
 
 bool ButtonHandler::Initialize(void) {
-    button_semaphore =
-        xSemaphoreCreateBinaryStatic(&button_semaphore_buffer);
-    return button_semaphore != nullptr;
+    if ((button_semaphore = xSemaphoreCreateBinaryStatic(
+             &button_semaphore_buffer)) == nullptr) {
+        return false;
+    }
+
+    uint32_t special_number = 12345U;
+    _delayed_press_work.Initialize([special_number]() {
+        LOG("THIS FUNCTION WAS DELAYED AND THE SPECIAL NUMBER IS "
+            "%u\r\n",
+            special_number);
+    });
+
+    return true;
 }
 
 void ButtonHandler::Start(void) {
@@ -44,7 +55,8 @@ void ButtonHandler::Start(void) {
 }
 
 void ButtonHandler::TaskFunction(void *pvParameters) {
-    (void)pvParameters;
+    ButtonHandler *const self =
+        static_cast<ButtonHandler *>(pvParameters);
 
     while (true) {
         if (xSemaphoreTake(button_semaphore, portMAX_DELAY) !=
@@ -55,7 +67,7 @@ void ButtonHandler::TaskFunction(void *pvParameters) {
         const GPIO_PinState level =
             HAL_GPIO_ReadPin(USR_BTN_GPIO_Port, USR_BTN_Pin);
 
-        // Adjust if your schematic is active-high.
+        // Adjust if the schematic is active-high.
         const uint8_t pressed = (level == GPIO_PIN_RESET) ? 1U : 0U;
 
         topics::ButtonInfo topic{};
@@ -64,6 +76,8 @@ void ButtonHandler::TaskFunction(void *pvParameters) {
 
         LOG("B1 pressed=%u\r\n", (unsigned)pressed);
         (void)Messaging::Publish<topics::ButtonInfo>(topic);
+
+        self->_delayed_press_work.ScheduleOnce(1000U);
 
         vTaskDelay(pdMS_TO_TICKS(kButtonHandlerTaskDelay));
     }
