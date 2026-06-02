@@ -121,7 +121,9 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument) {
     /* USER CODE BEGIN StartDefaultTask */
     (void)argument;
-    app_run();
+    for (;;) {
+        osDelay(portMAX_DELAY);
+    }
     /* USER CODE END StartDefaultTask */
 }
 

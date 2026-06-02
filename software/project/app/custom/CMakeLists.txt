@@ -7,7 +7,7 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 add_subdirectory(button_handler)
-add_subdirectory(delayable_work)
+add_subdirectory(delayable_handler)
 add_subdirectory(messaging)
 add_subdirectory(tx_handler)
 add_subdirectory(lsm6dsvtr_handler)
