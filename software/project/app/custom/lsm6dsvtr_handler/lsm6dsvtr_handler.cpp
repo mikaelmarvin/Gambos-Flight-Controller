@@ -1,11 +1,12 @@
 /**
  * @file lsm6dsvtr_handler.cpp
- * @brief One task for LSM6DSVTR — combined accel+gyro read, dual publish rates.
+ * @brief One task for LSM6DSVTR — combined accel+gyro read, dual
+ * publish rates.
  */
 
 #include "lsm6dsvtr_handler.hpp"
-#include "messaging/messaging.hpp"
 #include "i2c.h"
+#include "messaging/messaging.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -17,7 +18,8 @@ constexpr UBaseType_t kTaskPriority =
     static_cast<UBaseType_t>(tskIDLE_PRIORITY + 1U);
 constexpr uint32_t kTaskPeriodMs = 10U; /* 100 Hz */
 
-/** Publish gyro every N accel cycles (10 → 10 Hz gyro, 100 Hz accel). */
+/** Publish gyro every N accel cycles (10 → 10 Hz gyro, 100 Hz accel).
+ */
 constexpr uint32_t kGyroPublishDecimation = 10U;
 
 } // namespace
@@ -64,7 +66,7 @@ void Lsm6dsvtrHandler::TaskFunction(void *pvParameters) {
     Lsm6dsvtrHandler *const self =
         static_cast<Lsm6dsvtrHandler *>(pvParameters);
 
-    for (;;) {
+    while (true) {
         (void)self->ReadAndPublish();
         vTaskDelay(pdMS_TO_TICKS(kTaskPeriodMs));
     }

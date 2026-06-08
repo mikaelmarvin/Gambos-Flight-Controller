@@ -3,14 +3,43 @@
 
 #include <cstring>
 
-#include "main.h"
+#include "stm32f4xx_hal_gpio.h"
 
 #include "FreeRTOS.h"
+#include "semphr.h"
 #include "task.h"
 
 namespace {
 
 constexpr uint8_t kAddressLength = 5U;
+constexpr TickType_t kSpiDmaTimeoutMs = 100U;
+
+StaticSemaphore_t spi_dma_semaphore_buffer;
+SemaphoreHandle_t spi_dma_semaphore = nullptr;
+
+/** HAL_SPI_TxRxCpltCallback is one global for the firmware; hspi
+ * tells which bus finished, not which driver started the transfer.
+ * Set while NrfSpiExchange waits so SPI1 (flash/SD) completions do
+ * not wake nRF. */
+SPI_HandleTypeDef *spi_dma_owner = nullptr;
+
+bool EnsureSpiDmaSemaphore(void) {
+    if (spi_dma_semaphore == nullptr) {
+        spi_dma_semaphore =
+            xSemaphoreCreateBinaryStatic(&spi_dma_semaphore_buffer);
+    }
+    return spi_dma_semaphore != nullptr;
+}
+
+void SignalSpiDmaCompleteFromIsr(void) {
+    if (spi_dma_semaphore == nullptr) {
+        return;
+    }
+    BaseType_t hpw = pdFALSE;
+    (void)xSemaphoreGiveFromISR(spi_dma_semaphore, &hpw);
+    portYIELD_FROM_ISR(hpw);
+}
+
 // Default ShockBurst address (same for TX and RX)
 constexpr uint8_t kAddressBytes[5U] = {
     0xE7U,
@@ -21,6 +50,18 @@ constexpr uint8_t kAddressBytes[5U] = {
 };
 
 } // namespace
+
+extern "C" void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
+    if (spi_dma_owner != nullptr && hspi == spi_dma_owner) {
+        SignalSpiDmaCompleteFromIsr();
+    }
+}
+
+extern "C" void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi) {
+    if (spi_dma_owner != nullptr && hspi == spi_dma_owner) {
+        SignalSpiDmaCompleteFromIsr();
+    }
+}
 
 bool Nrf24l01p::RegisterCePin(GPIO_TypeDef *port, uint16_t pin) {
     _ce_pin_.port = port;
@@ -38,6 +79,9 @@ bool Nrf24l01p::Init(SPI_HandleTypeDef *spi,
                      const PrimaryRole primary_role) {
     _spi = spi;
     if (_spi == nullptr) {
+        return false;
+    }
+    if (!EnsureSpiDmaSemaphore()) {
         return false;
     }
 
@@ -155,7 +199,7 @@ bool Nrf24l01p::Init(SPI_HandleTypeDef *spi,
     if (primary_role == PrimaryRole::Prx) {
         config |= NRF24_CONFIG_PRIM_RX;
     } else {
-        config &= static_cast<uint8_t>(~NRF24_CONFIG_PRIM_RX);
+        config &= ~NRF24_CONFIG_PRIM_RX;
     }
     config &= ~NRF24_CONFIG_CRCO;
     if (!WriteReg(NRF24_REG_CONFIG, config)) {
@@ -174,8 +218,8 @@ bool Nrf24l01p::Init(SPI_HandleTypeDef *spi,
         HAL_GPIO_WritePin(_ce_pin_.port, _ce_pin_.pin, GPIO_PIN_SET);
     }
 
-    // This must block the task for 2 ms
-    vTaskDelay(pdMS_TO_TICKS(2));
+    // nRF24 power-up settling time; Init may run before the scheduler starts.
+    HAL_Delay(2U);
     return true;
 }
 
@@ -196,7 +240,35 @@ bool Nrf24l01p::NrfSpiExchange(SPI_HandleTypeDef *spi,
                                const uint8_t *tx,
                                uint8_t *rx,
                                uint8_t len) {
-    return HAL_SPI_TransmitReceive_DMA(spi, tx, rx, len) == HAL_OK;
+    if (spi == nullptr || tx == nullptr || rx == nullptr ||
+        len == 0U) {
+        return false;
+    }
+    if (spi_dma_semaphore == nullptr || _csn_pin_.port == nullptr) {
+        return false;
+    }
+
+    while (xSemaphoreTake(spi_dma_semaphore, 0) == pdTRUE) {}
+
+    HAL_GPIO_WritePin(_csn_pin_.port, _csn_pin_.pin, GPIO_PIN_RESET);
+
+    spi_dma_owner = spi;
+    const bool started =
+        HAL_SPI_TransmitReceive_DMA(spi, tx, rx, len) == HAL_OK;
+    if (!started) {
+        spi_dma_owner = nullptr;
+        HAL_GPIO_WritePin(
+            _csn_pin_.port, _csn_pin_.pin, GPIO_PIN_SET);
+        return false;
+    }
+
+    const bool completed =
+        xSemaphoreTake(spi_dma_semaphore,
+                       pdMS_TO_TICKS(kSpiDmaTimeoutMs)) == pdTRUE;
+    spi_dma_owner = nullptr;
+    HAL_GPIO_WritePin(_csn_pin_.port, _csn_pin_.pin, GPIO_PIN_SET);
+
+    return completed;
 }
 
 bool Nrf24l01p::WriteReadRegArray(const uint8_t cmd,

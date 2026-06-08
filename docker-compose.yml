@@ -8,11 +8,14 @@
 # USB (ST-Link, SEGGER J-Link, adapters): requires Linux /dev/bus/usb on the host. On Windows + WSL2,
 # attach the device with usbipd-win on the host first; WSL must expose USB (see Microsoft docs).
 
+# Fixed project name + image tag (see BlueSim): fewer duplicate containers/images when paths change.
+# Host cleanup on reopen: .devcontainer/host-docker-tidy.sh
 name: gambos
 
 services:
   # Service name - you'll reference this as 'dev-env'
   dev-env:
+    image: gambos-dev-env:latest
     # Build from Dockerfile in current directory
     build:
       context: .

@@ -1,11 +1,12 @@
 /**
  * @file bmp384_handler.cpp
- * @brief One task for BMP384 — combined pressure + temperature read/publish.
+ * @brief One task for BMP384 — combined pressure + temperature
+ * read/publish.
  */
 
 #include "bmp384_handler.hpp"
-#include "messaging/messaging.hpp"
 #include "i2c.h"
+#include "messaging/messaging.hpp"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -19,9 +20,7 @@ constexpr uint32_t kTaskPeriodMs = 50U; /* 20 Hz */
 
 } // namespace
 
-bool Bmp384Handler::Initialize(void) {
-    return _device.Init(&hi2c1);
-}
+bool Bmp384Handler::Initialize(void) { return _device.Init(&hi2c1); }
 
 void Bmp384Handler::Start(void) {
     configASSERT(xTaskCreate(&Bmp384Handler::TaskFunction,
@@ -46,9 +45,10 @@ bool Bmp384Handler::ReadAndPublish(void) {
 }
 
 void Bmp384Handler::TaskFunction(void *pvParameters) {
-    Bmp384Handler *const self = static_cast<Bmp384Handler *>(pvParameters);
+    Bmp384Handler *const self =
+        static_cast<Bmp384Handler *>(pvParameters);
 
-    for (;;) {
+    while (true) {
         (void)self->ReadAndPublish();
         vTaskDelay(pdMS_TO_TICKS(kTaskPeriodMs));
     }
