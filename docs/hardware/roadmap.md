@@ -21,7 +21,6 @@ Open work on **v1.0** (current board, firmware, and docs in this repository) and
 - Software architecture page: layer diagram, tasks, drivers structure
 - Hardware pages: fill placeholders (e.g. power measurements, LDO notes)
 - BOM with manufacturer part numbers in repo or linked spreadsheet
-- Add PDF file of the schematic diagram from KiCad
 - Testing of bulk capacitors on servo motors and their response -> osciloscope measuring
 
 ## Next hardware iteration (v1.1+)

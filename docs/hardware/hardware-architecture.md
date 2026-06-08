@@ -1,5 +1,7 @@
 # Hardware architecture
 
+**Schematic:** [Gambos PCB schematic (PDF)](../gambos-pcb.pdf) (KiCad v1.0 export).
+
 ## Block diagram
 
 ![System block diagram](../assets/block-diagram.png)

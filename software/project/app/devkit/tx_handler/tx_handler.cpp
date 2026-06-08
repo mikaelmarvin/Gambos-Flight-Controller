@@ -9,7 +9,6 @@
 #include "spi.h"
 
 #include "FreeRTOS.h"
-#include "semphr.h"
 #include "task.h"
 
 namespace {
@@ -17,19 +16,7 @@ namespace {
 constexpr uint32_t kTxHandlerTaskStackSize = 256U;
 constexpr uint32_t kTxHandlerTaskPriority = (tskIDLE_PRIORITY + 1U);
 
-StaticSemaphore_t spi_semaphore_buffer;
-SemaphoreHandle_t spi_semaphore = nullptr;
-
 } // namespace
-
-extern "C" void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi) {
-    (void)hspi;
-    BaseType_t hpw = pdFALSE;
-    if (spi_semaphore != nullptr) {
-        (void)xSemaphoreGiveFromISR(spi_semaphore, &hpw);
-        portYIELD_FROM_ISR(hpw);
-    }
-}
 
 bool TxHandler::Initialize(void) {
     Messaging::Subscribe<topics::ButtonInfo>(
@@ -39,12 +26,6 @@ bool TxHandler::Initialize(void) {
 
     if (!_nrf24l01p.RegisterCePin(GPIOA, GPIO_PIN_5) ||
         !_nrf24l01p.RegisterCsnPin(GPIOA, GPIO_PIN_6)) {
-        return false;
-    }
-
-    spi_semaphore =
-        xSemaphoreCreateBinaryStatic(&spi_semaphore_buffer);
-    if (spi_semaphore == NULL) {
         return false;
     }
 
