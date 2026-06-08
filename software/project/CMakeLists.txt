@@ -79,6 +79,8 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE ${MX_LINK_DIRS})
 target_link_libraries(${CMAKE_PROJECT_NAME} ${MX_LINK_LIBS})
 set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map)
 
+add_subdirectory(third_party/little_fs)
+
 add_subdirectory(custom_drivers)
 
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE)
@@ -95,5 +97,6 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
+    little_fs
     custom_drivers
 )
