@@ -16,6 +16,10 @@ AllowShortIfStatementsOnASingleLine: Never
 # Break long declarations/calls instead of infinite lines (0 = no wrap).
 ColumnLimit: 70
 
+# Keep the return type on the same line as the function name when wrapping.
+AlwaysBreakAfterReturnType: None
+PenaltyReturnTypeOnItsOwnLine: 1000
+
 # One parameter/argument per line when wrapping (readability for long SPI/HAL-style APIs).
 BinPackParameters: false
 BinPackArguments: false

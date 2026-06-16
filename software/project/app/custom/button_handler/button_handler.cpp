@@ -38,8 +38,8 @@ bool ButtonHandler::Initialize(void) {
     uint32_t special_number = 12345U;
     _delayed_press_work.Initialize([special_number]() {
         LOG("THIS FUNCTION WAS DELAYED AND THE SPECIAL NUMBER IS "
-            "%u\r\n",
-            special_number);
+            "%lu\r\n",
+            (unsigned long)special_number);
     });
 
     return true;
