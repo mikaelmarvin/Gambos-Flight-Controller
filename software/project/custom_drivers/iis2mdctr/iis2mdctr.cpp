@@ -1,9 +1,10 @@
 #include "iis2mdctr.hpp"
 
-bool Iis2mdctr::Init(I2C_HandleTypeDef *i2c) {
-    _i2c = i2c;
-    // TODO: data rate and continuous mode config via *_i2c.
-    return (_i2c != nullptr);
+#include "board_buses.hpp"
+
+bool Iis2mdctr::Init(void) {
+    // TODO: data rate and continuous mode config via I2c1().
+    return I2c1().IsInitialized();
 }
 
 bool Iis2mdctr::ReadSample(MagSample &out) {

@@ -16,11 +16,10 @@ class Iis2mdctr {
   public:
     Iis2mdctr() = default;
 
-    bool Init(I2C_HandleTypeDef *i2c);
+    bool Init(void);
     bool ReadSample(MagSample &out);
 
   private:
-    I2C_HandleTypeDef *_i2c{nullptr};
 };
 
 #endif /* IIS2MDCTR_HPP */

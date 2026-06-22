@@ -4,10 +4,10 @@
  */
 
 #include "tx_handler.hpp"
+#include "board_buses.hpp"
 #include "log.hpp"
 #include "main.h"
 #include "messaging/messaging.hpp"
-#include "spi.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -35,7 +35,11 @@ bool TxHandler::Initialize(void) {
 }
 
 void TxHandler::Start(void) {
-    if (!_nrf24l01p.Init(&hspi2, Nrf24l01p::PrimaryRole::Ptx)) {
+    if (!Spi2().IsInitialized()) {
+        LOG("tx_handler: SPI2 bus not initialized\r\n");
+    } else if (!_nrf24l01p.Init(Spi2().Spi(),
+                                Nrf24l01p::PrimaryRole::Ptx,
+                                &Spi2())) {
         LOG("tx_handler: nRF24 init failed (task still runs)\r\n");
     }
 
