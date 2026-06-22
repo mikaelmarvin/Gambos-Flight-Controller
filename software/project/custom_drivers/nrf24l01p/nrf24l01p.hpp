@@ -21,9 +21,7 @@ class Nrf24l01p {
 
     Nrf24l01p() = default;
 
-    bool Init(SPI_HandleTypeDef *spi,
-              PrimaryRole primary_role,
-              Bus *bus);
+    bool Init(SpiBus &bus, PrimaryRole primary_role);
     bool RegisterCePin(GPIO_TypeDef *port, uint16_t pin);
     bool RegisterCsnPin(GPIO_TypeDef *port, uint16_t pin);
     bool Send(const uint8_t *data);
@@ -33,10 +31,7 @@ class Nrf24l01p {
     /** nRF24 max payload / longest burst we support with fixed [33] SPI buffers. */
     static constexpr uint8_t kMaxFifoBytes = 32U;
 
-    bool NrfSpiExchange(SPI_HandleTypeDef *spi,
-                        const uint8_t *tx,
-                        uint8_t *rx,
-                        uint8_t len);
+    bool NrfSpiExchange(const uint8_t *tx, uint8_t *rx, uint8_t len);
     bool WriteReg(uint8_t reg, uint8_t value);
     bool WriteRegArray(uint8_t reg, const uint8_t *value, uint8_t length);
     bool WriteReadRegArray(uint8_t cmd, uint8_t *data, uint8_t len);
@@ -44,8 +39,7 @@ class Nrf24l01p {
     uint8_t ReadStatus();
     bool ToSetupAddressWidth(uint8_t length, uint8_t &setup_aw_value);
 
-    SPI_HandleTypeDef *_spi{nullptr};
-    Bus *_bus{nullptr};
+    SpiBus *_bus{nullptr};
     Pin _ce_pin_{};
     Pin _csn_pin_{};
     uint8_t _payload_length{1U};

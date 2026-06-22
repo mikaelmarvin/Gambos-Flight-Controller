@@ -2,7 +2,6 @@
 #define AT25SF128A_HPP
 
 #include "bus.hpp"
-#include "stm32f4xx_hal.h"
 
 #include <cstdint>
 
@@ -16,11 +15,9 @@ class At25sf128a {
     static constexpr uint32_t kPageProgramBytes = 256U;
 
     At25sf128a() = default;
+    At25sf128a(SpiBus &bus, CsPin cs);
 
-    bool Init(SPI_HandleTypeDef *spi,
-              GPIO_TypeDef *cs_port,
-              uint16_t cs_pin,
-              Bus *bus);
+    bool Init(void);
 
     bool Read(uint32_t address, uint8_t *data, uint32_t size);
     bool Write(uint32_t address, const uint8_t *data, uint32_t size);
@@ -31,16 +28,8 @@ class At25sf128a {
     bool ReadStatus(uint8_t *status);
 
   private:
-    bool SpiTransmitDma(const uint8_t *data, uint16_t size);
-    bool SpiReceiveDma(uint8_t *data, uint16_t size);
-    bool SpiTransmitReceiveDma(const uint8_t *tx,
-                               uint8_t *rx,
-                               uint16_t size);
-
-    SPI_HandleTypeDef *_spi{nullptr};
-    GPIO_TypeDef *_cs_port{nullptr};
-    uint16_t _cs_pin{0};
-    Bus *_bus{nullptr};
+    SpiBus *_bus{nullptr};
+    CsPin _cs{};
 };
 
 #endif /* AT25SF128A_HPP */

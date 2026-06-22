@@ -19,6 +19,8 @@ constexpr uint32_t kTaskPeriodMs = 50U; /* 20 Hz */
 
 } // namespace
 
+Bmp384Handler::Bmp384Handler(Bmp384 &device) : _device(device) {}
+
 bool Bmp384Handler::Initialize(void) { return _device.Init(); }
 
 void Bmp384Handler::Start(void) {

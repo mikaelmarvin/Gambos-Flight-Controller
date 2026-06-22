@@ -8,31 +8,62 @@
 
 #include <cstdint>
 
-#ifndef HAL_I2C_MODULE_ENABLED
-struct I2C_HandleTypeDef;
-#endif
+struct CsPin {
+    GPIO_TypeDef *port{nullptr};
+    uint16_t pin{0U};
+};
 
-// One instance per physical SPI or I2C peripheral (hspi1, hspi2, hi2c1).
-class Bus {
+/** RAII chip-select assert (active low). */
+class CsAssert {
   public:
-    enum class Kind : uint8_t {
-        Uninitialized = 0U,
-        Spi = 1U,
-        I2c = 2U,
-    };
+    explicit CsAssert(CsPin cs);
+    ~CsAssert();
 
-    bool Init(SPI_HandleTypeDef *spi);
-    bool Init(I2C_HandleTypeDef *hi2c);
+    CsAssert(const CsAssert &) = delete;
+    CsAssert &operator=(const CsAssert &) = delete;
 
+  private:
+    CsPin _cs{};
+};
+
+/** One instance per physical SPI peripheral (hspi1, hspi2). */
+class SpiBus {
+  public:
+    bool Init(SPI_HandleTypeDef *hspi);
     bool IsInitialized(void) const;
-    Kind GetKind(void) const;
 
-    SPI_HandleTypeDef *Spi(void) const;
-    I2C_HandleTypeDef *I2c(void) const;
+    bool TransmitDma(const uint8_t *tx,
+                     uint16_t len,
+                     TickType_t timeout);
+    bool ReceiveDma(uint8_t *rx, uint16_t len, TickType_t timeout);
+    bool TransmitReceiveDma(const uint8_t *tx,
+                            uint8_t *rx,
+                            uint16_t len,
+                            TickType_t timeout);
 
+    void SignalIfHandle(SPI_HandleTypeDef *hspi);
+
+  private:
+    bool EnsureDmaSemaphore(void);
+    bool EnsureBusMutex(void);
     bool BeginDma(void);
     bool WaitDma(TickType_t timeout);
     void SignalFromIsr(void);
+
+    SPI_HandleTypeDef *_hspi{nullptr};
+
+    StaticSemaphore_t _dma_sem_buffer{};
+    SemaphoreHandle_t _dma_sem{nullptr};
+
+    StaticSemaphore_t _bus_mutex_buffer{};
+    SemaphoreHandle_t _bus_mutex{nullptr};
+};
+
+/** One instance per physical I2C peripheral (hi2c1). */
+class I2cBus {
+  public:
+    bool Init(I2C_HandleTypeDef *hi2c);
+    bool IsInitialized(void) const;
 
     bool MemRead(uint16_t dev_addr_7bit,
                  uint16_t reg,
@@ -45,11 +76,15 @@ class Bus {
                   uint16_t len,
                   TickType_t timeout);
 
+    void SignalIfHandle(I2C_HandleTypeDef *hi2c);
+
   private:
     bool EnsureDmaSemaphore(void);
+    bool EnsureBusMutex(void);
+    bool BeginDma(void);
+    bool WaitDma(TickType_t timeout);
+    void SignalFromIsr(void);
 
-    Kind _kind{Kind::Uninitialized};
-    SPI_HandleTypeDef *_spi{nullptr};
     I2C_HandleTypeDef *_hi2c{nullptr};
 
     StaticSemaphore_t _dma_sem_buffer{};
@@ -58,5 +93,9 @@ class Bus {
     StaticSemaphore_t _bus_mutex_buffer{};
     SemaphoreHandle_t _bus_mutex{nullptr};
 };
+
+SpiBus &Spi1(void);
+SpiBus &Spi2(void);
+I2cBus &I2c1(void);
 
 #endif /* BUS_HPP */

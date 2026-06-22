@@ -36,74 +36,16 @@ bool IsSectorAligned(uint32_t address) {
 
 } // namespace
 
-bool At25sf128a::SpiTransmitDma(const uint8_t *data, uint16_t size) {
-    if ((_spi == nullptr) || (data == nullptr) || (size == 0U)) {
+At25sf128a::At25sf128a(SpiBus &bus, const CsPin cs)
+    : _bus(&bus), _cs(cs) {}
+
+bool At25sf128a::Init(void) {
+    if ((_bus == nullptr) || (_cs.port == nullptr) ||
+        !_bus->IsInitialized()) {
         return false;
     }
 
-    if ((_bus == nullptr) || !_bus->BeginDma()) {
-        return false;
-    }
-
-    if (HAL_SPI_Transmit_DMA(
-            _spi, const_cast<uint8_t *>(data), size) != HAL_OK) {
-        return false;
-    }
-
-    return _bus->WaitDma(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
-}
-
-bool At25sf128a::SpiReceiveDma(uint8_t *data, uint16_t size) {
-    if ((_spi == nullptr) || (data == nullptr) || (size == 0U)) {
-        return false;
-    }
-
-    if ((_bus == nullptr) || !_bus->BeginDma()) {
-        return false;
-    }
-
-    if (HAL_SPI_Receive_DMA(_spi, data, size) != HAL_OK) {
-        return false;
-    }
-
-    return _bus->WaitDma(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
-}
-
-bool At25sf128a::SpiTransmitReceiveDma(const uint8_t *tx,
-                                       uint8_t *rx,
-                                       uint16_t size) {
-    if ((_spi == nullptr) || (tx == nullptr) || (rx == nullptr) ||
-        (size == 0U)) {
-        return false;
-    }
-
-    if ((_bus == nullptr) || !_bus->BeginDma()) {
-        return false;
-    }
-
-    if (HAL_SPI_TransmitReceive_DMA(
-            _spi, const_cast<uint8_t *>(tx), rx, size) != HAL_OK) {
-        return false;
-    }
-
-    return _bus->WaitDma(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
-}
-
-bool At25sf128a::Init(SPI_HandleTypeDef *spi,
-                      GPIO_TypeDef *cs_port,
-                      uint16_t cs_pin,
-                      Bus *bus) {
-    _spi = spi;
-    _cs_port = cs_port;
-    _cs_pin = cs_pin;
-    _bus = bus;
-
-    if ((_spi == nullptr) || (_cs_port == nullptr) ||
-        (_bus == nullptr)) {
-        return false;
-    }
-
-    HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(_cs.port, _cs.pin, GPIO_PIN_SET);
 
     if (!Reset()) {
         return false;
@@ -121,7 +63,8 @@ bool At25sf128a::Init(SPI_HandleTypeDef *spi,
 bool At25sf128a::Read(uint32_t address,
                       uint8_t *data,
                       uint32_t size) {
-    if ((data == nullptr) || !IsValidRange(address, size)) {
+    if ((data == nullptr) || !IsValidRange(address, size) ||
+        (_bus == nullptr)) {
         return false;
     }
 
@@ -132,19 +75,21 @@ bool At25sf128a::Read(uint32_t address,
         static_cast<uint8_t>(address & 0xFFU),
     };
 
-    HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
-    const bool ok = SpiTransmitDma(command, sizeof(command)) &&
-                    SpiReceiveDma(data, static_cast<uint16_t>(size));
-    HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
-    return ok;
+    const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
+    CsAssert cs(_cs);
+    return _bus->TransmitDma(command, sizeof(command), timeout) &&
+           _bus->ReceiveDma(data, static_cast<uint16_t>(size), timeout);
 }
 
 bool At25sf128a::Write(uint32_t address,
                        const uint8_t *data,
                        uint32_t size) {
-    if ((data == nullptr) || !IsValidRange(address, size)) {
+    if ((data == nullptr) || !IsValidRange(address, size) ||
+        (_bus == nullptr)) {
         return false;
     }
+
+    const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
 
     uint32_t remaining = size;
     uint32_t current_address = address;
@@ -167,22 +112,20 @@ bool At25sf128a::Write(uint32_t address,
 
         {
             const uint8_t write_enable = kCmdWriteEnable;
-            HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
-            const bool enabled = SpiTransmitDma(&write_enable, 1U);
-            HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
-            if (!enabled) {
+            CsAssert cs(_cs);
+            if (!_bus->TransmitDma(&write_enable, 1U, timeout)) {
                 return false;
             }
         }
 
-        HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
-        const bool programmed =
-            SpiTransmitDma(command, sizeof(command)) &&
-            SpiTransmitDma(current_data,
-                           static_cast<uint16_t>(chunk));
-        HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
-        if (!programmed) {
-            return false;
+        {
+            CsAssert cs(_cs);
+            if (!_bus->TransmitDma(command, sizeof(command), timeout) ||
+                !_bus->TransmitDma(current_data,
+                                   static_cast<uint16_t>(chunk),
+                                   timeout)) {
+                return false;
+            }
         }
 
         if (!EnsureIdle()) {
@@ -198,16 +141,17 @@ bool At25sf128a::Write(uint32_t address,
 }
 
 bool At25sf128a::Erase(uint32_t address) {
-    if ((address >= kCapacityBytes) || !IsSectorAligned(address)) {
+    if ((address >= kCapacityBytes) || !IsSectorAligned(address) ||
+        (_bus == nullptr)) {
         return false;
     }
 
+    const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
+
     {
         const uint8_t write_enable = kCmdWriteEnable;
-        HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
-        const bool enabled = SpiTransmitDma(&write_enable, 1U);
-        HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
-        if (!enabled) {
+        CsAssert cs(_cs);
+        if (!_bus->TransmitDma(&write_enable, 1U, timeout)) {
             return false;
         }
     }
@@ -219,11 +163,11 @@ bool At25sf128a::Erase(uint32_t address) {
         static_cast<uint8_t>(address & 0xFFU),
     };
 
-    HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
-    const bool erased = SpiTransmitDma(command, sizeof(command));
-    HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
-    if (!erased) {
-        return false;
+    {
+        CsAssert cs(_cs);
+        if (!_bus->TransmitDma(command, sizeof(command), timeout)) {
+            return false;
+        }
     }
 
     return EnsureIdle();
@@ -249,22 +193,24 @@ bool At25sf128a::EnsureIdle(void) {
 }
 
 bool At25sf128a::Reset(void) {
+    if (_bus == nullptr) {
+        return false;
+    }
+
+    const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
+
     {
         const uint8_t enable_reset = kCmdEnableReset;
-        HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
-        const bool enabled = SpiTransmitDma(&enable_reset, 1U);
-        HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
-        if (!enabled) {
+        CsAssert cs(_cs);
+        if (!_bus->TransmitDma(&enable_reset, 1U, timeout)) {
             return false;
         }
     }
 
     {
         const uint8_t reset = kCmdReset;
-        HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
-        const bool reset_ok = SpiTransmitDma(&reset, 1U);
-        HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
-        if (!reset_ok) {
+        CsAssert cs(_cs);
+        if (!_bus->TransmitDma(&reset, 1U, timeout)) {
             return false;
         }
     }
@@ -273,7 +219,7 @@ bool At25sf128a::Reset(void) {
 }
 
 bool At25sf128a::JedecID(uint8_t *id) {
-    if (id == nullptr) {
+    if ((id == nullptr) || (_bus == nullptr)) {
         return false;
     }
 
@@ -285,11 +231,10 @@ bool At25sf128a::JedecID(uint8_t *id) {
     };
     uint8_t response[4] = {};
 
-    HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
-    const bool ok =
-        SpiTransmitReceiveDma(command, response, sizeof(command));
-    HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
-    if (!ok) {
+    const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
+    CsAssert cs(_cs);
+    if (!_bus->TransmitReceiveDma(
+            command, response, sizeof(command), timeout)) {
         return false;
     }
 
@@ -300,18 +245,17 @@ bool At25sf128a::JedecID(uint8_t *id) {
 }
 
 bool At25sf128a::ReadStatus(uint8_t *status) {
-    if (status == nullptr) {
+    if ((status == nullptr) || (_bus == nullptr)) {
         return false;
     }
 
     const uint8_t command[2] = {kCmdReadStatus, 0U};
     uint8_t response[2] = {};
 
-    HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
-    const bool ok =
-        SpiTransmitReceiveDma(command, response, sizeof(command));
-    HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
-    if (!ok) {
+    const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
+    CsAssert cs(_cs);
+    if (!_bus->TransmitReceiveDma(
+            command, response, sizeof(command), timeout)) {
         return false;
     }
 

@@ -5,26 +5,22 @@
  */
 
 #include "app/app.hpp"
-#include "board_buses.hpp"
+#include "board/board.hpp"
 #include "button_handler/button_handler.hpp"
 #include "delayable_handler/delayable_work.hpp"
 #include "log.hpp"
 #include "storage_handler/storage_handler.hpp"
 
-#include "i2c.h"
-#include "spi.h"
-
 namespace {
 
 ButtonHandler g_button_handler;
-StorageHandler g_storage_handler;
+StorageHandler g_storage_handler{board::Flash()};
 
 } // namespace
 
 extern "C" void app_init(void) {
-    configASSERT(Spi1().Init(&hspi1));
-    configASSERT(Spi2().Init(&hspi2));
-    configASSERT(I2c1().Init(&hi2c1));
+    configASSERT(board::InitBuses());
+    configASSERT(board::InitDevices());
 
     configASSERT(g_button_handler.Initialize());
     configASSERT(g_storage_handler.Initialize());

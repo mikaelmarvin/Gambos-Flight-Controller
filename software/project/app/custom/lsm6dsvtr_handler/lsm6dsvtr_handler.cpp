@@ -23,6 +23,9 @@ constexpr uint32_t kGyroPublishDecimation = 10U;
 
 } // namespace
 
+Lsm6dsvtrHandler::Lsm6dsvtrHandler(Lsm6dsvtr &device)
+    : _device(device) {}
+
 bool Lsm6dsvtrHandler::Initialize(void) {
     return _device.Init();
 }
