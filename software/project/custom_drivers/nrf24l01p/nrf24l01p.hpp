@@ -1,6 +1,7 @@
 #ifndef NRF24L01P_HPP
 #define NRF24L01P_HPP
 
+#include "bus.hpp"
 #include "stm32f4xx_hal.h"
 
 #include <cstdint>
@@ -20,7 +21,9 @@ class Nrf24l01p {
 
     Nrf24l01p() = default;
 
-    bool Init(SPI_HandleTypeDef *spi, PrimaryRole primary_role);
+    bool Init(SPI_HandleTypeDef *spi,
+              PrimaryRole primary_role,
+              Bus *bus);
     bool RegisterCePin(GPIO_TypeDef *port, uint16_t pin);
     bool RegisterCsnPin(GPIO_TypeDef *port, uint16_t pin);
     bool Send(const uint8_t *data);
@@ -42,6 +45,7 @@ class Nrf24l01p {
     bool ToSetupAddressWidth(uint8_t length, uint8_t &setup_aw_value);
 
     SPI_HandleTypeDef *_spi{nullptr};
+    Bus *_bus{nullptr};
     Pin _ce_pin_{};
     Pin _csn_pin_{};
     uint8_t _payload_length{1U};

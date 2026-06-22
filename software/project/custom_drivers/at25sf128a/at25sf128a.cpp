@@ -1,7 +1,5 @@
 #include "at25sf128a.hpp"
 
-#include "spi_dma_blocking.hpp"
-
 #include "stm32f4xx_hal_gpio.h"
 
 #include "FreeRTOS.h"
@@ -43,17 +41,16 @@ bool At25sf128a::SpiTransmitDma(const uint8_t *data, uint16_t size) {
         return false;
     }
 
-    if (!SpiDmaBlockingBegin(_spi)) {
+    if ((_bus == nullptr) || !_bus->BeginDma()) {
         return false;
     }
 
-    if (HAL_SPI_Transmit_DMA(_spi, const_cast<uint8_t *>(data), size) !=
-        HAL_OK) {
-        SpiDmaBlockingAbort();
+    if (HAL_SPI_Transmit_DMA(
+            _spi, const_cast<uint8_t *>(data), size) != HAL_OK) {
         return false;
     }
 
-    return SpiDmaBlockingWait(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
+    return _bus->WaitDma(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
 }
 
 bool At25sf128a::SpiReceiveDma(uint8_t *data, uint16_t size) {
@@ -61,16 +58,15 @@ bool At25sf128a::SpiReceiveDma(uint8_t *data, uint16_t size) {
         return false;
     }
 
-    if (!SpiDmaBlockingBegin(_spi)) {
+    if ((_bus == nullptr) || !_bus->BeginDma()) {
         return false;
     }
 
     if (HAL_SPI_Receive_DMA(_spi, data, size) != HAL_OK) {
-        SpiDmaBlockingAbort();
         return false;
     }
 
-    return SpiDmaBlockingWait(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
+    return _bus->WaitDma(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
 }
 
 bool At25sf128a::SpiTransmitReceiveDma(const uint8_t *tx,
@@ -81,33 +77,29 @@ bool At25sf128a::SpiTransmitReceiveDma(const uint8_t *tx,
         return false;
     }
 
-    if (!SpiDmaBlockingBegin(_spi)) {
+    if ((_bus == nullptr) || !_bus->BeginDma()) {
         return false;
     }
 
-    if (HAL_SPI_TransmitReceive_DMA(_spi,
-                                    const_cast<uint8_t *>(tx),
-                                    rx,
-                                    size) != HAL_OK) {
-        SpiDmaBlockingAbort();
+    if (HAL_SPI_TransmitReceive_DMA(
+            _spi, const_cast<uint8_t *>(tx), rx, size) != HAL_OK) {
         return false;
     }
 
-    return SpiDmaBlockingWait(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
+    return _bus->WaitDma(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
 }
 
 bool At25sf128a::Init(SPI_HandleTypeDef *spi,
                       GPIO_TypeDef *cs_port,
-                      uint16_t cs_pin) {
+                      uint16_t cs_pin,
+                      Bus *bus) {
     _spi = spi;
     _cs_port = cs_port;
     _cs_pin = cs_pin;
+    _bus = bus;
 
-    if ((_spi == nullptr) || (_cs_port == nullptr)) {
-        return false;
-    }
-
-    if (!SpiDmaBlockingEnsureSemaphore()) {
+    if ((_spi == nullptr) || (_cs_port == nullptr) ||
+        (_bus == nullptr)) {
         return false;
     }
 
@@ -141,9 +133,8 @@ bool At25sf128a::Read(uint32_t address,
     };
 
     HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
-    const bool ok =
-        SpiTransmitDma(command, sizeof(command)) &&
-        SpiReceiveDma(data, static_cast<uint16_t>(size));
+    const bool ok = SpiTransmitDma(command, sizeof(command)) &&
+                    SpiReceiveDma(data, static_cast<uint16_t>(size));
     HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
     return ok;
 }
@@ -187,7 +178,8 @@ bool At25sf128a::Write(uint32_t address,
         HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_RESET);
         const bool programmed =
             SpiTransmitDma(command, sizeof(command)) &&
-            SpiTransmitDma(current_data, static_cast<uint16_t>(chunk));
+            SpiTransmitDma(current_data,
+                           static_cast<uint16_t>(chunk));
         HAL_GPIO_WritePin(_cs_port, _cs_pin, GPIO_PIN_SET);
         if (!programmed) {
             return false;

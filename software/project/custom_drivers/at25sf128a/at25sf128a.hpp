@@ -1,12 +1,13 @@
 #ifndef AT25SF128A_HPP
 #define AT25SF128A_HPP
 
+#include "bus.hpp"
 #include "stm32f4xx_hal.h"
 
 #include <cstdint>
 
-// SPI DMA NOR flash driver. Transfers block the calling task on a semaphore
-// until the DMA completion callback runs.
+// SPI DMA NOR flash driver. Transfers block the calling task on a
+// semaphore until the DMA completion callback runs.
 class At25sf128a {
   public:
     // AT25SF128A (128 Mbit) — see Renesas datasheet.
@@ -18,7 +19,8 @@ class At25sf128a {
 
     bool Init(SPI_HandleTypeDef *spi,
               GPIO_TypeDef *cs_port,
-              uint16_t cs_pin);
+              uint16_t cs_pin,
+              Bus *bus);
 
     bool Read(uint32_t address, uint8_t *data, uint32_t size);
     bool Write(uint32_t address, const uint8_t *data, uint32_t size);
@@ -38,6 +40,7 @@ class At25sf128a {
     SPI_HandleTypeDef *_spi{nullptr};
     GPIO_TypeDef *_cs_port{nullptr};
     uint16_t _cs_pin{0};
+    Bus *_bus{nullptr};
 };
 
 #endif /* AT25SF128A_HPP */

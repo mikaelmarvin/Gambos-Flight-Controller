@@ -4,7 +4,7 @@ target_include_directories(custom_drivers PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_subdirectory(spi_dma_blocking)
+add_subdirectory(bus)
 add_subdirectory(nrf24l01p)
 add_subdirectory(lsm6dsvtr)
 add_subdirectory(iis2mdctr)

@@ -1,6 +1,5 @@
 #include "nrf24l01p.hpp"
 #include "nrf24l01p_hw.h"
-#include "spi_dma_blocking.hpp"
 
 #include <cstring>
 
@@ -38,12 +37,11 @@ bool Nrf24l01p::RegisterCsnPin(GPIO_TypeDef *port, uint16_t pin) {
 }
 
 bool Nrf24l01p::Init(SPI_HandleTypeDef *spi,
-                     const PrimaryRole primary_role) {
+                     const PrimaryRole primary_role,
+                     Bus *bus) {
     _spi = spi;
-    if (_spi == nullptr) {
-        return false;
-    }
-    if (!SpiDmaBlockingEnsureSemaphore()) {
+    _bus = bus;
+    if ((_spi == nullptr) || (_bus == nullptr)) {
         return false;
     }
 
@@ -212,7 +210,7 @@ bool Nrf24l01p::NrfSpiExchange(SPI_HandleTypeDef *spi,
 
     HAL_GPIO_WritePin(_csn_pin_.port, _csn_pin_.pin, GPIO_PIN_RESET);
 
-    if (!SpiDmaBlockingBegin(spi)) {
+    if ((_bus == nullptr) || !_bus->BeginDma()) {
         HAL_GPIO_WritePin(
             _csn_pin_.port, _csn_pin_.pin, GPIO_PIN_SET);
         return false;
@@ -221,14 +219,13 @@ bool Nrf24l01p::NrfSpiExchange(SPI_HandleTypeDef *spi,
     const bool started =
         HAL_SPI_TransmitReceive_DMA(spi, tx, rx, len) == HAL_OK;
     if (!started) {
-        SpiDmaBlockingAbort();
         HAL_GPIO_WritePin(
             _csn_pin_.port, _csn_pin_.pin, GPIO_PIN_SET);
         return false;
     }
 
     const bool completed =
-        SpiDmaBlockingWait(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
+        _bus->WaitDma(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
     HAL_GPIO_WritePin(_csn_pin_.port, _csn_pin_.pin, GPIO_PIN_SET);
 
     return completed;

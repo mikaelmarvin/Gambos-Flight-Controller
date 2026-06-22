@@ -6,10 +6,12 @@
  */
 
 #include "app/app.hpp"
+#include "board_buses.hpp"
 #include "button_handler/button_handler.hpp"
 #include "log.hpp"
 #include "tx_handler/tx_handler.hpp"
 
+#include "spi.h"
 #include "usart.h"
 
 #include "FreeRTOS.h"
@@ -23,6 +25,7 @@ TxHandler g_tx_handler;
 } // namespace
 
 extern "C" void app_init(void) {
+    (void)Spi2().Init(&hspi2);
     (void)g_button_handler.Initialize();
     (void)g_tx_handler.Initialize();
 }

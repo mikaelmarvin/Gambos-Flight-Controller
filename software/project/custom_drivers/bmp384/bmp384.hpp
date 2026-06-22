@@ -15,12 +15,11 @@ class Bmp384 {
   public:
     Bmp384() = default;
 
-    bool Init(I2C_HandleTypeDef *i2c);
+    bool Init(void);
     /** One blocking read for pressure and temperature. */
     bool ReadPressureTemperature(BaroSample &out);
 
   private:
-    I2C_HandleTypeDef *_i2c{nullptr};
 };
 
 #endif /* BMP384_HPP */
