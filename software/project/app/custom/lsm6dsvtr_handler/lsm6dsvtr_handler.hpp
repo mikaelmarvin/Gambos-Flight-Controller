@@ -9,7 +9,7 @@
  */
 class Lsm6dsvtrHandler {
   public:
-    Lsm6dsvtrHandler() = default;
+    explicit Lsm6dsvtrHandler(Lsm6dsvtr &device);
 
     bool Initialize(void);
     void Start(void);
@@ -19,7 +19,7 @@ class Lsm6dsvtrHandler {
 
     bool ReadAndPublish(void);
 
-    Lsm6dsvtr _device{};
+    Lsm6dsvtr &_device;
     uint32_t _loop_count{0U};
 };
 

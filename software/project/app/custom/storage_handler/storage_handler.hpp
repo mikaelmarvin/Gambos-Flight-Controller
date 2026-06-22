@@ -47,7 +47,7 @@ struct StorageQueueItem {
 
 class StorageHandler {
   public:
-    StorageHandler() = default;
+    explicit StorageHandler(At25sf128a &flash);
 
     bool Initialize(void);
     void Start(void);
@@ -86,7 +86,7 @@ class StorageHandler {
     bool ReadSettingsFromStorage(Settings &settings);
     bool WriteLogsToStorage(const uint8_t *data, uint32_t size);
 
-    At25sf128a _device{};
+    At25sf128a &_device;
     lfs_t _lfs{};
     lfs_config _lfs_cfg{};
 

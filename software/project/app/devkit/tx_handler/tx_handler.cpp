@@ -4,7 +4,7 @@
  */
 
 #include "tx_handler.hpp"
-#include "board_buses.hpp"
+#include "bus.hpp"
 #include "log.hpp"
 #include "messaging/messaging.hpp"
 
@@ -33,9 +33,7 @@ bool TxHandler::Initialize(void) {
         return false;
     }
 
-    return _nrf24l01p.Init(Spi2().Spi(),
-                          Nrf24l01p::PrimaryRole::Ptx,
-                          &Spi2());
+    return _nrf24l01p.Init(Spi2(), Nrf24l01p::PrimaryRole::Ptx);
 }
 
 void TxHandler::Start(void) {

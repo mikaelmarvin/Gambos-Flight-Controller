@@ -18,6 +18,9 @@ constexpr uint32_t kTaskPeriodMs = 100U; /* 10 Hz */
 
 } // namespace
 
+Iis2mdctrHandler::Iis2mdctrHandler(Iis2mdctr &device)
+    : _device(device) {}
+
 bool Iis2mdctrHandler::Initialize(void) {
     return _device.Init();
 }

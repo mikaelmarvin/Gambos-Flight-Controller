@@ -1,10 +1,10 @@
 #include "iis2mdctr.hpp"
 
-#include "board_buses.hpp"
+Iis2mdctr::Iis2mdctr(I2cBus &bus, const uint8_t addr7)
+    : _bus(&bus), _addr7(addr7) {}
 
 bool Iis2mdctr::Init(void) {
-    // TODO: data rate and continuous mode config via I2c1().
-    return I2c1().IsInitialized();
+    return (_bus != nullptr) && _bus->IsInitialized();
 }
 
 bool Iis2mdctr::ReadSample(MagSample &out) {

@@ -4,9 +4,7 @@
  */
 
 #include "storage_handler.hpp"
-#include "board_buses.hpp"
 #include "log.hpp"
-#include "main.h"
 #include "messaging/messaging.hpp"
 
 #include "FreeRTOS.h"
@@ -65,20 +63,9 @@ static int lfs_bd_sync(const lfs_config *c) {
 
 } // namespace
 
+StorageHandler::StorageHandler(At25sf128a &flash) : _device(flash) {}
+
 bool StorageHandler::Initialize(void) {
-    if (!Spi1().IsInitialized()) {
-        LOG("ERROR: SPI1 bus not initialized");
-        return false;
-    }
-
-    if (!_device.Init(Spi1().Spi(),
-                      FLASH_CS_GPIO_Port,
-                      FLASH_CS_Pin,
-                      &Spi1())) {
-        LOG("ERROR: Failed to initialize external flash");
-        return false;
-    }
-
     if (_request_queue_handle == nullptr) {
         _request_queue_handle =
             xQueueCreateStatic(kMaxStorageQueueItems,

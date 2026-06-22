@@ -36,12 +36,9 @@ bool Nrf24l01p::RegisterCsnPin(GPIO_TypeDef *port, uint16_t pin) {
     return (port != nullptr);
 }
 
-bool Nrf24l01p::Init(SPI_HandleTypeDef *spi,
-                     const PrimaryRole primary_role,
-                     Bus *bus) {
-    _spi = spi;
-    _bus = bus;
-    if ((_spi == nullptr) || (_bus == nullptr)) {
+bool Nrf24l01p::Init(SpiBus &bus, const PrimaryRole primary_role) {
+    _bus = &bus;
+    if ((_bus == nullptr) || !_bus->IsInitialized()) {
         return false;
     }
 
@@ -196,39 +193,22 @@ bool Nrf24l01p::Receive(uint8_t *data) {
         NRF24_CMD_R_RX_PAYLOAD, data, _payload_length);
 }
 
-bool Nrf24l01p::NrfSpiExchange(SPI_HandleTypeDef *spi,
-                               const uint8_t *tx,
+bool Nrf24l01p::NrfSpiExchange(const uint8_t *tx,
                                uint8_t *rx,
-                               uint8_t len) {
-    if (spi == nullptr || tx == nullptr || rx == nullptr ||
-        len == 0U) {
+                               const uint8_t len) {
+    if (tx == nullptr || rx == nullptr || len == 0U) {
         return false;
     }
-    if (_csn_pin_.port == nullptr) {
+    if ((_csn_pin_.port == nullptr) || (_bus == nullptr)) {
         return false;
     }
 
     HAL_GPIO_WritePin(_csn_pin_.port, _csn_pin_.pin, GPIO_PIN_RESET);
-
-    if ((_bus == nullptr) || !_bus->BeginDma()) {
-        HAL_GPIO_WritePin(
-            _csn_pin_.port, _csn_pin_.pin, GPIO_PIN_SET);
-        return false;
-    }
-
-    const bool started =
-        HAL_SPI_TransmitReceive_DMA(spi, tx, rx, len) == HAL_OK;
-    if (!started) {
-        HAL_GPIO_WritePin(
-            _csn_pin_.port, _csn_pin_.pin, GPIO_PIN_SET);
-        return false;
-    }
-
-    const bool completed =
-        _bus->WaitDma(pdMS_TO_TICKS(kSpiDmaTimeoutMs));
+    const bool ok = _bus->TransmitReceiveDma(
+        tx, rx, len, pdMS_TO_TICKS(kSpiDmaTimeoutMs));
     HAL_GPIO_WritePin(_csn_pin_.port, _csn_pin_.pin, GPIO_PIN_SET);
 
-    return completed;
+    return ok;
 }
 
 bool Nrf24l01p::WriteReadRegArray(const uint8_t cmd,
@@ -242,7 +222,7 @@ bool Nrf24l01p::WriteReadRegArray(const uint8_t cmd,
     uint8_t rx[33];
     tx[0] = cmd;
     memset(&tx[1], 0, len);
-    if (!NrfSpiExchange(_spi, tx, rx, len + 1U)) {
+    if (!NrfSpiExchange(tx, rx, len + 1U)) {
         return false;
     }
     memcpy(data, &rx[1], len);
@@ -252,7 +232,7 @@ bool Nrf24l01p::WriteReadRegArray(const uint8_t cmd,
 bool Nrf24l01p::WriteReg(const uint8_t reg, const uint8_t value) {
     uint8_t tx[2] = {NRF24_CMD_W_REG(reg), value};
     uint8_t rx[2];
-    return NrfSpiExchange(_spi, tx, rx, 2U);
+    return NrfSpiExchange(tx, rx, 2U);
 }
 
 bool Nrf24l01p::WriteRegArray(const uint8_t reg,
@@ -265,19 +245,19 @@ bool Nrf24l01p::WriteRegArray(const uint8_t reg,
     uint8_t rx[33];
     tx[0] = NRF24_CMD_W_REG(reg);
     memcpy(&tx[1], value, length);
-    return NrfSpiExchange(_spi, tx, rx, length + 1U);
+    return NrfSpiExchange(tx, rx, length + 1U);
 }
 
 bool Nrf24l01p::Command(const uint8_t value) {
     uint8_t tx[1] = {value};
     uint8_t rx[1];
-    return NrfSpiExchange(_spi, tx, rx, 1U);
+    return NrfSpiExchange(tx, rx, 1U);
 }
 
 uint8_t Nrf24l01p::ReadStatus() {
     uint8_t tx[1] = {NRF24_CMD_NOP};
     uint8_t rx[1];
-    (void)NrfSpiExchange(_spi, tx, rx, 1U);
+    (void)NrfSpiExchange(tx, rx, 1U);
     return rx[0];
 }
 

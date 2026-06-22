@@ -6,7 +6,7 @@
 /** One task for BMP384 — pressure and temperature from one read. */
 class Bmp384Handler {
   public:
-    Bmp384Handler() = default;
+    explicit Bmp384Handler(Bmp384 &device);
 
     bool Initialize(void);
     void Start(void);
@@ -16,7 +16,7 @@ class Bmp384Handler {
 
     bool ReadAndPublish(void);
 
-    Bmp384 _device{};
+    Bmp384 &_device;
 };
 
 #endif /* BMP384_HANDLER_HPP */
