@@ -1,5 +1,6 @@
 #include "board.hpp"
 
+#include "log.hpp"
 #include "main.h"
 
 #include "i2c.h"
@@ -18,8 +19,22 @@ Nrf24l01p g_radio{};
 } // namespace
 
 bool InitBuses(void) {
-    return Spi1().Init(&hspi1) && Spi2().Init(&hspi2) &&
-           I2c1().Init(&hi2c1);
+    if (!Spi1().Init(&hspi1)) {
+        LOG("ERROR: SPI1 bus init failed\r\n");
+        return false;
+    }
+
+    if (!Spi2().Init(&hspi2)) {
+        LOG("ERROR: SPI2 bus init failed\r\n");
+        return false;
+    }
+
+    if (!I2c1().Init(&hi2c1)) {
+        LOG("ERROR: I2C1 bus init failed\r\n");
+        return false;
+    }
+
+    return true;
 }
 
 bool InitDevices(void) {

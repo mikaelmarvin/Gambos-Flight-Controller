@@ -78,7 +78,8 @@ bool At25sf128a::Read(uint32_t address,
     const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
     CsAssert cs(_cs);
     return _bus->TransmitDma(command, sizeof(command), timeout) &&
-           _bus->ReceiveDma(data, static_cast<uint16_t>(size), timeout);
+           _bus->ReceiveDma(
+               data, static_cast<uint16_t>(size), timeout);
 }
 
 bool At25sf128a::Write(uint32_t address,
@@ -120,7 +121,8 @@ bool At25sf128a::Write(uint32_t address,
 
         {
             CsAssert cs(_cs);
-            if (!_bus->TransmitDma(command, sizeof(command), timeout) ||
+            if (!_bus->TransmitDma(
+                    command, sizeof(command), timeout) ||
                 !_bus->TransmitDma(current_data,
                                    static_cast<uint16_t>(chunk),
                                    timeout)) {

@@ -52,9 +52,11 @@ class SpiBus {
 
     SPI_HandleTypeDef *_hspi{nullptr};
 
+    // Ensures blocking a task until the DMA is complete.
     StaticSemaphore_t _dma_sem_buffer{};
     SemaphoreHandle_t _dma_sem{nullptr};
 
+    // Ensures protecting the bus from access by multiple tasks.
     StaticSemaphore_t _bus_mutex_buffer{};
     SemaphoreHandle_t _bus_mutex{nullptr};
 };
@@ -87,13 +89,16 @@ class I2cBus {
 
     I2C_HandleTypeDef *_hi2c{nullptr};
 
+    // Ensures blocking a task until the DMA is complete.
     StaticSemaphore_t _dma_sem_buffer{};
     SemaphoreHandle_t _dma_sem{nullptr};
 
+    // Ensures protecting the bus from access by multiple tasks.
     StaticSemaphore_t _bus_mutex_buffer{};
     SemaphoreHandle_t _bus_mutex{nullptr};
 };
 
+// Singleton instances for each physical bus.
 SpiBus &Spi1(void);
 SpiBus &Spi2(void);
 I2cBus &I2c1(void);
