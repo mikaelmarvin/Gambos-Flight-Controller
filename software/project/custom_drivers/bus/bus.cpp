@@ -47,11 +47,13 @@ extern "C" void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c) {
     SignalI2cDmaComplete(hi2c);
 }
 
-extern "C" void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
+extern "C" void HAL_I2C_MasterTxCpltCallback(
+    I2C_HandleTypeDef *hi2c) {
     SignalI2cDmaComplete(hi2c);
 }
 
-extern "C" void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+extern "C" void HAL_I2C_MasterRxCpltCallback(
+    I2C_HandleTypeDef *hi2c) {
     SignalI2cDmaComplete(hi2c);
 }
 
@@ -111,6 +113,8 @@ bool SpiBus::BeginDma(void) {
         return false;
     }
 
+    // Drain the binary semaphore so "Take" can’t succeed on a
+    // leftover "Give" from a previous transfer.
     while (xSemaphoreTake(_dma_sem, 0) == pdTRUE) {}
 
     return true;
@@ -154,8 +158,8 @@ bool SpiBus::TransmitDma(const uint8_t *tx,
 
     bool ok = false;
     if (BeginDma()) {
-        const HAL_StatusTypeDef started = HAL_SPI_Transmit_DMA(
-            _hspi, const_cast<uint8_t *>(tx), len);
+        const HAL_StatusTypeDef started =
+            HAL_SPI_Transmit_DMA(_hspi, tx, len);
         if (started == HAL_OK) {
             ok = WaitDma(timeout);
         }
@@ -205,8 +209,8 @@ bool SpiBus::TransmitReceiveDma(const uint8_t *tx,
 
     bool ok = false;
     if (BeginDma()) {
-        const HAL_StatusTypeDef started = HAL_SPI_TransmitReceive_DMA(
-            _hspi, const_cast<uint8_t *>(tx), rx, len);
+        const HAL_StatusTypeDef started =
+            HAL_SPI_TransmitReceive_DMA(_hspi, tx, rx, len);
         if (started == HAL_OK) {
             ok = WaitDma(timeout);
         }
@@ -301,13 +305,13 @@ bool I2cBus::MemRead(const uint16_t dev_addr_7bit,
 
     bool ok = false;
     if (BeginDma()) {
-        const HAL_StatusTypeDef started = HAL_I2C_Mem_Read_DMA(
-            _hi2c,
-            ToHalDevAddress(dev_addr_7bit),
-            reg,
-            I2C_MEMADD_SIZE_8BIT,
-            data,
-            len);
+        const HAL_StatusTypeDef started =
+            HAL_I2C_Mem_Read_DMA(_hi2c,
+                                 ToHalDevAddress(dev_addr_7bit),
+                                 reg,
+                                 I2C_MEMADD_SIZE_8BIT,
+                                 data,
+                                 len);
         if (started == HAL_OK) {
             ok = WaitDma(timeout);
         }
@@ -333,13 +337,13 @@ bool I2cBus::MemWrite(const uint16_t dev_addr_7bit,
 
     bool ok = false;
     if (BeginDma()) {
-        const HAL_StatusTypeDef started = HAL_I2C_Mem_Write_DMA(
-            _hi2c,
-            ToHalDevAddress(dev_addr_7bit),
-            reg,
-            I2C_MEMADD_SIZE_8BIT,
-            const_cast<uint8_t *>(data),
-            len);
+        const HAL_StatusTypeDef started =
+            HAL_I2C_Mem_Write_DMA(_hi2c,
+                                  ToHalDevAddress(dev_addr_7bit),
+                                  reg,
+                                  I2C_MEMADD_SIZE_8BIT,
+                                  const_cast<uint8_t *>(data),
+                                  len);
         if (started == HAL_OK) {
             ok = WaitDma(timeout);
         }
