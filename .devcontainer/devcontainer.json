@@ -25,7 +25,8 @@
         "C_Cpp.intelliSenseEngine": "disabled",
         "C_Cpp.errorSquiggles": "disabled",
         "clangd.arguments": [
-          "--background-index"
+          "--background-index",
+          "--compile-commands-dir=${workspaceFolder}/software/project"
         ]
       }
     }
