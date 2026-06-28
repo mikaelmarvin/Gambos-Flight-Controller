@@ -152,6 +152,8 @@ bool SpiBus::TransmitDma(const uint8_t *tx,
         return false;
     }
 
+    // Lock the bus mutex to prevent multiple tasks from accessing the
+    // bus at the same time.
     if (xSemaphoreTake(_bus_mutex, timeout) != pdTRUE) {
         return false;
     }
@@ -165,6 +167,7 @@ bool SpiBus::TransmitDma(const uint8_t *tx,
         }
     }
 
+    // Release the bus mutex to allow other tasks to access the bus.
     (void)xSemaphoreGive(_bus_mutex);
     return ok;
 }
@@ -177,6 +180,8 @@ bool SpiBus::ReceiveDma(uint8_t *rx,
         return false;
     }
 
+    // Lock the bus mutex to prevent multiple tasks from accessing the
+    // bus at the same time.
     if (xSemaphoreTake(_bus_mutex, timeout) != pdTRUE) {
         return false;
     }
@@ -190,6 +195,7 @@ bool SpiBus::ReceiveDma(uint8_t *rx,
         }
     }
 
+    // Release the bus mutex to allow other tasks to access the bus.
     (void)xSemaphoreGive(_bus_mutex);
     return ok;
 }
