@@ -23,7 +23,7 @@ constexpr uint8_t kStatusBusy = 0x01U;
 
 constexpr uint8_t kJedecManufacturerId = 0x1FU;
 constexpr uint8_t kJedecMemoryType = 0x89U;
-constexpr uint8_t kJedecCapacityId = 0x18U;
+constexpr uint8_t kJedecCapacityId = 0x01U;
 
 bool IsValidRange(uint32_t address, uint32_t size) {
     return (size > 0U) &&
@@ -77,6 +77,10 @@ bool At25sf128a::Read(uint32_t address,
 
     const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
     CsAssert cs(_cs);
+
+    // TransmitReceiveDma is not used due the to the variable size of
+    // the response. TransmitReceiveDma requires the response to be
+    // the same length as the command.
     return _bus->TransmitDma(command, sizeof(command), timeout) &&
            _bus->ReceiveDma(
                data, static_cast<uint16_t>(size), timeout);
@@ -90,6 +94,11 @@ bool At25sf128a::Write(uint32_t address,
         return false;
     }
 
+    // Ensure the device is idle before writing.
+    if (!EnsureIdle()) {
+        return false;
+    }
+
     const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
 
     uint32_t remaining = size;
@@ -99,11 +108,12 @@ bool At25sf128a::Write(uint32_t address,
     while (remaining > 0U) {
         const uint32_t page_offset =
             current_address % kPageProgramBytes;
-        uint32_t chunk = kPageProgramBytes - page_offset;
-        if (chunk > remaining) {
-            chunk = remaining;
+        uint32_t data_chunk = kPageProgramBytes - page_offset;
+        if (data_chunk > remaining) {
+            data_chunk = remaining;
         }
 
+        // Assemble program command
         const uint8_t command[4] = {
             kCmdPageProgram,
             static_cast<uint8_t>((current_address >> 16U) & 0xFFU),
@@ -112,6 +122,7 @@ bool At25sf128a::Write(uint32_t address,
         };
 
         {
+            // Send write enable command before programming command
             const uint8_t write_enable = kCmdWriteEnable;
             CsAssert cs(_cs);
             if (!_bus->TransmitDma(&write_enable, 1U, timeout)) {
@@ -120,23 +131,25 @@ bool At25sf128a::Write(uint32_t address,
         }
 
         {
+            // Send program command
             CsAssert cs(_cs);
             if (!_bus->TransmitDma(
                     command, sizeof(command), timeout) ||
                 !_bus->TransmitDma(current_data,
-                                   static_cast<uint16_t>(chunk),
+                                   static_cast<uint16_t>(data_chunk),
                                    timeout)) {
                 return false;
             }
         }
 
+        // Device can be prompted for readiness while it is writing
         if (!EnsureIdle()) {
             return false;
         }
 
-        current_address += chunk;
-        current_data += chunk;
-        remaining -= chunk;
+        current_address += data_chunk;
+        current_data += data_chunk;
+        remaining -= data_chunk;
     }
 
     return true;
@@ -151,6 +164,7 @@ bool At25sf128a::Erase(uint32_t address) {
     const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
 
     {
+        // Send write enable command before erase command
         const uint8_t write_enable = kCmdWriteEnable;
         CsAssert cs(_cs);
         if (!_bus->TransmitDma(&write_enable, 1U, timeout)) {
@@ -177,9 +191,11 @@ bool At25sf128a::Erase(uint32_t address) {
 
 bool At25sf128a::EnsureIdle(void) {
     uint8_t status = 0U;
-    TickType_t elapsed_ms = 0U;
+    const TickType_t start_tick = xTaskGetTickCount();
+    const TickType_t timeout_ticks =
+        pdMS_TO_TICKS(kEnsureIdleTimeoutMs);
 
-    while (elapsed_ms < kEnsureIdleTimeoutMs) {
+    while ((xTaskGetTickCount() - start_tick) < timeout_ticks) {
         if (!ReadStatus(&status)) {
             return false;
         }
@@ -188,7 +204,6 @@ bool At25sf128a::EnsureIdle(void) {
         }
 
         vTaskDelay(pdMS_TO_TICKS(1U));
-        ++elapsed_ms;
     }
 
     return false;
@@ -225,12 +240,16 @@ bool At25sf128a::JedecID(uint8_t *id) {
         return false;
     }
 
+    // The opcode is 1 byte, but the response is 3 bytes.
     const uint8_t command[4] = {
         kCmdReadJedecId,
         0U,
         0U,
         0U,
     };
+
+    // The response and command must be same length, only the last 3
+    // bytes are actual information.
     uint8_t response[4] = {};
 
     const TickType_t timeout = pdMS_TO_TICKS(kSpiDmaTimeoutMs);
