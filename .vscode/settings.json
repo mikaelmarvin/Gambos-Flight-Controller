@@ -15,5 +15,9 @@
   "C_Cpp.default.compileCommands": "${workspaceFolder}/software/project/compile_commands.json",
   "C_Cpp.intelliSenseEngine": "disabled",
   "C_Cpp.errorSquiggles": "disabled",
-  "cmake.ignoreCMakeListsMissing": true
+  "clangd.arguments": [
+    "--compile-commands-dir=${workspaceFolder}/software/project"
+  ],
+  "cmake.ignoreCMakeListsMissing": true,
+  "chat.disableAIFeatures": true
 }

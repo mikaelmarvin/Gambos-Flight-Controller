@@ -16,7 +16,7 @@ STM32 firmware for the Gambos project — built with CMake, developed in a **Dev
 ## First-time setup (after clone)
 
 1. **Open the repo in the editor** and choose **“Reopen in Container”** (or **Dev Containers: Reopen in Container**).
-2. Wait for the image to build and **post-create** to finish. The container runs `.devcontainer/setup.sh`, which runs `./software/project/scripts/build.sh custom` and fixes `compile_commands.json` paths for clangd.
+2. Wait for the image to build and **post-create** to finish. The container runs `.devcontainer/setup.sh`, which runs `./software/project/scripts/build.sh custom`.
 3. **Open a new terminal** so the shell prompt (Starship) and `PATH` are correct.
 
 ## Build, flash, probe, clean, and pristine
@@ -51,7 +51,8 @@ Run from the **repository root** via `software/project/scripts/`. `build.sh`, `c
 
 ## Editor / clangd (IntelliSense)
 
-- `compile_commands.json` is generated under `software/project/build/<board>/` when you build a preset (`custom` or `devkit`).
+- `compile_commands.json` is generated under `software/project/build/<board>/` when you build a preset (`custom` or `devkit`). A symlink at `software/project/compile_commands.json` points at the active board (default: `custom`).
+- **clangd path mappings** in `.devcontainer/devcontainer.json` and `.vscode/settings.json` translate host paths (`/home/mikael/gambos`) and container paths (`/workspace/gambos`) so IntelliSense works whether you built on the host or in the Dev Container — no file rewriting.
 - CMSIS-SVD for register view in Cortex-Debug: `software/STM32F446.svd` (referenced from `.vscode/launch.json`).
 - `software/.clangd` points firmware sources at the `board` compilation database.
 - If clangd is stale, run `./software/project/scripts/build.sh <board>` once, then **restart clangd** (command palette: **clangd: Restart language server**).

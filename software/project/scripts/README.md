@@ -33,6 +33,5 @@ Optional env:
 | `pristine.sh` / `pristine.sh all` | Delete entire `build/` |
 | `pristine.sh devkit` / `pristine.sh custom` | Delete only `build/devkit/` or `build/custom/` |
 | `gen-board-sources.sh` | Called by `build.sh` |
-| `fix-compile-commands-for-container.sh` | Dev Container path fix for `compile_commands.json` |
 
 USB debug probes need **`/dev/bus/usb`** (see repo `docker-compose.yml`). For **`custom`**, install SEGGER in the image (repo `Dockerfile`) and rebuild the Dev Container.

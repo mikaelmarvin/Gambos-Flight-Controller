@@ -1,7 +1,7 @@
 #!/bin/bash
 # Single entry point for devcontainer setup.
-# - Run with no args (postCreate): configure build, fix compile_commands paths, add Starship to .bashrc.
-# - Run with --post-start: fix compile_commands paths + ensure Starship in ~/.bashrc (every start).
+# - Run with no args (postCreate): configure build, add Starship to .bashrc.
+# - Run with --post-start: ensure Starship in ~/.bashrc (every start).
 
 set -e
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -19,20 +19,15 @@ ensure_starship_bashrc() {
 }
 
 if [[ "${1:-}" == "--post-start" ]]; then
-    bash software/project/scripts/fix-compile-commands-for-container.sh
     ensure_starship_bashrc || true
     exit 0
 fi
 
 # --- Full setup (postCreate) ---
 
-# 1. Configure + build custom (compile_commands.json for clangd).
+# Configure + build custom (compile_commands.json for clangd).
 bash software/project/scripts/build.sh custom
 
-# 2. Fix paths in compile_commands.json for container
-bash software/project/scripts/fix-compile-commands-for-container.sh || true
-
-# 3. Starship in ~/.bashrc (idempotent; also runs on every postStart for old volumes)
 ensure_starship_bashrc || true
 
 echo "Devcontainer setup done. Open a new terminal for Starship prompt."

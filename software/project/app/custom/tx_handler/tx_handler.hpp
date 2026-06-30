@@ -5,8 +5,7 @@
 
 class TxHandler {
   public:
-    TxHandler() = default;
-    ~TxHandler() = default;
+    explicit TxHandler(Nrf24l01p &radio);
 
     bool Initialize(void);
     void Start(void);
@@ -14,7 +13,7 @@ class TxHandler {
   private:
     static void TaskFunction(void *pvParameters);
 
-    Nrf24l01p _nrf24l01p{};
+    Nrf24l01p &_radio;
 };
 
 #endif /* TX_HANDLER_HPP */

@@ -5,7 +5,7 @@
 
 class Iis2mdctrHandler {
   public:
-    Iis2mdctrHandler() = default;
+    explicit Iis2mdctrHandler(Iis2mdctr &device);
 
     bool Initialize(void);
     void Start(void);
@@ -15,7 +15,7 @@ class Iis2mdctrHandler {
 
     bool ReadAndPublish(void);
 
-    Iis2mdctr _device{};
+    Iis2mdctr &_device;
 };
 
 #endif /* IIS2MDCTR_HANDLER_HPP */

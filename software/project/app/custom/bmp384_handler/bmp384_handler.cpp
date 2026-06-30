@@ -5,7 +5,6 @@
  */
 
 #include "bmp384_handler.hpp"
-#include "i2c.h"
 #include "messaging/messaging.hpp"
 
 #include "FreeRTOS.h"
@@ -20,7 +19,9 @@ constexpr uint32_t kTaskPeriodMs = 50U; /* 20 Hz */
 
 } // namespace
 
-bool Bmp384Handler::Initialize(void) { return _device.Init(&hi2c1); }
+Bmp384Handler::Bmp384Handler(Bmp384 &device) : _device(device) {}
+
+bool Bmp384Handler::Initialize(void) { return _device.Init(); }
 
 void Bmp384Handler::Start(void) {
     configASSERT(xTaskCreate(&Bmp384Handler::TaskFunction,

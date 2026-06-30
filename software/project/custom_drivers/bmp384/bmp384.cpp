@@ -1,9 +1,10 @@
 #include "bmp384.hpp"
 
-bool Bmp384::Init(I2C_HandleTypeDef *i2c) {
-    _i2c = i2c;
-    // TODO: oversampling and normal mode config via *_i2c.
-    return (_i2c != nullptr);
+Bmp384::Bmp384(I2cBus &bus, const uint8_t addr7)
+    : _bus(&bus), _addr7(addr7) {}
+
+bool Bmp384::Init(void) {
+    return (_bus != nullptr) && _bus->IsInitialized();
 }
 
 bool Bmp384::ReadPressureTemperature(BaroSample &out) {
