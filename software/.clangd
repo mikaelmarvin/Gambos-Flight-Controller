@@ -1,7 +1,27 @@
 # Extra system includes for clangd (arm-none-eabi newlib lives outside project -I flags).
 # Adjust GCC version in paths if `arm-none-eabi-gcc -E -v` shows a different 10.3.1.
 #
-# Restart clangd after editing (Command Palette → "clangd: Restart language server").
+# compile_commands.json must point at the active board, e.g.:
+#   project/compile_commands.json -> build/custom/compile_commands.json
+# Restart clangd after switching boards (Command Palette → "clangd: Restart language server").
+
+---
+# Only index TUs from compile_commands.json (avoids devkit/custom duplicate symbols).
+Index:
+  Background: Build
+
+---
+# Inactive board (when compile_commands points at custom).
+If:
+  PathMatch: project/app/devkit/.*
+Index:
+  Background: Skip
+
+---
+If:
+  PathMatch: project/board/devkit/.*
+Index:
+  Background: Skip
 
 ---
 # Same newlib/gcc paths (arm-none-eabi toolchain); board-selected compile_commands.

@@ -1,0 +1,18 @@
+# Workspace-root clangd config (picked up for all files under gambos/).
+CompileFlags:
+  CompilationDatabase: software/project
+
+Index:
+  Background: Build
+
+---
+If:
+  PathMatch: software/project/app/devkit/.*
+Index:
+  Background: Skip
+
+---
+If:
+  PathMatch: software/project/board/devkit/.*
+Index:
+  Background: Skip

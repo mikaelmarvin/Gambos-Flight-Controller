@@ -16,7 +16,6 @@
   "C_Cpp.intelliSenseEngine": "disabled",
   "C_Cpp.errorSquiggles": "disabled",
   "clangd.arguments": [
-    "--background-index",
     "--compile-commands-dir=${workspaceFolder}/software/project"
   ],
   "cmake.ignoreCMakeListsMissing": true,
