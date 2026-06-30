@@ -1,7 +1,7 @@
 #ifndef IIS2MDCTR_HPP
 #define IIS2MDCTR_HPP
 
-#include "stm32f4xx_hal.h"
+#include "bus.hpp"
 
 #include <cstdint>
 
@@ -15,12 +15,14 @@ struct MagSample {
 class Iis2mdctr {
   public:
     Iis2mdctr() = default;
+    Iis2mdctr(I2cBus &bus, uint8_t addr7);
 
-    bool Init(I2C_HandleTypeDef *i2c);
+    bool Init(void);
     bool ReadSample(MagSample &out);
 
   private:
-    I2C_HandleTypeDef *_i2c{nullptr};
+    I2cBus *_bus{nullptr};
+    uint8_t _addr7{0U};
 };
 
 #endif /* IIS2MDCTR_HPP */

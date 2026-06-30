@@ -42,6 +42,10 @@ services:
     environment:
       - TERM=xterm-256color
     
+    # Bridge route to talk back to your Ubuntu host's Ollama service
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    
     # OpenOCD ports (for GDB debugging and telnet)
     ports:
       - "3333:3333"   # GDB server

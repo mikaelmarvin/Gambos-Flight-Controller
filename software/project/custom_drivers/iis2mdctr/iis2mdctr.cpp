@@ -1,9 +1,10 @@
 #include "iis2mdctr.hpp"
 
-bool Iis2mdctr::Init(I2C_HandleTypeDef *i2c) {
-    _i2c = i2c;
-    // TODO: data rate and continuous mode config via *_i2c.
-    return (_i2c != nullptr);
+Iis2mdctr::Iis2mdctr(I2cBus &bus, const uint8_t addr7)
+    : _bus(&bus), _addr7(addr7) {}
+
+bool Iis2mdctr::Init(void) {
+    return (_bus != nullptr) && _bus->IsInitialized();
 }
 
 bool Iis2mdctr::ReadSample(MagSample &out) {

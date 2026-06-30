@@ -5,7 +5,6 @@
  */
 
 #include "lsm6dsvtr_handler.hpp"
-#include "i2c.h"
 #include "messaging/messaging.hpp"
 
 #include "FreeRTOS.h"
@@ -24,8 +23,11 @@ constexpr uint32_t kGyroPublishDecimation = 10U;
 
 } // namespace
 
+Lsm6dsvtrHandler::Lsm6dsvtrHandler(Lsm6dsvtr &device)
+    : _device(device) {}
+
 bool Lsm6dsvtrHandler::Initialize(void) {
-    return _device.Init(&hi2c1);
+    return _device.Init();
 }
 
 void Lsm6dsvtrHandler::Start(void) {

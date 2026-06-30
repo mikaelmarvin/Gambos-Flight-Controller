@@ -4,9 +4,9 @@
  */
 
 #include "tx_handler.hpp"
+#include "bus.hpp"
 #include "log.hpp"
 #include "messaging/messaging.hpp"
-#include "spi.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -29,7 +29,11 @@ bool TxHandler::Initialize(void) {
         return false;
     }
 
-    return _nrf24l01p.Init(&hspi2, Nrf24l01p::PrimaryRole::Ptx);
+    if (!Spi2().IsInitialized()) {
+        return false;
+    }
+
+    return _nrf24l01p.Init(Spi2(), Nrf24l01p::PrimaryRole::Ptx);
 }
 
 void TxHandler::Start(void) {

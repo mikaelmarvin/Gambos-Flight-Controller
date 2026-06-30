@@ -4,10 +4,10 @@
  */
 
 #include "tx_handler.hpp"
+#include "bus.hpp"
 #include "log.hpp"
 #include "main.h"
 #include "messaging/messaging.hpp"
-#include "spi.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -19,26 +19,27 @@ constexpr uint32_t kTxHandlerTaskPriority = (tskIDLE_PRIORITY + 1U);
 
 } // namespace
 
+TxHandler::TxHandler(Nrf24l01p &radio) : _radio(radio) {}
+
 bool TxHandler::Initialize(void) {
     Messaging::Subscribe<topics::ButtonInfo>(
         [](const topics::ButtonInfo &button_info) {
             LOG("Button pressed: %u\r\n", button_info.button_state);
         });
 
-    if (!_nrf24l01p.RegisterCePin(NRF24_CE_GPIO_Port, NRF24_CE_Pin) ||
-        !_nrf24l01p.RegisterCsnPin(NRF24_CS_GPIO_Port,
-                                   NRF24_CS_Pin)) {
+    if (!_radio.RegisterCePin(NRF24_CE_GPIO_Port, NRF24_CE_Pin) ||
+        !_radio.RegisterCsnPin(NRF24_CS_GPIO_Port, NRF24_CS_Pin)) {
         return false;
     }
 
-    return true;
+    if (!Spi2().IsInitialized()) {
+        return false;
+    }
+
+    return _radio.Init(Spi2(), Nrf24l01p::PrimaryRole::Ptx);
 }
 
 void TxHandler::Start(void) {
-    if (!_nrf24l01p.Init(&hspi2, Nrf24l01p::PrimaryRole::Ptx)) {
-        LOG("tx_handler: nRF24 init failed (task still runs)\r\n");
-    }
-
     configASSERT(xTaskCreate(&TxHandler::TaskFunction,
                              "tx_handler",
                              kTxHandlerTaskStackSize,

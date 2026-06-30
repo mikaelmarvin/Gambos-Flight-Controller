@@ -1,7 +1,7 @@
 #ifndef BMP384_HPP
 #define BMP384_HPP
 
-#include "stm32f4xx_hal.h"
+#include "bus.hpp"
 
 #include <cstdint>
 
@@ -14,13 +14,15 @@ struct BaroSample {
 class Bmp384 {
   public:
     Bmp384() = default;
+    Bmp384(I2cBus &bus, uint8_t addr7);
 
-    bool Init(I2C_HandleTypeDef *i2c);
+    bool Init(void);
     /** One blocking read for pressure and temperature. */
     bool ReadPressureTemperature(BaroSample &out);
 
   private:
-    I2C_HandleTypeDef *_i2c{nullptr};
+    I2cBus *_bus{nullptr};
+    uint8_t _addr7{0U};
 };
 
 #endif /* BMP384_HPP */
