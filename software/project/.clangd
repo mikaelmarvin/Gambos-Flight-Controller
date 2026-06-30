@@ -1,0 +1,41 @@
+# Active board: compile_commands.json in this directory (symlink to build/<board>/).
+# Restart clangd after switching boards.
+
+CompileFlags:
+  CompilationDatabase: .
+
+Index:
+  Background: Build
+
+---
+# Inactive board tree — keep out of the index (duplicate app_init, etc.).
+If:
+  PathMatch: app/devkit/.*
+Index:
+  Background: Skip
+
+---
+If:
+  PathMatch: board/devkit/.*
+Index:
+  Background: Skip
+
+---
+CompileFlags:
+  Add:
+    - -isystem
+    - /usr/lib/gcc/arm-none-eabi/10.3.1/include
+    - -isystem
+    - /usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed
+    - -isystem
+    - /usr/include/newlib
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1/arm-none-eabi
+    - -isystem
+    - /usr/lib/arm-none-eabi/include/c++/10.3.1/backward
+
+---
+InlayHints:
+  ParameterNames: No
