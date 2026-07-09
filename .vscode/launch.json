@@ -2,45 +2,23 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug devkit (ST-Link / OpenOCD)",
-      "type": "cortex-debug",
-      "request": "launch",
-      "servertype": "openocd",
-      "cwd": "${workspaceFolder}",
-      "executable": "${workspaceFolder}/software/project/build/devkit/gambos.elf",
-      "device": "STM32F446RE",
-      "svdFile": "${workspaceFolder}/software/STM32F446.svd",
-      "configFiles": ["interface/stlink.cfg", "target/stm32f4x.cfg"],
-      "runToEntryPoint": "main"
-    },
-    {
-      "name": "Attach devkit (ST-Link / OpenOCD)",
-      "type": "cortex-debug",
-      "request": "attach",
-      "servertype": "openocd",
-      "executable": "${workspaceFolder}/software/project/build/devkit/gambos.elf",
-      "device": "STM32F446RE",
-      "svdFile": "${workspaceFolder}/software/STM32F446.svd",
-      "configFiles": ["interface/stlink.cfg", "target/stm32f4x.cfg"]
-    },
-    {
-      "name": "Debug custom (J-Link)",
+      "name": "Debug gambos-pcb (J-Link)",
       "type": "cortex-debug",
       "request": "launch",
       "servertype": "jlink",
       "cwd": "${workspaceFolder}",
-      "executable": "${workspaceFolder}/software/project/build/custom/gambos.elf",
+      "executable": "${workspaceFolder}/software/project/build/gambos-pcb/gambos.elf",
       "device": "STM32F446RE",
       "interface": "swd",
       "svdFile": "${workspaceFolder}/software/STM32F446.svd",
       "runToEntryPoint": "main"
     },
     {
-      "name": "Attach custom (J-Link)",
+      "name": "Attach gambos-pcb (J-Link)",
       "type": "cortex-debug",
       "request": "attach",
       "servertype": "jlink",
-      "executable": "${workspaceFolder}/software/project/build/custom/gambos.elf",
+      "executable": "${workspaceFolder}/software/project/build/gambos-pcb/gambos.elf",
       "device": "STM32F446RE",
       "interface": "swd",
       "svdFile": "${workspaceFolder}/software/STM32F446.svd"

@@ -10,30 +10,18 @@
             "cacheVariables": {}
         },
         {
-            "name": "devkit",
+            "name": "gambos-pcb",
             "inherits": "default",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "BOARD": "devkit"
-            }
-        },
-        {
-            "name": "custom",
-            "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "BOARD": "custom"
+                "BOARD": "gambos-pcb"
             }
         }
     ],
     "buildPresets": [
         {
-            "name": "devkit",
-            "configurePreset": "devkit"
-        },
-        {
-            "name": "custom",
-            "configurePreset": "custom"
+            "name": "gambos-pcb",
+            "configurePreset": "gambos-pcb"
         }
     ]
 }

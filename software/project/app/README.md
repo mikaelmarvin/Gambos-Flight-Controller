@@ -1,5 +1,3 @@
-# Application code
+# Application
 
-The devkit application lives in `app/devkit/`. Sources are listed in `app/devkit/CMakeLists.txt` (included from the top-level `CMakeLists.txt`).
-
-Use `app_init()` (before the RTOS scheduler starts) and `app_run()` (for example from the default FreeRTOS task).
+The Gambos PCB application lives in `app/gambos-pcb/`. Sources are listed in `app/gambos-pcb/CMakeLists.txt` (included from the top-level `CMakeLists.txt`).

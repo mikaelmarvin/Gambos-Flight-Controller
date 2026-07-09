@@ -2,36 +2,31 @@
 
 Run these from the **repository root**.
 
-**`build.sh`** and **`clean.sh`** require **`devkit`** or **`custom`** — no default (same rule as **`flash.sh`** / **`probe.sh`**).
+## Probe & flash (Gambos PCB / J-Link)
 
-## Probe & flash (explicit board required)
-
-You **must** pass **`devkit`** or **`custom`** — there is no default.
-
-| Board argument | Hardware | Probe | Flash |
-|----------------|----------|-------|-------|
-| **`devkit`** | STM32 Nucleo-F446RE — **ST-Link** | `./software/project/scripts/probe.sh devkit` | `./software/project/scripts/flash.sh devkit` |
-| **`custom`** | Gambos PCB — **SEGGER J-Link** | `./software/project/scripts/probe.sh custom` | `./software/project/scripts/flash.sh custom` |
+| Command | Hardware | Probe | Flash |
+|---------|----------|-------|-------|
+| `./software/project/scripts/probe.sh` | Gambos PCB — **SEGGER J-Link** | `./software/project/scripts/probe.sh` | `./software/project/scripts/flash.sh` |
 
 Build first:
 
 ```bash
-./software/project/scripts/build.sh devkit    # or build.sh custom
+./software/project/scripts/build.sh
 ```
 
 Optional env:
 
-- **`GAMBOS_FLASH_ELF`** — explicit ELF for `flash.sh` (adapter still follows `devkit` vs `custom`).
-- **`GAMBOS_JLINK_DEVICE`**, **`GAMBOS_JLINK_SPEED`** — J-Link only (`custom`).
+- **`GAMBOS_FLASH_ELF`** — explicit ELF for `flash.sh`
+- **`GAMBOS_JLINK_DEVICE`**, **`GAMBOS_JLINK_SPEED`** — J-Link tuning
 
 ## Other scripts
 
 | Script | Role |
 |--------|------|
-| `build.sh devkit` / `build.sh custom` | Configure + compile (**argument required**) → `build/<preset>/gambos.elf` |
-| `clean.sh devkit` / `clean.sh custom` | CMake `clean` (**argument required**) |
+| `build.sh` | Configure + compile → `build/gambos-pcb/gambos.elf` |
+| `clean.sh` | CMake `clean` for `gambos-pcb` |
 | `pristine.sh` / `pristine.sh all` | Delete entire `build/` |
-| `pristine.sh devkit` / `pristine.sh custom` | Delete only `build/devkit/` or `build/custom/` |
+| `pristine.sh gambos-pcb` | Delete only `build/gambos-pcb/` |
 | `gen-board-sources.sh` | Called by `build.sh` |
 
-USB debug probes need **`/dev/bus/usb`** (see repo `docker-compose.yml`). For **`custom`**, install SEGGER in the image (repo `Dockerfile`) and rebuild the Dev Container.
+USB debug probes need **`/dev/bus/usb`** (see repo `docker-compose.yml`). Install SEGGER in the image (repo `Dockerfile`) and rebuild the Dev Container.
