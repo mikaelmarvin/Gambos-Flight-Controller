@@ -45,16 +45,23 @@ wanted = [
     "MX_Application_Src",
     "STM32_Drivers_Src",
     "FreeRTOS_Src",
+    "FatFs_Src",
     "MX_LINK_DIRS",
     "MX_LINK_LIBS",
 ]
 
 def parse_set_block(text: str, name: str):
-    m = re.search(rf"set\(\s*{re.escape(name)}\s*(.*?)\n\)", text, re.S)
-    if not m:
-        raise RuntimeError(f"Missing set({name} ...) in {cube_stm32}")
     values = []
-    for raw in m.group(1).splitlines():
+    in_block = False
+    for raw in text.splitlines():
+        if not in_block:
+            if re.match(rf"^\s*set\(\s*{re.escape(name)}(?:\s+)?$", raw):
+                in_block = True
+            continue
+
+        if re.match(r"^\s*\)\s*$", raw):
+            return values
+
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
@@ -66,12 +73,13 @@ def parse_set_block(text: str, name: str):
             f"${{CMAKE_SOURCE_DIR}}/board/{board}/",
         )
         values.append(line)
-    return values
+
+    raise RuntimeError(f"Missing set({name} ...) in {cube_stm32}")
 
 blocks = {name: parse_set_block(stm32_text, name) for name in wanted}
 
 # Validate rewritten paths.
-for key in ["MX_Include_Dirs", "MX_Application_Src", "STM32_Drivers_Src", "FreeRTOS_Src"]:
+for key in ["MX_Include_Dirs", "MX_Application_Src", "STM32_Drivers_Src", "FreeRTOS_Src", "FatFs_Src"]:
     for item in blocks[key]:
         if not item.startswith("${CMAKE_SOURCE_DIR}/board/"):
             continue

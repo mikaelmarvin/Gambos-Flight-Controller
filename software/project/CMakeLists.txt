@@ -55,6 +55,7 @@ foreach(_required
     MX_Application_Src
     STM32_Drivers_Src
     FreeRTOS_Src
+    FatFs_Src
     MX_LINK_LIBS
 )
     if(NOT DEFINED ${_required})
@@ -73,6 +74,10 @@ target_link_libraries(STM32_Drivers PUBLIC stm32cubemx)
 add_library(FreeRTOS OBJECT)
 target_sources(FreeRTOS PRIVATE ${FreeRTOS_Src})
 target_link_libraries(FreeRTOS PUBLIC stm32cubemx)
+
+add_library(FatFs OBJECT)
+target_sources(FatFs PRIVATE ${FatFs_Src})
+target_link_libraries(FatFs PUBLIC stm32cubemx)
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MX_Application_Src})
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE ${MX_LINK_DIRS})
