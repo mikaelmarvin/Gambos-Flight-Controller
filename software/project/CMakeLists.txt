@@ -21,7 +21,7 @@ endif()
 set(CMAKE_PROJECT_NAME gambos)
 
 if(NOT BOARD)
-    set(BOARD "devkit" CACHE STRING "Target board")
+    set(BOARD "gambos-pcb" CACHE STRING "Target board")
 endif()
 message(STATUS "Board: ${BOARD}")
 

@@ -10,7 +10,7 @@ Open work on **v1.0** (current board, firmware, and docs in this repository) and
 
 ### Firmware
 
-- Complete custom-board peripheral bring-up on `custom` preset (I2C sensors, SPI flash, SD, SPI2 RF)
+- Complete Gambos PCB peripheral bring-up on `gambos-pcb` preset (I2C sensors, SPI flash, SD, SPI2 RF)
 - RTOS task layout, drivers, and messaging (see [Software architecture](../software/software-architecture.md))
 - Sensor fusion and control loops for fixed-wing flight
 - In-flight logging on external flash; post-flight copy to SD

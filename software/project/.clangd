@@ -1,24 +1,11 @@
-# Active board: compile_commands.json in this directory (symlink to build/<board>/).
-# Restart clangd after switching boards.
+# Active board: compile_commands.json in this directory (symlink to build/gambos-pcb/).
+# Restart clangd after rebuilding.
 
 CompileFlags:
   CompilationDatabase: .
 
 Index:
   Background: Build
-
----
-# Inactive board tree — keep out of the index (duplicate app_init, etc.).
-If:
-  PathMatch: app/devkit/.*
-Index:
-  Background: Skip
-
----
-If:
-  PathMatch: board/devkit/.*
-Index:
-  Background: Skip
 
 ---
 CompileFlags:

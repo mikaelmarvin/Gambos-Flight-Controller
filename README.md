@@ -14,7 +14,7 @@ Custom **STM32F446** flight-controller PCB and firmware — schematic through la
 | **Wireless**  | nRF24L01+ telemetry / command link                                     |
 | **Debug**     | SWD + UART (SEGGER J-Link)                                             |
 | **PCB**       | 4-layer, 75 × 50 mm — KiCad, manufactured **v1.0**                     |
-| **Firmware**  | CMake, FreeRTOS —`devkit` and `custom` targets                         |
+| **Firmware**  | CMake, FreeRTOS — `gambos-pcb` target                                  |
 | **Status**    | v1.0 built; hardware bring-up in progress; flight software in progress |
 | **Schematic** | [Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf) — KiCad export, v1.0 |
 

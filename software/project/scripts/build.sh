@@ -1,25 +1,20 @@
 #!/usr/bin/env bash
-# Configure (if needed) + build. First argument is required (no default).
+# Configure (if needed) + build for the Gambos PCB target.
 #
 # Usage:
-#   ./software/project/scripts/build.sh devkit
-#   ./software/project/scripts/build.sh custom
-#
-# Flash/probe use the same preset name: ./software/project/scripts/flash.sh devkit|custom
+#   ./software/project/scripts/build.sh
+#   ./software/project/scripts/build.sh gambos-pcb
 #
 set -euo pipefail
 
-usage() {
-    echo "Usage: $0 devkit | custom" >&2
-    echo "  devkit  — Nucleo-F446RE preset" >&2
-    echo "  custom  — Gambos PCB preset" >&2
+PRESET="${1:-gambos-pcb}"
+
+if [[ "${PRESET}" != "gambos-pcb" ]]; then
+    echo "Usage: $0 [gambos-pcb]" >&2
+    echo "  gambos-pcb  — Gambos PCB preset (default)" >&2
     exit 1
-}
+fi
 
-[[ $# -eq 1 ]] || usage
-[[ "${1}" == "devkit" || "${1}" == "custom" ]] || usage
-
-PRESET="$1"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 GEN_DIR="${ROOT}/build/${PRESET}/generated"

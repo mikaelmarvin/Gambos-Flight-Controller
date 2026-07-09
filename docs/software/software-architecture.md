@@ -4,7 +4,7 @@ Firmware for Gambos lives under [`software/`](../../software/).
 
 | | |
 | --- | --- |
-| **MCU** | STM32F446 — Nucleo (`devkit`) and Gambos PCB (`custom`) |
+| **MCU** | STM32F446 — Gambos PCB (`gambos-pcb`) |
 | **Build** | CMake, FreeRTOS, STM32 HAL |
 | **Status** | Build/flash workflow documented; flight-stack architecture docs not written yet |
 
