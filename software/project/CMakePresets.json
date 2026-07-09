@@ -6,7 +6,7 @@
             "hidden": true,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/${presetName}",
-            "toolchainFile": "${sourceDir}/build/${presetName}/generated/toolchain.cmake",
+            "toolchainFile": "${sourceDir}/cmake/toolchain-gambos-pcb.cmake",
             "cacheVariables": {}
         },
         {

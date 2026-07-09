@@ -1,0 +1,12 @@
+--- Core/Src/stm32f4xx_it.c	2026-07-09 12:33:37.048394330 +0000
++++ Core/Src/stm32f4xx_it.c	2026-07-09 12:34:08.377051762 +0000
+@@ -259,4 +259,9 @@
+ 
+ /* USER CODE BEGIN 1 */
+ 
++/**
++ * @brief EXTI line0 (USR_BTN on PC0).
++ */
++void EXTI0_IRQHandler(void) { HAL_GPIO_EXTI_IRQHandler(USR_BTN_Pin); }
++
+ /* USER CODE END 1 */

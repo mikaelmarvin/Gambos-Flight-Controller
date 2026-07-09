@@ -1,0 +1,26 @@
+--- Core/Src/tim.c	2026-07-09 12:33:37.048976109 +0000
++++ Core/Src/tim.c	2026-07-09 12:34:08.377469813 +0000
+@@ -42,9 +42,9 @@
+ 
+   /* USER CODE END TIM2_Init 1 */
+   htim2.Instance = TIM2;
+-  htim2.Init.Prescaler = 0;
++  htim2.Init.Prescaler = 179;
+   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+-  htim2.Init.Period = 4294967295;
++  htim2.Init.Period = 9999;
+   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+   if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
+@@ -86,9 +86,9 @@
+ 
+   /* USER CODE END TIM3_Init 1 */
+   htim3.Instance = TIM3;
+-  htim3.Init.Prescaler = 0;
++  htim3.Init.Prescaler = 179;
+   htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+-  htim3.Init.Period = 65535;
++  htim3.Init.Period = 9999;
+   htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+   htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+   if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
