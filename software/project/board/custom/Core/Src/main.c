@@ -21,6 +21,7 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "dma.h"
+#include "fatfs.h"
 #include "gpio.h"
 #include "i2c.h"
 #include "spi.h"
@@ -31,6 +32,7 @@
  * ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "app/app.hpp"
+
 /* USER CODE END Includes */
 
 /* Private typedef
@@ -109,6 +111,7 @@ int main(void) {
     MX_TIM2_Init();
     MX_TIM3_Init();
     MX_UART4_Init();
+    MX_FATFS_Init();
     /* USER CODE BEGIN 2 */
     {
         static const uint8_t k_boot[] =
@@ -116,14 +119,15 @@ int main(void) {
             "scheduler)\r\n";
         (void)HAL_UART_Transmit(
             &huart4, k_boot, sizeof(k_boot) - 1U, HAL_MAX_DELAY);
-        /* Bring-up: blink LED3 ~5×/s so you can prove firmware
+        /* Bring-up: blink LED3 ~5x/s so you can prove firmware
          * reached here without UART. */
         // for (uint32_t i = 0U; i < 25U; i++) {
-        //     HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
-        //     HAL_Delay(100U);
+        //   HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
+        //   HAL_Delay(100U);
         // }
     }
     app_init();
+
     /* USER CODE END 2 */
 
     /* Init scheduler */
