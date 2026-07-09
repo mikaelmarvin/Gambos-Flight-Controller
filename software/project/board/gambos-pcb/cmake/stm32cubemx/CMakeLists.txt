@@ -112,12 +112,12 @@ target_link_libraries(STM32_Drivers PUBLIC stm32cubemx)
 
 
 # Create FreeRTOS static library
-add_library(FreeRTOS STATIC)
+add_library(FreeRTOS OBJECT)
 target_sources(FreeRTOS PRIVATE ${FreeRTOS_Src})
 target_link_libraries(FreeRTOS PUBLIC stm32cubemx)
 
 # Create FatFs static library
-add_library(FatFs STATIC)
+add_library(FatFs OBJECT)
 target_sources(FatFs PRIVATE ${FatFs_Src})
 target_link_libraries(FatFs PUBLIC stm32cubemx)
 

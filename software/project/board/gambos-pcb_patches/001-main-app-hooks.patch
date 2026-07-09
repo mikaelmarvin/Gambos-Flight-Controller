@@ -1,0 +1,31 @@
+--- Core/Src/main.c	2026-07-09 12:33:37.048849714 +0000
++++ Core/Src/main.c	2026-07-09 12:34:08.377374899 +0000
+@@ -31,6 +31,7 @@
+ /* Private includes
+  * ----------------------------------------------------------*/
+ /* USER CODE BEGIN Includes */
++#include "app/app.hpp"
+ 
+ /* USER CODE END Includes */
+ 
+@@ -112,6 +113,20 @@
+     MX_UART4_Init();
+     MX_FATFS_Init();
+     /* USER CODE BEGIN 2 */
++    {
++        static const uint8_t k_boot[] =
++            "\r\n[boot] gambos-pcb — UART4 @ 115200 (main, before "
++            "scheduler)\r\n";
++        (void)HAL_UART_Transmit(
++            &huart4, k_boot, sizeof(k_boot) - 1U, HAL_MAX_DELAY);
++        /* Bring-up: blink LED3 ~5x/s so you can prove firmware
++         * reached here without UART. */
++        // for (uint32_t i = 0U; i < 25U; i++) {
++        //   HAL_GPIO_TogglePin(LED3_GPIO_Port, LED3_Pin);
++        //   HAL_Delay(100U);
++        // }
++    }
++    app_init();
+ 
+     /* USER CODE END 2 */
+ 

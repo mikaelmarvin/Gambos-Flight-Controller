@@ -17,8 +17,7 @@ fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
-GEN_DIR="${ROOT}/build/${PRESET}/generated"
-"${ROOT}/scripts/gen-board-sources.sh" "${PRESET}" "${GEN_DIR}"
+"${ROOT}/scripts/sync-cubemx-gambos-pcb.sh"
 cmake --preset "${PRESET}"
 cmake --build "build/${PRESET}" --parallel
 echo "OK: build/${PRESET}/gambos.elf"
