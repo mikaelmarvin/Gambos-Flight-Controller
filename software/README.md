@@ -10,59 +10,57 @@ STM32 firmware for the Gambos project — built with CMake, developed in a **Dev
 | **Git**                         | Clone this repository.                                                        |
 | **Docker** + **Docker Compose** | Used by the dev container.                                                    |
 | **Cursor** or **VS Code**       | With the **Dev Containers** extension (`ms-vscode-remote.remote-containers`). |
-| **Host OS**                     | **Linux** recommended for **USB** (ST-Link, serial) into the container.       |
+| **Host OS**                     | **Linux** recommended for **USB** (J-Link, serial) into the container.       |
 
 
 ## First-time setup (after clone)
 
 1. **Open the repo in the editor** and choose **“Reopen in Container”** (or **Dev Containers: Reopen in Container**).
-2. Wait for the image to build and **post-create** to finish. The container runs `.devcontainer/setup.sh`, which runs `./software/project/scripts/build.sh custom`.
+2. Wait for the image to build and **post-create** to finish. The container runs `.devcontainer/setup.sh`, which runs `./software/project/scripts/build.sh`.
 3. **Open a new terminal** so the shell prompt (Starship) and `PATH` are correct.
 
 ## Build, flash, probe, clean, and pristine
 
-Run from the **repository root** via `software/project/scripts/`. `build.sh`, `clean.sh`, `flash.sh`, and `probe.sh` require `devkit` or `custom` (no default). `pristine.sh` optionally takes a preset or removes all of `build/`.
+Run from the **repository root** via `software/project/scripts/`.
 
 
-| Argument | Hardware      | Debugger                       |
-| ----------| ---------------| --------------------------------|
-| `devkit` | Nucleo-F446RE | On-board **ST-Link** (OpenOCD) |
-| `custom` | Gambos PCB    | **SEGGER J-Link** (`JLinkExe`) |
+| Argument | Hardware   | Debugger            |
+| -------- | ---------- | ------------------- |
+| `gambos-pcb` (default) | Gambos PCB | **SEGGER J-Link** (`JLinkExe`) |
 
 
 
 | Script                            | Role                                              |
 | -----------------------------------| ---------------------------------------------------|
-| `build.sh <preset>`               | Configure + compile → `build/<preset>/gambos.elf` |
-| `clean.sh <preset>`               | CMake `clean` for one preset                      |
+| `build.sh`                        | Configure + compile → `build/gambos-pcb/gambos.elf` |
+| `clean.sh`                        | CMake `clean`                                     |
 | `pristine.sh` / `pristine.sh all` | Delete entire `build/`                            |
-| `pristine.sh <preset>`            | Delete only `build/devkit/` or `build/custom/`    |
-| `flash.sh <preset>`               | Program the MCU (build matching preset first)     |
-| `probe.sh <preset>`               | Verify debugger connection                        |
+| `pristine.sh gambos-pcb`          | Delete only `build/gambos-pcb/`                   |
+| `flash.sh`                        | Program the MCU (build first)                     |
+| `probe.sh`                        | Verify debugger connection                        |
 
 
 ```bash
-./software/project/scripts/build.sh devkit      # or custom
-./software/project/scripts/clean.sh devkit
-./software/project/scripts/pristine.sh          # or pristine.sh devkit | custom | all
-./software/project/scripts/flash.sh devkit
-./software/project/scripts/probe.sh custom      # optional before flash
+./software/project/scripts/build.sh
+./software/project/scripts/clean.sh
+./software/project/scripts/pristine.sh          # or pristine.sh gambos-pcb | all
+./software/project/scripts/flash.sh
+./software/project/scripts/probe.sh             # optional before flash
 ```
 
 ## Editor / clangd (IntelliSense)
 
-- `compile_commands.json` is generated under `software/project/build/<board>/` when you build a preset (`custom` or `devkit`). A symlink at `software/project/compile_commands.json` points at the active board (default: `custom`).
+- `compile_commands.json` is generated under `software/project/build/gambos-pcb/` when you build. A symlink at `software/project/compile_commands.json` points at that directory.
 - **clangd path mappings** in `.devcontainer/devcontainer.json` and `.vscode/settings.json` translate host paths (`/home/mikael/gambos`) and container paths (`/workspace/gambos`) so IntelliSense works whether you built on the host or in the Dev Container — no file rewriting.
 - CMSIS-SVD for register view in Cortex-Debug: `software/STM32F446.svd` (referenced from `.vscode/launch.json`).
 - `software/.clangd` points firmware sources at the `board` compilation database.
-- If clangd is stale, run `./software/project/scripts/build.sh <board>` once, then **restart clangd** (command palette: **clangd: Restart language server**).
+- If clangd is stale, run `./software/project/scripts/build.sh`, then **restart clangd** (command palette: **clangd: Restart language server**).
 
 ## Debugging
 
-**Run and Debug (F5):** **Debug** or **Attach** for `devkit` (OpenOCD + ST-Link) or `custom` (J-Link) — see `.vscode/launch.json`. Symbols from `build/<preset>/gambos.elf`; build (and flash if needed) that preset first.
+**Run and Debug (F5):** **Debug** or **Attach gambos-pcb (J-Link)** — see `.vscode/launch.json`. Symbols from `build/gambos-pcb/gambos.elf`; build (and flash if needed) first.
 
 **Before F5**
 
-1. In a terminal: `./software/project/scripts/build.sh devkit` or `build.sh custom` so the ELF exists and matches your code.
-2. Optionally `flash.sh` / `probe.sh` with the same preset if you want to verify outside the debugger.
-
+1. In a terminal: `./software/project/scripts/build.sh` so the ELF exists and matches your code.
+2. Optionally `flash.sh` / `probe.sh` if you want to verify outside the debugger.

@@ -1,0 +1,11 @@
+--- CMakeLists.txt	2026-07-09 12:33:37.041842479 +0000
++++ CMakeLists.txt	2026-07-10 11:40:00.000000000 +0000
+@@ -1,5 +1,8 @@
+ cmake_minimum_required(VERSION 3.22)
+ 
++# CubeIDE / board-local CMake only — not used by software/project/CMakeLists.txt
++# (the Gambos firmware build uses board/gambos-pcb/cmake/stm32cubemx/ directly).
++
+ #
+ # This file is generated only once,
+ # and is not re-generated if converter is called multiple times.
