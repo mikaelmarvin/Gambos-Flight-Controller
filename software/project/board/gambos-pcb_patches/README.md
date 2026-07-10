@@ -9,6 +9,7 @@ Unified diffs applied on top of `gambos-pcb_upstream/` to produce `gambos-pcb/`.
 | `003-gpio-button-exti.patch` | User button EXTI + NVIC |
 | `004-stm32f4xx-it-exti0.patch` | `EXTI0_IRQHandler` |
 | `005-tim-pwm-tuning.patch` | TIM2/TIM3 prescaler and period |
+| `006-cubeide-cmake-note.patch` | Note that board `CMakeLists.txt` is CubeIDE-only |
 
 ## After CubeMX regen
 

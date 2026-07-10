@@ -13,8 +13,7 @@
             "name": "gambos-pcb",
             "inherits": "default",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "BOARD": "gambos-pcb"
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         }
     ],

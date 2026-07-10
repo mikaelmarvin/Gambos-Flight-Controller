@@ -23,7 +23,7 @@ Optional env:
 
 | Script | Role |
 |--------|------|
-| `build.sh` | Configure + compile → `build/gambos-pcb/gambos.elf` |
+| `build.sh` | Sync (default) + configure + compile → `build/gambos-pcb/gambos.elf`; use `--no-sync` to skip sync |
 | `clean.sh` | CMake `clean` for `gambos-pcb` |
 | `pristine.sh` / `pristine.sh all` | Delete entire `build/` |
 | `pristine.sh gambos-pcb` | Delete only `build/gambos-pcb/` |
