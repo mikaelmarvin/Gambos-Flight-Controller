@@ -67,7 +67,7 @@ RUN pip3 install --no-cache-dir \
     intelhex \
     pyelftools
 
-# SEGGER J-Link Software Pack (JLinkExe): flash/probe for the custom Gambos PCB over USB.
+# SEGGER J-Link Software Pack (JLinkExe): flash/probe for the Gambos PCB over USB.
 # License: download POST accepts SEGGER's click-through license (same as manual install).
 # J-Link postinst runs udevadm to reload rules; Docker has no udevd, so real udevadm fails.
 # dpkg maintainer scripts often omit /usr/local/bin from PATH; /usr/bin/udevadm is always found.

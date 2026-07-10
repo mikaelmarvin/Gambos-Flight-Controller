@@ -6,34 +6,21 @@
             "hidden": true,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/${presetName}",
-            "toolchainFile": "${sourceDir}/build/${presetName}/generated/toolchain.cmake",
+            "toolchainFile": "${sourceDir}/cmake/toolchain-gambos-pcb.cmake",
             "cacheVariables": {}
         },
         {
-            "name": "devkit",
+            "name": "gambos-pcb",
             "inherits": "default",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "BOARD": "devkit"
-            }
-        },
-        {
-            "name": "custom",
-            "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "BOARD": "custom"
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         }
     ],
     "buildPresets": [
         {
-            "name": "devkit",
-            "configurePreset": "devkit"
-        },
-        {
-            "name": "custom",
-            "configurePreset": "custom"
+            "name": "gambos-pcb",
+            "configurePreset": "gambos-pcb"
         }
     ]
 }

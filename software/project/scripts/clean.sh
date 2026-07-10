@@ -1,26 +1,24 @@
 #!/usr/bin/env bash
-# Run CMake clean for one preset. First argument is required (no default).
+# Run CMake clean for the Gambos PCB preset.
 #
 # Usage:
-#   ./software/project/scripts/clean.sh devkit
-#   ./software/project/scripts/clean.sh custom
+#   ./software/project/scripts/clean.sh
+#   ./software/project/scripts/clean.sh gambos-pcb
 #
 set -euo pipefail
 
-usage() {
-    echo "Usage: $0 devkit | custom" >&2
+PRESET="${1:-gambos-pcb}"
+
+if [[ "${PRESET}" != "gambos-pcb" ]]; then
+    echo "Usage: $0 [gambos-pcb]" >&2
     exit 1
-}
+fi
 
-[[ $# -eq 1 ]] || usage
-[[ "${1}" == "devkit" || "${1}" == "custom" ]] || usage
-
-PRESET="$1"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 BUILD="build/${PRESET}"
 if [[ ! -d "$BUILD" ]]; then
-    echo "Nothing to clean: ${BUILD} missing (run build.sh ${PRESET} first)." >&2
+    echo "Nothing to clean: ${BUILD} missing (run build.sh first)." >&2
     exit 0
 fi
 cmake --build "$BUILD" --target clean

@@ -4,15 +4,3 @@ CompileFlags:
 
 Index:
   Background: Build
-
----
-If:
-  PathMatch: software/project/app/devkit/.*
-Index:
-  Background: Skip
-
----
-If:
-  PathMatch: software/project/board/devkit/.*
-Index:
-  Background: Skip
