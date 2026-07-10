@@ -21,6 +21,7 @@ declare -a REL_PATHS=(
     "Core/Src/gpio.c"
     "Core/Src/stm32f4xx_it.c"
     "Core/Src/tim.c"
+    "CMakeLists.txt"
 )
 
 declare -a PATCH_NAMES=(
@@ -29,6 +30,7 @@ declare -a PATCH_NAMES=(
     "003-gpio-button-exti"
     "004-stm32f4xx-it-exti0"
     "005-tim-pwm-tuning"
+    "006-cubeide-cmake-note"
 )
 
 mkdir -p "${PATCH_DIR}"
