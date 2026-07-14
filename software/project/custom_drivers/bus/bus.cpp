@@ -319,8 +319,14 @@ bool I2cBus::MemRead(const uint16_t dev_addr_7bit,
                                  data,
                                  len);
         if (started == HAL_OK) {
-            ok = WaitDma(timeout);
+            ok = WaitDma(timeout) &&
+                 (HAL_I2C_GetState(_hi2c) == HAL_I2C_STATE_READY) &&
+                 (_hi2c->ErrorCode == HAL_I2C_ERROR_NONE);
         }
+    }
+
+    if (!ok && (_hi2c->ErrorCode != HAL_I2C_ERROR_NONE)) {
+        _hi2c->ErrorCode = HAL_I2C_ERROR_NONE;
     }
 
     (void)xSemaphoreGive(_bus_mutex);
@@ -351,8 +357,14 @@ bool I2cBus::MemWrite(const uint16_t dev_addr_7bit,
                                   const_cast<uint8_t *>(data),
                                   len);
         if (started == HAL_OK) {
-            ok = WaitDma(timeout);
+            ok = WaitDma(timeout) &&
+                 (HAL_I2C_GetState(_hi2c) == HAL_I2C_STATE_READY) &&
+                 (_hi2c->ErrorCode == HAL_I2C_ERROR_NONE);
         }
+    }
+
+    if (!ok && (_hi2c->ErrorCode != HAL_I2C_ERROR_NONE)) {
+        _hi2c->ErrorCode = HAL_I2C_ERROR_NONE;
     }
 
     (void)xSemaphoreGive(_bus_mutex);
