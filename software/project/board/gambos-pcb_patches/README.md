@@ -10,6 +10,8 @@ Unified diffs applied on top of `gambos-pcb_upstream/` to produce `gambos-pcb/`.
 | `004-stm32f4xx-it-exti0.patch` | `EXTI0_IRQHandler` |
 | `005-tim-pwm-tuning.patch` | TIM2/TIM3 prescaler and period |
 | `006-cubeide-cmake-note.patch` | Note that board `CMakeLists.txt` is CubeIDE-only |
+| `007-i2c1-msp-nvic.patch` | Enable I2C1 EV/ER NVIC in MSP init |
+| `008-i2c1-it-handlers.patch` | I2C1 EV/ER IRQ handlers (required for HAL I2C DMA) |
 
 ## After CubeMX regen
 

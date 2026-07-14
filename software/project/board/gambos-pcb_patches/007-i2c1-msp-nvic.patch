@@ -1,0 +1,24 @@
+--- Core/Src/i2c.c
++++ Core/Src/i2c.c
+@@ -116,6 +116,11 @@
+ 
+         /* USER CODE BEGIN I2C1_MspInit 1 */
+ 
++        HAL_NVIC_SetPriority(I2C1_EV_IRQn, 5, 0);
++        HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
++        HAL_NVIC_SetPriority(I2C1_ER_IRQn, 5, 0);
++        HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
++
+         /* USER CODE END I2C1_MspInit 1 */
+     }
+ }
+@@ -142,6 +147,9 @@
+         HAL_DMA_DeInit(i2cHandle->hdmatx);
+         /* USER CODE BEGIN I2C1_MspDeInit 1 */
+ 
++        HAL_NVIC_DisableIRQ(I2C1_EV_IRQn);
++        HAL_NVIC_DisableIRQ(I2C1_ER_IRQn);
++
+         /* USER CODE END I2C1_MspDeInit 1 */
+     }
+ }
