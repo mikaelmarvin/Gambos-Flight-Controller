@@ -29,10 +29,10 @@ bool InitBuses(void) {
     //     return false;
     // }
 
-    // if (!I2c1().Init(&hi2c1)) {
-    //     LOG("ERROR: I2C1 bus init failed\r\n");
-    //     return false;
-    // }
+    if (!I2c1().Init(&hi2c1)) {
+        LOG("ERROR: I2C1 bus init failed\r\n");
+        return false;
+    }
 
     return true;
 }
@@ -43,9 +43,9 @@ bool InitDevices(void) {
         return false;
     }
 
-    // (void)g_baro.Init();
-    // (void)g_magnetometer.Init();
-    // (void)g_imu.Init();
+    (void)g_baro.Init();
+    (void)g_magnetometer.Init();
+    (void)g_imu.Init();
 
     return true;
 }
