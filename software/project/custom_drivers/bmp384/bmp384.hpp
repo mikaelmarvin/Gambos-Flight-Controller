@@ -13,10 +13,9 @@ struct BaroSample {
 /**
  * Bosch BMP384 — pressure + temperature on one I2C device.
  *
- * Init loads NVM calibration, then runs normal mode at 25 Hz with
- * pressure x8 / temperature x1 oversampling. ReadPressureTemperature
- * returns false if press+temp data-ready bits are not set; on success
- * it returns compensated Pa and °C×100.
+ * Init loads NVM calibration and starts normal mode (press×2, temp×1,
+ * ODR 25 Hz). ReadPressureTemperature waits for DRDY then returns
+ * compensated Pa and °C×100.
  */
 class Bmp384 {
   public:
@@ -28,21 +27,21 @@ class Bmp384 {
 
   private:
     struct CalibData {
-        uint16_t par_t1{0U};
-        uint16_t par_t2{0U};
-        int8_t par_t3{0};
-        int16_t par_p1{0};
-        int16_t par_p2{0};
-        int8_t par_p3{0};
-        int8_t par_p4{0};
-        uint16_t par_p5{0U};
-        uint16_t par_p6{0U};
-        int8_t par_p7{0};
-        int8_t par_p8{0};
-        int16_t par_p9{0};
-        int8_t par_p10{0};
-        int8_t par_p11{0};
-        int64_t t_lin{0};
+        float par_t1{0.0f};
+        float par_t2{0.0f};
+        float par_t3{0.0f};
+        float par_p1{0.0f};
+        float par_p2{0.0f};
+        float par_p3{0.0f};
+        float par_p4{0.0f};
+        float par_p5{0.0f};
+        float par_p6{0.0f};
+        float par_p7{0.0f};
+        float par_p8{0.0f};
+        float par_p9{0.0f};
+        float par_p10{0.0f};
+        float par_p11{0.0f};
+        float t_lin{0.0f};
     };
 
     bool SoftReset(void);

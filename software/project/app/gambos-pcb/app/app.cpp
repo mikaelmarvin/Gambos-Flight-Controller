@@ -39,12 +39,16 @@ void AppStartupTask(void *pvParameters) {
     configASSERT(g_storage_handler.Initialize());
     configASSERT(g_sensing_handler.Initialize());
 
+    LOG("app_startup: free heap %u bytes\r\n",
+        static_cast<unsigned>(xPortGetFreeHeapSize()));
     LOG("app_startup: starting FreeRTOS tasks\r\n");
     DelayableWork::Start();
     g_button_handler.Start();
     g_actuator_handler.Start();
     g_storage_handler.Start();
     g_sensing_handler.Start();
+    LOG("app_startup: tasks started, free heap %u bytes\r\n",
+        static_cast<unsigned>(xPortGetFreeHeapSize()));
 
     vTaskDelete(nullptr);
 }

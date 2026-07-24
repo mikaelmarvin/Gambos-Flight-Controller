@@ -22,7 +22,7 @@ SemaphoreHandle_t ButtonHandler::button_semaphore;
 namespace {
 
 constexpr uint32_t kButtonHandlerTaskStackSize =
-    1536U; /* nested printf via Messaging::Publish → subscriber LOG */
+    768U; /* printf in task + publish → subscriber LOG */
 constexpr uint32_t kButtonHandlerTaskPriority =
     (tskIDLE_PRIORITY + 2U);
 constexpr uint32_t kButtonHandlerTaskDelay = 20U;
