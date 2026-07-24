@@ -19,20 +19,21 @@ struct GyroSample {
 
 /**
  * STMicro LSM6DSVTR — accelerometer + gyroscope on one I2C device.
+ *
+ * Init configures high-performance mode, 120 Hz ODR, ±8 g / ±2000 dps.
+ * ReadAccelGyro returns false if XLDA/GDA are not both set (no new sample).
  */
 class Lsm6dsvtr {
   public:
-    Lsm6dsvtr() = default;
+    Lsm6dsvtr() = delete;
     Lsm6dsvtr(I2cBus &bus, uint8_t addr7);
 
     bool Init(void);
-    /** One blocking I2C transaction for both accel and gyro raw
-     * samples. */
     bool ReadAccelGyro(AccelSample &accel, GyroSample &gyro);
 
   private:
     I2cBus *_bus{nullptr};
-    uint8_t _addr7{0U};
+    const uint8_t _addr7{0U};
 };
 
 #endif /* LSM6DSVTR_HPP */
