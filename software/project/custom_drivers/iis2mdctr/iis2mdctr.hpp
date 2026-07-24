@@ -11,10 +11,16 @@ struct MagSample {
     int16_t z{0};
 };
 
-/** STMicro IIS2MDCTR magnetometer. */
+/**
+ * STMicro IIS2MDCTR magnetometer.
+ *
+ * Init configures continuous high-resolution mode at 10 Hz with BDU
+ * and temperature compensation. ReadSample returns false if ZYXDA is
+ * not set.
+ */
 class Iis2mdctr {
   public:
-    Iis2mdctr() = default;
+    Iis2mdctr() = delete;
     Iis2mdctr(I2cBus &bus, uint8_t addr7);
 
     bool Init(void);
@@ -22,7 +28,7 @@ class Iis2mdctr {
 
   private:
     I2cBus *_bus{nullptr};
-    uint8_t _addr7{0U};
+    const uint8_t _addr7{0U};
 };
 
 #endif /* IIS2MDCTR_HPP */

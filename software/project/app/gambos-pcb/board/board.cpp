@@ -43,10 +43,7 @@ bool InitDevices(void) {
         return false;
     }
 
-    (void)g_baro.Init();
-    (void)g_magnetometer.Init();
-    (void)g_imu.Init();
-
+    /* I2C sensors are initialized by SensingHandler. */
     return true;
 }
 
