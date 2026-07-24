@@ -4,6 +4,7 @@
  */
 
 #include "sensing_handler/sensing_handler.hpp"
+#include "log.hpp"
 #include "messaging/messaging.hpp"
 
 #include "FreeRTOS.h"
@@ -11,7 +12,7 @@
 
 namespace {
 
-constexpr uint32_t kTaskStackWords = 512U;
+constexpr uint32_t kTaskStackWords = 768U;
 constexpr UBaseType_t kTaskPriority =
     static_cast<UBaseType_t>(tskIDLE_PRIORITY + 1U);
 
@@ -32,16 +33,35 @@ SensingHandler::SensingHandler(Lsm6dsvtr &imu,
     : _imu(imu), _mag(mag), _baro(baro) {}
 
 bool SensingHandler::Initialize(void) {
-    return _imu.Init() && _mag.Init() && _baro.Init();
+    if (!_imu.Init()) {
+        LOG("ERROR: LSM6DSVTR init failed\r\n");
+        return false;
+    }
+    if (!_mag.Init()) {
+        LOG("ERROR: IIS2MDCTR init failed\r\n");
+        return false;
+    }
+    if (!_baro.Init()) {
+        LOG("ERROR: BMP384 init failed\r\n");
+        return false;
+    }
+    LOG("sensing: IMU + mag + baro init OK\r\n");
+    return true;
 }
 
 void SensingHandler::Start(void) {
-    configASSERT(xTaskCreate(&SensingHandler::TaskFunction,
-                             "sensing",
-                             kTaskStackWords,
-                             this,
-                             kTaskPriority,
-                             nullptr) == pdPASS);
+    const BaseType_t created =
+        xTaskCreate(&SensingHandler::TaskFunction,
+                    "sensing",
+                    kTaskStackWords,
+                    this,
+                    kTaskPriority,
+                    nullptr);
+    if (created != pdPASS) {
+        LOG("ERROR: sensing task create failed (heap=%u)\r\n",
+            static_cast<unsigned>(xPortGetFreeHeapSize()));
+        configASSERT(false);
+    }
 }
 
 bool SensingHandler::ReadAndPublishImu(void) {
