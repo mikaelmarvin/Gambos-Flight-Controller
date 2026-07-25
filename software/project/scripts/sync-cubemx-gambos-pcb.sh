@@ -93,12 +93,16 @@ cp -a "${UPSTREAM}" "${PATCHED}"
 
 for patch in "${PATCHES[@]}"; do
     echo "Applying $(basename "${patch}")"
-    if ! patch -d "${PATCHED}" -p0 --forward --reject-file=- < "${patch}"; then
+    if ! patch -d "${PATCHED}" -p0 --forward --no-backup-if-mismatch \
+            --reject-file=- < "${patch}"; then
         echo "Failed to apply patch: ${patch}" >&2
         exit 1
     fi
 done
 
+# Drop any *.orig leftovers from patch(1) (e.g. fuzzy applies / older patch).
+find "${PATCHED}" -type f -name '*.orig' -delete
+find "${PATCHED}" -type f -name '*.rej' -delete
 # Re-format files touched by patches (patches may reintroduce Cube layout).
 if command -v "${CLANG_FORMAT}" >/dev/null 2>&1 && [[ -f "${FORMAT_STYLE}" ]]; then
   mapfile -t PATCHED_FILES < <(awk '/^\+\+\+ / { sub(/^\+\+\+ /, ""); print }' "${PATCHES[@]}" | sort -u)
