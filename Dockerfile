@@ -23,6 +23,8 @@ RUN apt-get update && apt-get install -y \
     ninja-build \
     # clangd for C/C++ navigation when using Dev Containers
     clangd \
+    # clang-format — same engine as editor format-on-save; used by board sync
+    clang-format \
     # ARM cross-compiler toolchain (for STM32/ARM microcontrollers)
     gcc-arm-none-eabi \
     # OpenOCD - on-chip debugger for flashing/debugging

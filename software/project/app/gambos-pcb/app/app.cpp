@@ -27,9 +27,8 @@ constexpr UBaseType_t kAppStartupPriority =
 ButtonHandler g_button_handler;
 ActuatorHandler g_actuator_handler;
 StorageHandler g_storage_handler{board::Flash()};
-SensingHandler g_sensing_handler{board::Imu(),
-                                 board::Magnetometer(),
-                                 board::Baro()};
+SensingHandler g_sensing_handler{
+    board::Imu(), board::Magnetometer(), board::Baro()};
 
 void AppStartupTask(void *pvParameters) {
     (void)pvParameters;

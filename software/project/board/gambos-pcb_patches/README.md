@@ -25,7 +25,12 @@ Unified diffs applied on top of `gambos-pcb_upstream/` to produce `gambos-pcb/`.
 If you intentionally changed `gambos-pcb/` and want to refresh patches:
 
 ```bash
+# Only rewrite patches whose hunks actually changed (no timestamp noise)
 ./software/project/scripts/regenerate-board-patches.sh
+
+# Or only specific patches:
+./software/project/scripts/regenerate-board-patches.sh 001
+./software/project/scripts/regenerate-board-patches.sh 001-main-app-hooks 005
 ```
 
-Review the git diff before committing.
+Review the git diff before committing. Unchanged patches are left alone.
