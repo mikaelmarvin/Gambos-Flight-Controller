@@ -1,6 +1,6 @@
---- Core/Src/stm32f4xx_it.c	2026-07-09 12:33:37.048394330 +0000
-+++ Core/Src/stm32f4xx_it.c	2026-07-09 12:34:08.377051762 +0000
-@@ -259,4 +259,9 @@
+--- Core/Src/stm32f4xx_it.c
++++ Core/Src/stm32f4xx_it.c
+@@ -258,4 +258,9 @@
  
  /* USER CODE BEGIN 1 */
  
