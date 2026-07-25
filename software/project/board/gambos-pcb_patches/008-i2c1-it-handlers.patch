@@ -1,6 +1,6 @@
 --- Core/Src/stm32f4xx_it.c
 +++ Core/Src/stm32f4xx_it.c
-@@ -65,6 +65,7 @@
+@@ -64,6 +64,7 @@
  
  /* External variables
   * --------------------------------------------------------*/
@@ -8,22 +8,18 @@
  extern DMA_HandleTypeDef hdma_i2c1_rx;
  extern DMA_HandleTypeDef hdma_i2c1_tx;
  extern DMA_HandleTypeDef hdma_spi1_tx;
-@@ -264,4 +265,18 @@
+@@ -263,4 +264,14 @@
   */
  void EXTI0_IRQHandler(void) { HAL_GPIO_EXTI_IRQHandler(USR_BTN_Pin); }
  
 +/**
 + * @brief I2C1 event interrupt (required for HAL I2C DMA).
 + */
-+void I2C1_EV_IRQHandler(void) {
-+    HAL_I2C_EV_IRQHandler(&hi2c1);
-+}
++void I2C1_EV_IRQHandler(void) { HAL_I2C_EV_IRQHandler(&hi2c1); }
 +
 +/**
 + * @brief I2C1 error interrupt (required for HAL I2C DMA).
 + */
-+void I2C1_ER_IRQHandler(void) {
-+    HAL_I2C_ER_IRQHandler(&hi2c1);
-+}
++void I2C1_ER_IRQHandler(void) { HAL_I2C_ER_IRQHandler(&hi2c1); }
 +
  /* USER CODE END 1 */

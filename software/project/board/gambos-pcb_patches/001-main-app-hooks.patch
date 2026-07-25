@@ -1,5 +1,5 @@
---- Core/Src/main.c	2026-07-09 12:33:37.048849714 +0000
-+++ Core/Src/main.c	2026-07-09 12:34:08.377374899 +0000
+--- Core/Src/main.c
++++ Core/Src/main.c
 @@ -31,6 +31,7 @@
  /* Private includes
   * ----------------------------------------------------------*/
@@ -8,9 +8,9 @@
  
  /* USER CODE END Includes */
  
-@@ -112,6 +113,20 @@
+@@ -111,6 +112,20 @@
+     MX_TIM3_Init();
      MX_UART4_Init();
-     MX_FATFS_Init();
      /* USER CODE BEGIN 2 */
 +    {
 +        static const uint8_t k_boot[] =

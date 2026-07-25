@@ -1,15 +1,14 @@
---- Core/Src/freertos.c	2026-07-09 12:33:37.049070622 +0000
-+++ Core/Src/freertos.c	2026-07-09 12:34:08.377538136 +0000
-@@ -27,7 +27,7 @@
+--- Core/Src/freertos.c
++++ Core/Src/freertos.c
+@@ -27,6 +27,7 @@
  /* Private includes
   * ----------------------------------------------------------*/
  /* USER CODE BEGIN Includes */
--
 +#include "app/app.hpp"
+ 
  /* USER CODE END Includes */
  
- /* Private typedef
-@@ -57,7 +57,7 @@
+@@ -57,7 +58,7 @@
  osThreadId_t defaultTaskHandle;
  const osThreadAttr_t defaultTask_attributes = {
      .name = "defaultTask",
@@ -18,7 +17,7 @@
      .priority = (osPriority_t)osPriorityNormal,
  };
  
-@@ -120,9 +120,9 @@
+@@ -120,9 +121,9 @@
  /* USER CODE END Header_StartDefaultTask */
  void StartDefaultTask(void *argument) {
      /* USER CODE BEGIN StartDefaultTask */
