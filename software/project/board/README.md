@@ -22,6 +22,14 @@ Application code stays in `app/gambos-pcb/`. Hardware drivers stay in `custom_dr
 ./software/project/scripts/build.sh
 ```
 
+Sync also cleans the fresh Cube export before patches:
+
+1. **CRLF→LF** in `gambos-pcb_upstream/` (Cube on Windows otherwise dirties every file)
+2. **clang-format** on `Core/**/*.c` and `Core/**/*.h` — same style as editor
+   format-on-save (`software/.clang-format`). Drivers/Middlewares are left alone.
+
+Then patches apply and the build tree is produced.
+
 `build.sh` runs sync by default. For day-to-day compiles after the board tree exists:
 
 ```bash

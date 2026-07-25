@@ -27,7 +27,7 @@ Optional env:
 | `clean.sh` | CMake `clean` for `gambos-pcb` |
 | `pristine.sh` / `pristine.sh all` | Delete entire `build/` |
 | `pristine.sh gambos-pcb` | Delete only `build/gambos-pcb/` |
-| `sync-cubemx-gambos-pcb.sh` | Upstream + patches → `board/gambos-pcb/` |
+| `sync-cubemx-gambos-pcb.sh` | Normalize LF + clang-format `Core/`, apply patches → `board/gambos-pcb/` |
 | `regenerate-board-patches.sh` | Recreate patches after intentional board edits |
 
 USB debug probes need **`/dev/bus/usb`** (see repo `docker-compose.yml`). Install SEGGER in the image (repo `Dockerfile`) and rebuild the Dev Container.
