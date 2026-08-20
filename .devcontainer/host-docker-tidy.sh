@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Runs on the HOST via devcontainer.json "initializeCommand" (before the dev container is created).
 # Limits pile-up from this compose project + Dev Containers' per-config vsc-*-uid wrapper images.
+# Also trims stale BuildKit cache (old ~4GB toolchain layers from prior rebuilds).
 # Does NOT run "docker compose down", does NOT remove volumes, does NOT stop a running container.
 
 set -euo pipefail
@@ -30,6 +31,9 @@ if docker image prune --help 2>/dev/null | grep -q -- '--filter'; then
     docker image prune -f --filter "label=com.docker.compose.project=${PROJECT_NAME}" 2>/dev/null || true
 fi
 
+# Dangling images only (no tag) — safe across projects.
+docker image prune -f 2>/dev/null || true
+
 mapfile -t vsc_repos < <(docker images --format '{{.Repository}}' | grep -E "^vsc-${SLUG}-" | sort -u || true)
 if ((${#vsc_repos[@]} > 1)); then
     for repo in "${vsc_repos[@]}"; do
@@ -40,6 +44,8 @@ if ((${#vsc_repos[@]} > 1)); then
     done
 fi
 
+# Drop build cache older than 48h. Keeps the latest gambos toolchain layer for fast
+# reopen; removes multi-GB duplicate layers from rebuilds earlier in the week.
 if docker builder prune --help 2>/dev/null | grep -q -- '--filter'; then
-    docker builder prune -f --filter "until=336h" 2>/dev/null || true
+    docker builder prune -f --filter "until=48h" 2>/dev/null || true
 fi

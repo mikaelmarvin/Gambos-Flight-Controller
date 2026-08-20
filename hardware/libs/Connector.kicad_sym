@@ -354762,7 +354762,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.usb.org/sites/default/files/documents/usb_type-c.zip"
-			(at 3.81 0 0)
+			(at 30.226 -25.908 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(hide yes)
@@ -354898,7 +354898,7 @@
 		(symbol "USB_C_Receptacle_USB2.0_14P_0_1"
 			(rectangle
 				(start -10.16 17.78)
-				(end 10.16 -17.78)
+				(end 10.16 -10.16)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -354909,7 +354909,7 @@
 			)
 			(polyline
 				(pts
-					(xy -8.89 -3.81) (xy -8.89 3.81)
+					(xy -8.89 1.27) (xy -8.89 8.89)
 				)
 				(stroke
 					(width 0.508)
@@ -354920,8 +354920,8 @@
 				)
 			)
 			(rectangle
-				(start -7.62 -3.81)
-				(end -6.35 3.81)
+				(start -7.62 8.89)
+				(end -6.35 1.27)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -354931,9 +354931,9 @@
 				)
 			)
 			(arc
-				(start -7.62 3.81)
-				(mid -6.985 4.4423)
-				(end -6.35 3.81)
+				(start -7.62 8.89)
+				(mid -6.985 9.5223)
+				(end -6.35 8.89)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -354943,9 +354943,9 @@
 				)
 			)
 			(arc
-				(start -7.62 3.81)
-				(mid -6.985 4.4423)
-				(end -6.35 3.81)
+				(start -7.62 8.89)
+				(mid -6.985 9.5223)
+				(end -6.35 8.89)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -354955,9 +354955,9 @@
 				)
 			)
 			(arc
-				(start -8.89 3.81)
-				(mid -6.985 5.7067)
-				(end -5.08 3.81)
+				(start -8.89 8.89)
+				(mid -6.985 10.7867)
+				(end -5.08 8.89)
 				(stroke
 					(width 0.508)
 					(type default)
@@ -354967,9 +354967,9 @@
 				)
 			)
 			(arc
-				(start -5.08 -3.81)
-				(mid -6.985 -5.7067)
-				(end -8.89 -3.81)
+				(start -5.08 1.27)
+				(mid -6.985 -0.6267)
+				(end -8.89 1.27)
 				(stroke
 					(width 0.508)
 					(type default)
@@ -354979,9 +354979,9 @@
 				)
 			)
 			(arc
-				(start -6.35 -3.81)
-				(mid -6.985 -4.4423)
-				(end -7.62 -3.81)
+				(start -6.35 1.27)
+				(mid -6.985 0.6377)
+				(end -7.62 1.27)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -354991,9 +354991,9 @@
 				)
 			)
 			(arc
-				(start -6.35 -3.81)
-				(mid -6.985 -4.4423)
-				(end -7.62 -3.81)
+				(start -6.35 1.27)
+				(mid -6.985 0.6377)
+				(end -7.62 1.27)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -355004,7 +355004,7 @@
 			)
 			(polyline
 				(pts
-					(xy -5.08 3.81) (xy -5.08 -3.81)
+					(xy -5.08 8.89) (xy -5.08 1.27)
 				)
 				(stroke
 					(width 0.508)
@@ -355015,7 +355015,7 @@
 				)
 			)
 			(circle
-				(center -2.54 1.143)
+				(center -2.54 6.223)
 				(radius 0.635)
 				(stroke
 					(width 0.254)
@@ -355027,7 +355027,7 @@
 			)
 			(polyline
 				(pts
-					(xy -1.27 4.318) (xy 0 6.858) (xy 1.27 4.318) (xy -1.27 4.318)
+					(xy -1.27 9.398) (xy 0 11.938) (xy 1.27 9.398) (xy -1.27 9.398)
 				)
 				(stroke
 					(width 0.254)
@@ -355039,7 +355039,7 @@
 			)
 			(polyline
 				(pts
-					(xy 0 -2.032) (xy 2.54 0.508) (xy 2.54 1.778)
+					(xy 0 3.048) (xy 2.54 5.588) (xy 2.54 6.858)
 				)
 				(stroke
 					(width 0.508)
@@ -355051,7 +355051,7 @@
 			)
 			(polyline
 				(pts
-					(xy 0 -3.302) (xy -2.54 -0.762) (xy -2.54 0.508)
+					(xy 0 1.778) (xy -2.54 4.318) (xy -2.54 5.588)
 				)
 				(stroke
 					(width 0.508)
@@ -355063,7 +355063,7 @@
 			)
 			(polyline
 				(pts
-					(xy 0 -5.842) (xy 0 4.318)
+					(xy 0 -0.762) (xy 0 9.398)
 				)
 				(stroke
 					(width 0.508)
@@ -355074,7 +355074,7 @@
 				)
 			)
 			(circle
-				(center 0 -5.842)
+				(center 0 -0.762)
 				(radius 1.27)
 				(stroke
 					(width 0)
@@ -355085,8 +355085,8 @@
 				)
 			)
 			(rectangle
-				(start 1.905 1.778)
-				(end 3.175 3.048)
+				(start 1.905 6.858)
+				(end 3.175 8.128)
 				(stroke
 					(width 0.254)
 					(type default)
@@ -355098,8 +355098,8 @@
 		)
 		(symbol "USB_C_Receptacle_USB2.0_14P_1_1"
 			(pin passive line
-				(at 0 -22.86 90)
-				(length 5.08)
+				(at 0 -12.7 90)
+				(length 2.54)
 				(name "GND"
 					(effects
 						(font
@@ -355116,8 +355116,8 @@
 				)
 			)
 			(pin passive line
-				(at 15.24 15.24 180)
-				(length 5.08)
+				(at 12.7 15.24 180)
+				(length 2.54)
 				(name "VBUS"
 					(effects
 						(font
@@ -355134,8 +355134,8 @@
 				)
 			)
 			(pin bidirectional line
-				(at 15.24 10.16 180)
-				(length 5.08)
+				(at 12.7 10.16 180)
+				(length 2.54)
 				(name "CC1"
 					(effects
 						(font
@@ -355152,8 +355152,8 @@
 				)
 			)
 			(pin bidirectional line
-				(at 15.24 -2.54 180)
-				(length 5.08)
+				(at 12.7 -2.54 180)
+				(length 2.54)
 				(name "D+"
 					(effects
 						(font
@@ -355170,8 +355170,8 @@
 				)
 			)
 			(pin bidirectional line
-				(at 15.24 2.54 180)
-				(length 5.08)
+				(at 12.7 2.54 180)
+				(length 2.54)
 				(name "D-"
 					(effects
 						(font
@@ -355207,7 +355207,7 @@
 				)
 			)
 			(pin passive line
-				(at 0 -22.86 90)
+				(at 0 -15.24 90)
 				(length 5.08)
 				(hide yes)
 				(name "GND"
@@ -355226,7 +355226,7 @@
 				)
 			)
 			(pin passive line
-				(at 0 -22.86 90)
+				(at 0 -15.24 90)
 				(length 5.08)
 				(hide yes)
 				(name "GND"
@@ -355264,8 +355264,8 @@
 				)
 			)
 			(pin bidirectional line
-				(at 15.24 7.62 180)
-				(length 5.08)
+				(at 12.7 7.62 180)
+				(length 2.54)
 				(name "CC2"
 					(effects
 						(font
@@ -355282,8 +355282,8 @@
 				)
 			)
 			(pin bidirectional line
-				(at 15.24 -5.08 180)
-				(length 5.08)
+				(at 12.7 -5.08 180)
+				(length 2.54)
 				(name "D+"
 					(effects
 						(font
@@ -355300,8 +355300,8 @@
 				)
 			)
 			(pin bidirectional line
-				(at 15.24 0 180)
-				(length 5.08)
+				(at 12.7 0 180)
+				(length 2.54)
 				(name "D-"
 					(effects
 						(font
@@ -355337,7 +355337,7 @@
 				)
 			)
 			(pin passive line
-				(at 0 -22.86 90)
+				(at 0 -15.24 90)
 				(length 5.08)
 				(hide yes)
 				(name "GND"
@@ -355356,8 +355356,8 @@
 				)
 			)
 			(pin passive line
-				(at -7.62 -22.86 90)
-				(length 5.08)
+				(at -7.62 -12.7 90)
+				(length 2.54)
 				(name "SHIELD"
 					(effects
 						(font

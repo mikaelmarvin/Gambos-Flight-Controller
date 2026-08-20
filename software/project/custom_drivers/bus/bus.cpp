@@ -108,6 +108,34 @@ bool SpiBus::Init(SPI_HandleTypeDef *hspi) {
 
 bool SpiBus::IsInitialized(void) const { return _hspi != nullptr; }
 
+uint32_t SpiBus::GetBaudRatePrescaler(void) const {
+    if (!IsInitialized()) {
+        return 0U;
+    }
+    return _hspi->Init.BaudRatePrescaler;
+}
+
+bool SpiBus::SetBaudRatePrescaler(const uint32_t prescaler,
+                                  const TickType_t timeout) {
+    if (!IsInitialized() || !IS_SPI_BAUDRATE_PRESCALER(prescaler) ||
+        !EnsureBusMutex()) {
+        return false;
+    }
+
+    if (xSemaphoreTake(_bus_mutex, timeout) != pdTRUE) {
+        return false;
+    }
+
+    // BR is only writable while SPE is cleared.
+    __HAL_SPI_DISABLE(_hspi);
+    MODIFY_REG(_hspi->Instance->CR1, SPI_CR1_BR, prescaler);
+    _hspi->Init.BaudRatePrescaler = prescaler;
+    __HAL_SPI_ENABLE(_hspi);
+
+    (void)xSemaphoreGive(_bus_mutex);
+    return true;
+}
+
 bool SpiBus::BeginDma(void) {
     if (!EnsureDmaSemaphore()) {
         return false;
@@ -118,6 +146,18 @@ bool SpiBus::BeginDma(void) {
     while (xSemaphoreTake(_dma_sem, 0) == pdTRUE) {}
 
     return true;
+}
+
+void SpiBus::DrainRxOverrun(void) {
+    if (_hspi == nullptr) {
+        return;
+    }
+    // Full-duplex SPI still shifts RX during TX-only DMA; unread RX
+    // sets OVR and breaks the next transfer.
+    while (__HAL_SPI_GET_FLAG(_hspi, SPI_FLAG_RXNE) != RESET) {
+        (void)_hspi->Instance->DR;
+    }
+    __HAL_SPI_CLEAR_OVRFLAG(_hspi);
 }
 
 bool SpiBus::WaitDma(const TickType_t timeout) {
@@ -166,6 +206,7 @@ bool SpiBus::TransmitDma(const uint8_t *tx,
             ok = WaitDma(timeout);
         }
     }
+    DrainRxOverrun();
 
     // Release the bus mutex to allow other tasks to access the bus.
     (void)xSemaphoreGive(_bus_mutex);

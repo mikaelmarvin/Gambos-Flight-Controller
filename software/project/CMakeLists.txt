@@ -37,6 +37,7 @@ endif()
 add_subdirectory("${CUBEMX_BOARD_CMAKE_DIR}" cubemx_board)
 
 add_subdirectory(third_party/little_fs)
+add_subdirectory(third_party/fat_fs)
 add_subdirectory(custom_drivers)
 add_subdirectory(app/gambos-pcb)
 
@@ -49,5 +50,6 @@ list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
     little_fs
+    fat_fs
     custom_drivers
 )
