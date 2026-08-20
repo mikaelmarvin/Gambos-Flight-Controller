@@ -36,6 +36,7 @@ void AppStartupTask(void *pvParameters) {
     (void)pvParameters;
 
     configASSERT(board::InitDevices());
+    configASSERT(g_button_handler.Initialize());
     configASSERT(g_actuator_handler.Initialize());
     configASSERT(g_storage_handler.Initialize());
     configASSERT(g_sd_handler.Initialize());
@@ -59,8 +60,6 @@ void AppStartupTask(void *pvParameters) {
 
 extern "C" void app_init(void) {
     configASSERT(board::InitBuses());
-    configASSERT(g_button_handler.Initialize());
-
     configASSERT(xTaskCreate(AppStartupTask,
                              "app_startup",
                              kAppStartupStackWords,
