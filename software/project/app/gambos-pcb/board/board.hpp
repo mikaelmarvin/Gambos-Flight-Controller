@@ -7,6 +7,7 @@
 #include "iis2mdctr.hpp"
 #include "lsm6dsvtr.hpp"
 #include "nrf24l01p.hpp"
+#include "sd_card.hpp"
 
 namespace board {
 
@@ -18,6 +19,7 @@ bool InitBuses(void);
 bool InitDevices(void);
 
 At25sf128a &Flash(void);
+SdCard &Sd(void);
 Bmp384 &Baro(void);
 Iis2mdctr &Magnetometer(void);
 Lsm6dsvtr &Imu(void);

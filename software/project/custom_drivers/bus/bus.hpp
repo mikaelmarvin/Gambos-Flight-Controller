@@ -41,6 +41,10 @@ class SpiBus {
                             uint16_t len,
                             TickType_t timeout);
 
+    /** SPI_BAUDRATEPRESCALER_* ; SPI is briefly disabled while BR changes. */
+    bool SetBaudRatePrescaler(uint32_t prescaler, TickType_t timeout);
+    uint32_t GetBaudRatePrescaler(void) const;
+
     void SignalIfHandle(SPI_HandleTypeDef *hspi);
 
   private:
@@ -48,6 +52,7 @@ class SpiBus {
     bool EnsureBusMutex(void);
     bool BeginDma(void);
     bool WaitDma(TickType_t timeout);
+    void DrainRxOverrun(void);
     void SignalFromIsr(void);
 
     SPI_HandleTypeDef *_hspi{nullptr};

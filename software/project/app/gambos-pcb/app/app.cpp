@@ -12,6 +12,7 @@
 #include "button_handler/button_handler.hpp"
 #include "delayable_handler/delayable_work.hpp"
 #include "log.hpp"
+#include "sd_handler/sd_handler.hpp"
 #include "sensing_handler/sensing_handler.hpp"
 #include "storage_handler/storage_handler.hpp"
 
@@ -20,13 +21,14 @@
 
 namespace {
 
-constexpr uint32_t kAppStartupStackWords = 512U;
+constexpr uint32_t kAppStartupStackWords = 1024U;
 constexpr UBaseType_t kAppStartupPriority =
     static_cast<UBaseType_t>(tskIDLE_PRIORITY + 2U);
 
 ButtonHandler g_button_handler;
 ActuatorHandler g_actuator_handler;
 StorageHandler g_storage_handler{board::Flash()};
+SdHandler g_sd_handler{board::Sd()};
 SensingHandler g_sensing_handler{
     board::Imu(), board::Magnetometer(), board::Baro()};
 
@@ -36,6 +38,7 @@ void AppStartupTask(void *pvParameters) {
     configASSERT(board::InitDevices());
     configASSERT(g_actuator_handler.Initialize());
     configASSERT(g_storage_handler.Initialize());
+    configASSERT(g_sd_handler.Initialize());
     configASSERT(g_sensing_handler.Initialize());
 
     LOG("app_startup: free heap %u bytes\r\n",
