@@ -27,7 +27,7 @@ constexpr UBaseType_t kAppStartupPriority =
 
 ButtonHandler g_button_handler;
 ActuatorHandler g_actuator_handler;
-StorageHandler g_storage_handler{board::Flash()};
+StorageHandler g_storage_handler{board::Flash(), board::Sd()};
 SdHandler g_sd_handler{board::Sd()};
 SensingHandler g_sensing_handler{
     board::Imu(), board::Magnetometer(), board::Baro()};
