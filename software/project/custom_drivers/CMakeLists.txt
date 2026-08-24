@@ -5,7 +5,6 @@ target_include_directories(custom_drivers PUBLIC
 )
 
 add_subdirectory(bus)
-add_subdirectory(nrf24l01p)
 add_subdirectory(lsm6dsvtr)
 add_subdirectory(iis2mdctr)
 add_subdirectory(bmp384)
