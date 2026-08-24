@@ -141,17 +141,22 @@ void StorageHandler::HandleSettingsRead(
     NotifyReadRequester(item.read.requester, read_ok);
 }
 
-void StorageHandler::HandleSettingsWrite(const StorageQueueItem &item,
-                                         bool &log_file_is_open) {
-
-    if (!_flash_fs.OpenSettingsForWrite()) {
-        LOG("ERROR: Failed to open settings file");
+void StorageHandler::HandleSettingsWrite(
+    const StorageQueueItem &item) {
+    if (item.write.size != sizeof(Settings)) {
+        LOG("ERROR: Invalid settings size");
         return;
     }
 
-    if (item.write.size != sizeof(Settings)) {
-        LOG("ERROR: Invalid settings size");
-        (void)_flash_fs.CloseSettings();
+    if (_flash_fs.IsLogsFileOpen()) {
+        if (!_flash_fs.CloseLogs()) {
+            LOG("ERROR: Failed to close logs file");
+            return;
+        }
+    }
+
+    if (!_flash_fs.OpenSettingsForWrite()) {
+        LOG("ERROR: Failed to open settings file for write");
         return;
     }
 
@@ -159,8 +164,6 @@ void StorageHandler::HandleSettingsWrite(const StorageQueueItem &item,
         *reinterpret_cast<const Settings *>(item.write.data);
     if (!_flash_fs.WriteSettings(settings)) {
         LOG("ERROR: Failed to write settings to storage");
-        (void)_flash_fs.CloseSettings();
-        return;
     }
 
     if (!_flash_fs.CloseSettings()) {
@@ -168,37 +171,30 @@ void StorageHandler::HandleSettingsWrite(const StorageQueueItem &item,
     }
 }
 
-void StorageHandler::HandleLogsWrite(const StorageQueueItem &item,
-                                     bool &log_file_is_open,
-                                     uint8_t &log_entries) {
+void StorageHandler::HandleLogsWrite(const StorageQueueItem &item) {
     if (item.operation !=
         static_cast<uint8_t>(StorageOperation::WRITE)) {
         LOG("ERROR: Invalid log storage operation");
         return;
     }
 
-    if (!log_file_is_open) {
-        if (!_flash_fs.OpenLogs()) {
-            LOG("ERROR: Failed to open log file");
-            return;
-        }
-        log_file_is_open = true;
+    if (!_flash_fs.OpenLogs()) {
+        LOG("ERROR: Failed to open log file");
+        return;
     }
 
     if (!_flash_fs.WriteLogs(item.write.data, item.write.size)) {
         LOG("ERROR: Failed to write logs to storage");
-        (void)_flash_fs.SyncLogs();
-        return;
     }
 
-    log_entries++;
+    _log_entries++;
 
-    if (log_entries >= 10U) {
+    if (_log_entries >= kMaxLogEntriesBeforeSync) {
         if (!_flash_fs.SyncLogs()) {
             LOG("ERROR: Failed to sync logs to storage");
             return;
         }
-        log_entries = 0;
+        _log_entries = 0U;
     }
 }
 

@@ -12,6 +12,8 @@
 
 #include <cstdint>
 
+inline constexpr uint8_t kMaxLogEntriesBeforeSync = 10U;
+
 enum class StorageFile : uint8_t {
     SETTINGS = 0U,
     LOGS = 1U,
@@ -43,11 +45,8 @@ class StorageHandler {
     static void TaskFunction(void *pvParameters);
 
     void HandleSettingsRead(const StorageQueueItem &item);
-    void HandleSettingsWrite(const StorageQueueItem &item,
-                             bool &log_file_is_open);
-    void HandleLogsWrite(const StorageQueueItem &item,
-                         bool &log_file_is_open,
-                         uint8_t &log_entries);
+    void HandleSettingsWrite(const StorageQueueItem &item);
+    void HandleLogsWrite(const StorageQueueItem &item);
 
     void NotifyReadRequester(TaskHandle_t requester, bool success);
 
@@ -56,6 +55,7 @@ class StorageHandler {
     StorageQueue _queue;
 
     StorageState _storage_state{StorageState::NOT_READY};
+    uint8_t _log_entries{0U};
 
     inline static StaticSemaphore_t _read_mutex_state{};
     inline static SemaphoreHandle_t _read_mutex_handle{nullptr};
