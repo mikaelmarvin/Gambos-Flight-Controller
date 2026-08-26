@@ -94,6 +94,7 @@ void StorageHandler::TaskFunction(void *pvParameters) {
             }
         } break;
         case StorageState::SD_TRANSFER: {
+
             break;
         }
         default: {
@@ -178,7 +179,7 @@ void StorageHandler::HandleLogsWrite(const StorageQueueItem &item) {
         return;
     }
 
-    if (!_flash_fs.OpenLogs()) {
+    if (!_flash_fs.OpenLogsForWrite()) {
         LOG("ERROR: Failed to open log file");
         return;
     }

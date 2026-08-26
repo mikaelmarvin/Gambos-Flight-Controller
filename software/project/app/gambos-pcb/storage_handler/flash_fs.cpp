@@ -149,7 +149,7 @@ bool FlashFileSystem::CloseSettings(void) {
     return false;
 }
 
-bool FlashFileSystem::OpenLogs(void) {
+bool FlashFileSystem::OpenLogsForWrite(void) {
     if (_logs_file_is_open) {
         return true;
     }
@@ -165,7 +165,23 @@ bool FlashFileSystem::OpenLogs(void) {
         return true;
     }
 
-    LOG("ERROR: Failed to open logs file: %d", err);
+    LOG("ERROR: Failed to open logs file for write: %d", err);
+    return false;
+}
+
+bool FlashFileSystem::OpenLogsForRead(void) {
+    if (_logs_file_is_open) {
+        return true;
+    }
+
+    const int8_t err = lfs_file_opencfg(
+        &_lfs, &_log_file, kLogFilePath, LFS_O_RDONLY, &_file_config);
+    if (err == LFS_ERR_OK) {
+        _logs_file_is_open = true;
+        return true;
+    }
+
+    LOG("ERROR: Failed to open logs file for read: %d", err);
     return false;
 }
 
@@ -214,4 +230,46 @@ bool FlashFileSystem::WriteLogs(const uint8_t *data, uint32_t size) {
     const lfs_ssize_t written =
         lfs_file_write(&_lfs, &_log_file, data, size);
     return written == static_cast<lfs_ssize_t>(size);
+}
+
+int32_t FlashFileSystem::ReadLogs(uint8_t *data, uint32_t size) {
+    if ((data == nullptr) || (size == 0U) || !_logs_file_is_open) {
+        return -1;
+    }
+
+    const lfs_ssize_t bytes_read =
+        lfs_file_read(&_lfs, &_log_file, data, size);
+    if (bytes_read < 0) {
+        LOG("ERROR: Failed to read logs file: %d",
+            static_cast<int>(bytes_read));
+        return -1;
+    }
+
+    return static_cast<int32_t>(bytes_read);
+}
+
+bool FlashFileSystem::ResetLogs(void) {
+    if (!CloseLogs()) {
+        return false;
+    }
+
+    const int8_t err = lfs_remove(&_lfs, kLogFilePath);
+    if ((err != LFS_ERR_OK) && (err != LFS_ERR_NOENT)) {
+        LOG("ERROR: Failed to remove logs file: %d", err);
+        return false;
+    }
+
+    // Recreate empty /logs/0000.bin for the next logging session.
+    if (!OpenLogsForWrite()) {
+        return false;
+    }
+    return CloseLogs();
+}
+
+bool FlashFileSystem::IsSettingsFileOpen(void) const {
+    return _settings_file_is_open;
+}
+
+bool FlashFileSystem::IsLogsFileOpen(void) const {
+    return _logs_file_is_open;
 }

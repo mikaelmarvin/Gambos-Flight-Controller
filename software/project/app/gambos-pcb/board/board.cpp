@@ -47,7 +47,7 @@ bool InitDevices(void) {
     }
 
     /* I2C sensors are initialized by SensingHandler. */
-    /* SD card is initialized by SdHandler (FatFs mount). */
+    /* SD / FatFs is owned by storage_handler (sd_fs) when needed. */
     return true;
 }
 
