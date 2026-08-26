@@ -19,16 +19,23 @@ class FlashFileSystem {
     bool OpenSettingsForRead(void);
     bool CloseSettings(void);
 
-    bool OpenLogs(void);
+    bool OpenLogsForWrite(void);
+    bool OpenLogsForRead(void);
     bool CloseLogs(void);
     bool SyncLogs(void);
 
     bool WriteSettings(const Settings &settings);
     bool ReadSettings(Settings &settings);
     bool WriteLogs(const uint8_t *data, uint32_t size);
+    // Bytes read (0 = EOF), or -1 on error.
+    int32_t ReadLogs(uint8_t *data, uint32_t size);
 
-    bool IsSettingsFileOpen(void);
-    bool IsLogsFileOpen(void);
+    // After a successful SD export: close, delete /logs/0000.bin.
+    // Next OpenLogsForWrite recreates an empty file with the same name.
+    bool ResetLogs(void);
+
+    bool IsSettingsFileOpen(void) const;
+    bool IsLogsFileOpen(void) const;
 
   private:
     At25sf128a &_flash;
