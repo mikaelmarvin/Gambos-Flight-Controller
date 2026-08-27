@@ -2,6 +2,7 @@
 #define STORAGE_HANDLER_HPP
 
 #include "flash_fs.hpp"
+#include "messaging/messaging.hpp"
 #include "sd_fs.hpp"
 #include "settings.hpp"
 #include "storage_queue.hpp"
@@ -25,8 +26,8 @@ enum class StorageOperation : uint8_t {
 };
 
 enum class StorageState : uint8_t {
-    NOT_READY = 0U,
-    IDLE = 1U,
+    IDLE = 0U,
+    PROCESS_REQUESTS = 1U,
     SD_TRANSFER = 2U,
 };
 
@@ -37,16 +38,18 @@ class StorageHandler {
     bool Initialize(void);
     void Start(void);
 
-    bool WriteLogs(const uint8_t *data, uint32_t size);
-    bool WriteSettings(const Settings &settings);
-    bool ReadSettings(Settings &settings);
+    bool WriteLogsToFlash(const uint8_t *data, uint32_t size);
+    bool WriteSettingsToFlash(const Settings &settings);
+    bool ReadSettingsFromFlash(Settings &settings);
 
   private:
     static void TaskFunction(void *pvParameters);
+    static void OnButtonInfo(const topics::ButtonInfo &topic);
 
     void HandleSettingsRead(const StorageQueueItem &item);
     void HandleSettingsWrite(const StorageQueueItem &item);
     void HandleLogsWrite(const StorageQueueItem &item);
+    void HandleSdTransfer(void);
 
     void NotifyReadRequester(TaskHandle_t requester, bool success);
 
@@ -54,9 +57,10 @@ class StorageHandler {
     SdCardFileSystem _sd_fs;
     StorageQueue _queue;
 
-    StorageState _storage_state{StorageState::NOT_READY};
+    StorageState _storage_state{StorageState::IDLE};
     uint8_t _log_entries{0U};
 
+    inline static StorageHandler *_instance{nullptr};
     inline static StaticSemaphore_t _read_mutex_state{};
     inline static SemaphoreHandle_t _read_mutex_handle{nullptr};
 };

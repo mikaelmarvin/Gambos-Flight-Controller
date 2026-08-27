@@ -68,6 +68,7 @@ void Error_Handler(void);
  * -----------------------------------------------------------*/
 #define USR_BTN_Pin GPIO_PIN_0
 #define USR_BTN_GPIO_Port GPIOC
+#define USR_BTN_EXTI_IRQn EXTI0_IRQn
 #define NRF24_CS_Pin GPIO_PIN_0
 #define NRF24_CS_GPIO_Port GPIOA
 #define IRQ_Pin GPIO_PIN_1

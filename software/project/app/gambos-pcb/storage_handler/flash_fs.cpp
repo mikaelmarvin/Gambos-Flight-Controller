@@ -265,11 +265,3 @@ bool FlashFileSystem::ResetLogs(void) {
     }
     return CloseLogs();
 }
-
-bool FlashFileSystem::IsSettingsFileOpen(void) const {
-    return _settings_file_is_open;
-}
-
-bool FlashFileSystem::IsLogsFileOpen(void) const {
-    return _logs_file_is_open;
-}
