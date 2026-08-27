@@ -17,23 +17,19 @@ UPSTREAM="${ROOT}/board/${BOARD}_upstream"
 PATCHED="${ROOT}/board/${BOARD}"
 PATCH_DIR="${ROOT}/board/${BOARD}_patches"
 
-# One patch ↔ one file (except 004+008, which stack on stm32f4xx_it.c).
+# One patch ↔ one file.
 declare -a REL_PATHS=(
     "Core/Src/main.c"
     "Core/Src/freertos.c"
-    "Core/Src/gpio.c"
     "Core/Src/tim.c"
     "CMakeLists.txt"
-    "Core/Src/i2c.c"
 )
 
 declare -a PATCH_NAMES=(
     "001-main-app-hooks"
     "002-freertos-default-task"
-    "003-gpio-button-exti"
     "005-tim-pwm-tuning"
     "006-cubeide-cmake-note"
-    "007-i2c1-msp-nvic"
 )
 
 # Compare hunks only: drop ---/+++ path + timestamp noise.
@@ -94,45 +90,6 @@ regenerate_simple() {
     write_patch_if_changed "${out}" "${tmp}"
 }
 
-# 004 then 008 both edit stm32f4xx_it.c. Rebuild the pair from final patched file
-# by reverse-applying 008 to recover the mid state (after 004 only).
-regenerate_it_pair() {
-    local rel="Core/Src/stm32f4xx_it.c"
-    local out004="${PATCH_DIR}/004-stm32f4xx-it-exti0.patch"
-    local out008="${PATCH_DIR}/008-i2c1-it-handlers.patch"
-    local tmpdir mid t004 t008
-
-    if [[ ! -f "${UPSTREAM}/${rel}" || ! -f "${PATCHED}/${rel}" ]]; then
-        echo "Missing ${rel} in upstream or patched tree" >&2
-        return 1
-    fi
-    if [[ ! -f "${out008}" ]]; then
-        echo "Missing ${out008} (needed to split stacked it.c patches)" >&2
-        return 1
-    fi
-
-    tmpdir="$(mktemp -d)"
-    mid="${tmpdir}/${rel}"
-    mkdir -p "$(dirname "${mid}")"
-    cp "${PATCHED}/${rel}" "${mid}"
-
-    if ! patch -d "${tmpdir}" -p0 -R --forward --no-backup-if-mismatch \
-            --reject-file=- < "${out008}" >/dev/null; then
-        rm -rf "${tmpdir}"
-        echo "Failed to reverse-apply 008 onto patched ${rel}; edit 004/008 by hand" >&2
-        return 1
-    fi
-
-    t004="$(mktemp)"
-    t008="$(mktemp)"
-    make_file_diff "${rel}" "${UPSTREAM}/${rel}" "${mid}" "${t004}"
-    make_file_diff "${rel}" "${mid}" "${PATCHED}/${rel}" "${t008}"
-    rm -rf "${tmpdir}"
-
-    write_patch_if_changed "${out004}" "${t004}"
-    write_patch_if_changed "${out008}" "${t008}"
-}
-
 should_run() {
     local name="$1"
     if [[ ${#REQUESTED[@]} -eq 0 ]]; then
@@ -174,12 +131,6 @@ for i in "${!REL_PATHS[@]}"; do
         ran=$((ran + 1))
     fi
 done
-
-if should_run "004-stm32f4xx-it-exti0" || should_run "008-i2c1-it-handlers" ||
-    should_run "004" || should_run "008" || should_run "stm32f4xx_it"; then
-    regenerate_it_pair
-    ran=$((ran + 1))
-fi
 
 if [[ ${#REQUESTED[@]} -gt 0 && "${ran}" -eq 0 ]]; then
     echo "No matching patches for: ${REQUESTED[*]}" >&2

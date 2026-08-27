@@ -4,6 +4,7 @@
  */
 
 #include "storage_queue.hpp"
+#include "log.hpp"
 
 bool StorageQueue::Initialize(void) {
     if (_handle != nullptr) {
@@ -29,6 +30,7 @@ bool StorageQueue::Send(const StorageQueueItem &item,
 bool StorageQueue::Receive(StorageQueueItem &item,
                            TickType_t timeout) {
     if (_handle == nullptr) {
+        LOG("ERROR: Storage queue not initialized");
         return false;
     }
 

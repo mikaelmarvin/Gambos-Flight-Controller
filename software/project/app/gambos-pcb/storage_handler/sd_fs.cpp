@@ -80,74 +80,6 @@ bool SdCardFileSystem::IsLogsFileOpen(void) const {
     return _logs_file_is_open;
 }
 
-bool SdCardFileSystem::FindNextLogPath(char *path,
-                                       uint32_t path_len) {
-    if ((path == nullptr) || (path_len < kLogPathMaxLen)) {
-        return false;
-    }
-
-    // Scan LOGS/ once: next name is (highest NNNN.BIN index) + 1.
-    // Gaps from PC deletes are never reused (0000,0001,0003 → 0004).
-    DIR dir{};
-    FRESULT fr = f_opendir(&dir, kLogDir);
-    if (fr == FR_NO_PATH) {
-        // Directory not created yet — first file is 0000.
-        const int printed =
-            std::snprintf(path, path_len, "LOGS/0000.BIN");
-        return (printed > 0) &&
-               (static_cast<uint32_t>(printed) < path_len);
-    }
-    if (fr != FR_OK) {
-        LOG("ERROR: SD f_opendir failed: %d", static_cast<int>(fr));
-        return false;
-    }
-
-    int32_t highest = -1;
-    for (;;) {
-        FILINFO info{};
-        fr = f_readdir(&dir, &info);
-        if ((fr != FR_OK) || (info.fname[0] == '\0')) {
-            break;
-        }
-        if ((info.fattrib & AM_DIR) != 0U) {
-            continue;
-        }
-
-        // Expect 8.3 name like "0003.BIN" (FF_USE_LFN == 0).
-        unsigned index = 0U;
-        char ext[4] = {};
-        if (std::sscanf(info.fname, "%04u.%3s", &index, ext) != 2) {
-            continue;
-        }
-        if ((ext[0] != 'B' && ext[0] != 'b') ||
-            (ext[1] != 'I' && ext[1] != 'i') ||
-            (ext[2] != 'N' && ext[2] != 'n')) {
-            continue;
-        }
-        if (static_cast<int32_t>(index) > highest) {
-            highest = static_cast<int32_t>(index);
-        }
-    }
-    (void)f_closedir(&dir);
-
-    if (fr != FR_OK) {
-        LOG("ERROR: SD f_readdir failed: %d", static_cast<int>(fr));
-        return false;
-    }
-
-    const uint32_t next = static_cast<uint32_t>(highest + 1);
-    if (next >= kMaxLogFileIndex) {
-        LOG("ERROR: SD LOGS/ is full (next would be %u)",
-            static_cast<unsigned>(next));
-        return false;
-    }
-
-    const int printed = std::snprintf(
-        path, path_len, "LOGS/%04u.BIN", static_cast<unsigned>(next));
-    return (printed > 0) &&
-           (static_cast<uint32_t>(printed) < path_len);
-}
-
 bool SdCardFileSystem::OpenLogsForWrite(void) {
     if (_logs_file_is_open) {
         return true;
@@ -163,6 +95,9 @@ bool SdCardFileSystem::OpenLogsForWrite(void) {
         return false;
     }
 
+    // FatFs is configured with FF_USE_LFN=0 (8.3 names only), so
+    // paths are short like "LOGS/0000.BIN". kLogPathMaxLen includes
+    // room for that path plus the null terminator.
     char path[kLogPathMaxLen] = {};
     if (!FindNextLogPath(path, sizeof(path))) {
         return false;
@@ -214,6 +149,79 @@ bool SdCardFileSystem::WriteLogs(const uint8_t *data, uint32_t size) {
     }
 
     return true;
+}
+
+bool SdCardFileSystem::FindNextLogPath(char *path,
+                                       uint32_t path_len) {
+    if ((path == nullptr) || (path_len < kLogPathMaxLen)) {
+        return false;
+    }
+
+    // Scan LOGS/ once: next name is (highest NNNN.BIN index) + 1.
+    // Gaps from PC deletes are never reused (0000,0001,0003 → 0004).
+    DIR dir{};
+    FRESULT fr = f_opendir(&dir, kLogDir);
+    if (fr == FR_NO_PATH) {
+        // Directory not created yet — first file is 0000.
+        const int printed =
+            std::snprintf(path, path_len, "LOGS/0000.BIN");
+        return (printed > 0) &&
+               (static_cast<uint32_t>(printed) < path_len);
+    }
+    if (fr != FR_OK) {
+        LOG("ERROR: SD f_opendir failed: %d", static_cast<int>(fr));
+        return false;
+    }
+
+    int32_t highest = -1;
+    for (;;) {
+        FILINFO info{};
+        fr = f_readdir(&dir, &info);
+
+        // Failed to read directory or end of directory.
+        if ((fr != FR_OK) || (info.fname[0] == '\0')) {
+            break;
+        }
+
+        // Skip directories.
+        if ((info.fattrib & AM_DIR) != 0U) {
+            continue;
+        }
+
+        // Expect 8.3 name like "0003.BIN" (FF_USE_LFN == 0).
+        uint32_t index = 0U;
+        char ext[4] = {};
+        if (std::sscanf(info.fname, "%04u.%3s", &index, ext) != 2) {
+            continue;
+        }
+        if ((ext[0] != 'B' && ext[0] != 'b') ||
+            (ext[1] != 'I' && ext[1] != 'i') ||
+            (ext[2] != 'N' && ext[2] != 'n')) {
+            continue;
+        }
+        if (index > highest) {
+            highest = index;
+        }
+    }
+    (void)f_closedir(&dir);
+
+    if (fr != FR_OK) {
+        LOG("ERROR: SD f_readdir failed: %d", static_cast<int>(fr));
+        return false;
+    }
+
+    const uint32_t next = static_cast<uint32_t>(highest + 1);
+    if (next >= kMaxLogFileIndex) {
+        LOG("ERROR: SD LOGS/ is full (next would be %u)",
+            static_cast<unsigned>(next));
+        return false;
+    }
+
+    // Set the output argument path to the next log file path.
+    const int printed = std::snprintf(
+        path, path_len, "LOGS/%04u.BIN", static_cast<unsigned>(next));
+    return (printed > 0) &&
+           (static_cast<uint32_t>(printed) < path_len);
 }
 
 extern "C" DSTATUS disk_status(BYTE pdrv) {

@@ -31,11 +31,9 @@ class FlashFileSystem {
     int32_t ReadLogs(uint8_t *data, uint32_t size);
 
     // After a successful SD export: close, delete /logs/0000.bin.
-    // Next OpenLogsForWrite recreates an empty file with the same name.
+    // Next OpenLogsForWrite recreates an empty file with the same
+    // name.
     bool ResetLogs(void);
-
-    bool IsSettingsFileOpen(void) const;
-    bool IsLogsFileOpen(void) const;
 
   private:
     At25sf128a &_flash;

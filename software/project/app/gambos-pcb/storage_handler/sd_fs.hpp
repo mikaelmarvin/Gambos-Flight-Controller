@@ -14,20 +14,21 @@ class SdCardFileSystem {
   public:
     explicit SdCardFileSystem(SdCard &sd);
 
-    // Registers the card with FatFs disk_* (does not mount / talk SPI).
+    // Registers the card with FatFs disk_* (does not mount / talk
+    // SPI).
     bool Initialize(void);
 
     // Lazy: f_mount triggers SdCard::Init via disk_initialize.
     bool Mount(void);
     bool Unmount(void);
     bool IsMounted(void) const;
+    bool IsLogsFileOpen(void) const;
 
     // Opens LOGS/(max_existing_index + 1).BIN — never reuses gaps
     // left by deleted files on the PC.
     bool OpenLogsForWrite(void);
     bool CloseLogs(void);
     bool WriteLogs(const uint8_t *data, uint32_t size);
-    bool IsLogsFileOpen(void) const;
 
   private:
     bool FindNextLogPath(char *path, uint32_t path_len);
