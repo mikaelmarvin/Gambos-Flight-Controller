@@ -128,9 +128,9 @@ extern "C" {
  */
 #if !defined(LSI_VALUE)
 #define LSI_VALUE 32000U /*!< LSI Typical Value in Hz*/
-#endif /* LSI_VALUE */   /*!< Value of the Internal Low Speed        \
-                          oscillator in Hz   The real value may vary                                           \
-                          depending on the variations   in voltage and                                                    \
+#endif /* LSI_VALUE */   /*!< Value of the Internal Low Speed          \
+                          oscillator in Hz   The real value may vary   \
+                          depending on the variations   in voltage and \
                           temperature.*/
 /**
  * @brief External Low Speed oscillator (LSE) value.
@@ -302,9 +302,10 @@ extern "C" {
 #define PHY_BSR                                                      \
     ((uint16_t)0x0001U) /*!< Transceiver Basic Status Register    */
 
-#define PHY_RESET ((uint16_t)0x8000U)    /*!< PHY Reset */
-#define PHY_LOOPBACK ((uint16_t)0x4000U) /*!< Select loop-back mode  \
-                                          */
+#define PHY_RESET ((uint16_t)0x8000U) /*!< PHY Reset */
+#define PHY_LOOPBACK                                                 \
+    ((uint16_t)0x4000U) /*!< Select loop-back mode                   \
+                         */
 #define PHY_FULLDUPLEX_100M                                          \
     ((uint16_t)0x2100U) /*!< Set the full-duplex mode at 100 Mb/s */
 #define PHY_HALFDUPLEX_100M                                          \
@@ -330,13 +331,10 @@ extern "C" {
     ((uint16_t)0x0002U) /*!< Jabber condition detected            */
 
 /* Section 4: Extended PHY Registers */
-#define PHY_SR                                                       \
-    ((uint16_t)) /*!< PHY status register Offset */
+#define PHY_SR ((uint16_t)) /*!< PHY status register Offset */
 
-#define PHY_SPEED_STATUS                                             \
-    ((uint16_t)) /*!< PHY Speed mask */
-#define PHY_DUPLEX_STATUS                                            \
-    ((uint16_t)) /*!< PHY Duplex mask */
+#define PHY_SPEED_STATUS ((uint16_t))  /*!< PHY Speed mask */
+#define PHY_DUPLEX_STATUS ((uint16_t)) /*!< PHY Duplex mask */
 
 /* ################## SPI peripheral configuration
  * ########################## */

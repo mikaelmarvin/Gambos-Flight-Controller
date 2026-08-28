@@ -78,8 +78,6 @@ void StorageHandler::TaskFunction(void *pvParameters) {
         static_cast<StorageHandler *>(pvParameters);
 
     while (true) {
-        LOG("INFO: Storage state: %u\r\n",
-            static_cast<unsigned>(self->_storage_state));
         switch (self->_storage_state) {
         case StorageState::IDLE: {
             vTaskDelay(kIdleDelay);
@@ -305,16 +303,18 @@ bool StorageHandler::WriteLogsToFlash(const uint8_t *data,
         return false;
     }
 
+    if (_storage_state != StorageState::PROCESS_REQUESTS) {
+        return false;
+    }
+
     StorageQueueItem item = {};
     item.file = static_cast<uint8_t>(StorageFile::LOGS);
     item.operation = static_cast<uint8_t>(StorageOperation::WRITE);
     item.write.size = size;
     memcpy(item.write.data, data, size);
     if (!_queue.Send(item, 0)) {
-        LOG("ERROR: Failed to send logs to storage queue\r\n");
         return false;
     }
-    LOG("INFO: Sent logs to storage queue\r\n");
 
     return true;
 }
@@ -409,7 +409,7 @@ void StorageHandler::OnAccelSample(const topics::AccelSample &topic) {
              topic.y,
              topic.z);
 
-    // _instance->WriteLogsToFlash(
-    //     reinterpret_cast<const uint8_t *>(data_string),
-    //     strlen(data_string));
+    _instance->WriteLogsToFlash(
+        reinterpret_cast<const uint8_t *>(data_string),
+        strlen(data_string));
 }
