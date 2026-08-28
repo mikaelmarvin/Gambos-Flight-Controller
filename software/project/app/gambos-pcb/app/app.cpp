@@ -12,7 +12,6 @@
 #include "button_handler/button_handler.hpp"
 #include "delayable_handler/delayable_work.hpp"
 #include "log.hpp"
-#include "sd_handler/sd_handler.hpp"
 #include "sensing_handler/sensing_handler.hpp"
 #include "storage_handler/storage_handler.hpp"
 
@@ -26,9 +25,8 @@ constexpr UBaseType_t kAppStartupPriority =
     static_cast<UBaseType_t>(tskIDLE_PRIORITY + 2U);
 
 ButtonHandler g_button_handler;
-ActuatorHandler g_actuator_handler;
-StorageHandler g_storage_handler{board::Flash()};
-SdHandler g_sd_handler{board::Sd()};
+// ActuatorHandler g_actuator_handler;
+StorageHandler g_storage_handler{board::Flash(), board::Sd()};
 SensingHandler g_sensing_handler{
     board::Imu(), board::Magnetometer(), board::Baro()};
 
@@ -37,9 +35,8 @@ void AppStartupTask(void *pvParameters) {
 
     configASSERT(board::InitDevices());
     configASSERT(g_button_handler.Initialize());
-    configASSERT(g_actuator_handler.Initialize());
+    // configASSERT(g_actuator_handler.Initialize());
     configASSERT(g_storage_handler.Initialize());
-    configASSERT(g_sd_handler.Initialize());
     configASSERT(g_sensing_handler.Initialize());
 
     LOG("app_startup: free heap %u bytes\r\n",
@@ -47,13 +44,20 @@ void AppStartupTask(void *pvParameters) {
     LOG("app_startup: starting FreeRTOS tasks\r\n");
     DelayableWork::Start();
     g_button_handler.Start();
-    g_actuator_handler.Start();
+    // g_actuator_handler.Start();
     g_storage_handler.Start();
     g_sensing_handler.Start();
     LOG("app_startup: tasks started, free heap %u bytes\r\n",
         static_cast<unsigned>(xPortGetFreeHeapSize()));
 
     vTaskDelete(nullptr);
+}
+
+extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    if (GPIO_Pin == USR_BTN_Pin) {
+        ButtonHandler::CallbackFromISR();
+        return;
+    }
 }
 
 } // namespace

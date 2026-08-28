@@ -28,12 +28,15 @@ class Nrf24l01p {
     bool Receive(uint8_t *data);
 
   private:
-    /** nRF24 max payload / longest burst we support with fixed [33] SPI buffers. */
+    /** nRF24 max payload / longest burst we support with fixed [33]
+     * SPI buffers. */
     static constexpr uint8_t kMaxFifoBytes = 32U;
 
     bool NrfSpiExchange(const uint8_t *tx, uint8_t *rx, uint8_t len);
     bool WriteReg(uint8_t reg, uint8_t value);
-    bool WriteRegArray(uint8_t reg, const uint8_t *value, uint8_t length);
+    bool WriteRegArray(uint8_t reg,
+                       const uint8_t *value,
+                       uint8_t length);
     bool WriteReadRegArray(uint8_t cmd, uint8_t *data, uint8_t len);
     bool Command(uint8_t value);
     uint8_t ReadStatus();

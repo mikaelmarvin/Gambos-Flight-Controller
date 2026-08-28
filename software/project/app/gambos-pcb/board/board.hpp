@@ -6,7 +6,6 @@
 #include "bus.hpp"
 #include "iis2mdctr.hpp"
 #include "lsm6dsvtr.hpp"
-#include "nrf24l01p.hpp"
 #include "sd_card.hpp"
 
 namespace board {
@@ -23,7 +22,6 @@ SdCard &Sd(void);
 Bmp384 &Baro(void);
 Iis2mdctr &Magnetometer(void);
 Lsm6dsvtr &Imu(void);
-Nrf24l01p &Radio(void);
 
 } // namespace board
 

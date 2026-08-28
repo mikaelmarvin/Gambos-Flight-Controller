@@ -23,19 +23,17 @@ class Messaging {
     ~Messaging() = default;
 
     template <typename Topic>
-    static bool Publish(const Topic &topic) {
-        for (uint8_t i = 0; i < kMaxSubscribersPerTopic; i++) {
+    static void Publish(const Topic &topic) {
+        for (uint8_t i = 0U; i < kMaxSubscribersPerTopic; i++) {
             if (SubscriberTable<Topic>::subscribers[i] != nullptr) {
                 SubscriberTable<Topic>::subscribers[i](topic);
             }
         }
-
-        return true;
     }
 
     template <typename Topic>
     static bool Subscribe(CallbackFunction<Topic> callback) {
-        for (uint8_t i = 0; i < kMaxSubscribersPerTopic; i++) {
+        for (uint8_t i = 0U; i < kMaxSubscribersPerTopic; i++) {
             if (SubscriberTable<Topic>::subscribers[i] == nullptr) {
                 SubscriberTable<Topic>::subscribers[i] = callback;
                 return true;

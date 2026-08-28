@@ -7,4 +7,9 @@ enum class ButtonId : uint8_t {
     USER_BUTTON = 0U,
 };
 
+enum class ButtonState : uint8_t {
+    PRESSED = 0U,
+    RELEASED = 1U,
+};
+
 #endif /* GAMBOS_BUTTON_HANDLER_COMMON_HPP */
