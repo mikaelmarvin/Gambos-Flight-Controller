@@ -21,6 +21,7 @@ bool StorageQueue::Initialize(void) {
 bool StorageQueue::Send(const StorageQueueItem &item,
                         TickType_t timeout) {
     if (_handle == nullptr) {
+        LOG("ERROR: Storage queue not initialized\r\n");
         return false;
     }
 
@@ -30,7 +31,7 @@ bool StorageQueue::Send(const StorageQueueItem &item,
 bool StorageQueue::Receive(StorageQueueItem &item,
                            TickType_t timeout) {
     if (_handle == nullptr) {
-        LOG("ERROR: Storage queue not initialized");
+        LOG("ERROR: Storage queue not initialized\r\n");
         return false;
     }
 

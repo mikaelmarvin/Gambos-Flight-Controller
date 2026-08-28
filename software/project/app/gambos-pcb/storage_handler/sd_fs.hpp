@@ -31,7 +31,9 @@ class SdCardFileSystem {
     bool WriteLogs(const uint8_t *data, uint32_t size);
 
   private:
-    bool FindNextLogPath(char *path, uint32_t path_len);
+    // Highest matching LOGS/NNNN.BIN index + 1 (0 if none).
+    bool FindNextLogIndex(uint32_t &next_index);
+    bool FormatLogPath(char *path, uint32_t path_len, uint32_t index);
 
     SdCard &_sd;
     FATFS _fs{};
