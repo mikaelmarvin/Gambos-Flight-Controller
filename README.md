@@ -1,81 +1,100 @@
 # Gambos flight controller
 
-Custom **STM32F446** flight-controller PCB and firmware — schematic through layout, manufacture, assembly, bring-up, application and driver development.
+Custom **STM32F446** flight controller — KiCad PCB through FreeRTOS firmware.
+Schematic, layout, manufacture, bring-up, drivers, and application code in one repo.
 
 ## At a glance
 
+|               |                                                                                    |
+| ---------------| ------------------------------------------------------------------------------------|
+| **MCU**       | STM32F446RET6                                                                      |
+| **Sensors**   | Accelerometer, gyroscope, magnetometer, barometer, temperature                     |
+| **Storage**   | External flash + microSD                                                           |
+| **Actuation** | 5× hobby servo PWM, ESC motor PWM                                                  |
+| **Wireless**  | nRF24L01+ telemetry / command link                                                 |
+| **Debug**     | SWD + UART                                                                         |
+| **PCB**       | 4-layer, 75 × 50 mm — KiCad, manufactured **v1.0**                                 |
+| **Firmware**  | C++17, FreeRTOS, CMake — custom drivers + handler tasks                            |
+| **Status**    | v1.0 PCB built and brought up; sensing + storage running; flight stack in progress |
+| **Schematic** | [Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf) — KiCad export, v1.0             |
 
-|               |                                                                        |
-| ---------------| ------------------------------------------------------------------------|
-| **MCU**       | STM32F446RET6 (Cortex-M4 + FPU)                                        |
-| **Sensors**   | Accelerometer, gyroscope, magnetometer, barometer, temperature         |
-| **Storage**   | External flash + microSD                                               |
-| **Actuation** | 5× hobby servo PWM, ESC motor PWM                                      |
-| **Wireless**  | nRF24L01+ telemetry / command link                                     |
-| **Debug**     | SWD + UART (SEGGER J-Link)                                             |
-| **PCB**       | 4-layer, 75 × 50 mm — KiCad, manufactured **v1.0**                     |
-| **Firmware**  | CMake, FreeRTOS — `gambos-pcb` target                                  |
-| **Status**    | v1.0 built; hardware bring-up in progress; flight software in progress |
-| **Schematic** | [Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf) — KiCad export, v1.0 |
+## What this covers
 
-## Schematic (v1.0)
+- **PCB** — 4-layer board in KiCad: power, sensing, storage, actuation, RF (v1.0 manufactured)
+- **Bring-up** — power first, then buses and peripherals validated on the bench
+- **Drivers** — C++ device drivers for IMU, magnetometer, barometer, external flash, SD, nRF24L01+, hardware PWM
+- **Application** — FreeRTOS handler tasks (sensing, storage, UI); CubeMX HAL baseline with a patch workflow for regeneration
+- **Toolchain** — CMake build, Dev Container, J-Link debug (workflow docs in [software/README.md](software/README.md))
 
-The full board schematic is published as a PDF:
+## Hardware
 
-**[Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf)**
+|               |                                        |
+| ------------- | -------------------------------------- |
+| 3D render (KiCad) | Bench bring-up — power section     |
 
-The editable design lives in the KiCad project under [`hardware/`](hardware/); the PDF is an export of that source.
+v1.0 layout (left) and early bring-up (right). Full schematic: [PDF](docs/gambos-pcb.pdf) · editable source: [hardware/](hardware/)
 
-## Render and Bring-up setup
+![System block diagram](docs/assets/block-diagram.png)
 
-<p align="center">
-  <table cellspacing="0" cellpadding="12">
-    <tr>
-      <td align="center" valign="top">
-        <img src="docs/assets/3d-pcb-render.png" alt="3D PCB render" style="height:240px; width:auto; max-width:none;">
-        <br>
-        <sub>3D PCB render</sub>
-      </td>
-      <td align="center" valign="top">
-        <img src="docs/assets/bringup-setup.jpg" alt="Bring-up setup on the bench" style="height:240px; width:auto; max-width:none;">
-        <br>
-        <sub>Testing the power section on the bench</sub>
-      </td>
-    </tr>
-  </table>
-</p>
+I2C sensors, SPI storage, separate SPI for RF, PWM actuation — see [Hardware architecture](docs/hardware/hardware-architecture.md).
 
-Render of v1.0 layout in KiCad (left) and early bench bring-up (right), started with the power section before moving to testing other peripherals.
+## Firmware
 
-## Hardware block diagram
+C++17 on **FreeRTOS**. STM32 HAL and CubeMX-generated init sit at the bottom; board-specific code is in `custom_drivers/`; application logic is split into **handler tasks** under `app/gambos-pcb/` (sensing, storage, button, actuation). Handlers own scheduling and coordinate bus access — e.g. one I2C task for all flight sensors so reads stay ordered.
 
-<p align="center">
-  <img src="docs/assets/block-diagram.png" alt="System block diagram" style="height:312px; width:auto; max-width:none;">
-  <br>
-  <sub>Hardware block diagram</sub>
-</p>
+### Layer stack
 
-Buses, actuation, and interfaces are described in [Hardware architecture](docs/hardware/hardware-architecture.md).
+```mermaid
+flowchart TB
+  subgraph handlers["Application (app/gambos-pcb)"]
+    SensingHandler
+    StorageHandler
+    ButtonHandler
+    ActuatorHandler
+  end
+  subgraph drivers["Board drivers (custom_drivers)"]
+    LSM6DSVTR["IMU"]
+    IIS2MDCTR["Mag"]
+    BMP384["Baro"]
+    AT25SF128A["Flash"]
+    SDCard["SD / FatFs"]
+    NRF24["nRF24L01+"]
+    HwPwm["Servo / ESC PWM"]
+  end
+  HAL["STM32 HAL + CubeMX"]
+  RTOS["FreeRTOS"]
+  handlers --> drivers --> HAL
+  handlers --> RTOS
+```
 
-## Software architecture
+Detailed figure and stack notes: [Software architecture](docs/software/software-architecture.md).
 
-*(diagram pending)* — layer stack, drivers, RTOS tasks, and flight logic are described in [Software architecture](docs/software/software-architecture.md).
+### Subsystem status
+
+| Area | State |
+| --- | --- |
+| Build / flash / debug | Working — [software/README.md](software/README.md) |
+| I2C sensing (IMU, mag, baro) | Running on hardware |
+| Flash logging + SD export | Implemented (state machine + queue) |
+| Button / EXTI | Working |
+| Actuation (PWM) | Driver present; handler not wired in app yet |
+| RF (nRF24L01+) | Driver present; app integration pending |
+| Flight control | Not started |
+
+### Next
+
+Actuator handler integration, RF telemetry/command path, then attitude control and logging policy for flight.
 
 ## Documentation
 
-Full index: **[docs/index.md](docs/index.md)**
+**Index:** [docs/index.md](docs/index.md)
 
-**Hardware** (read in order after this page):
-
-1. [Hardware architecture](docs/hardware/hardware-architecture.md)
-2. [Physical design](docs/hardware/physical-design.md)
-3. [Power](docs/hardware/power.md) → [Storage](docs/hardware/storage.md) → [Sensing](docs/hardware/sensing.md) → [User interface](docs/hardware/user-interface.md)
-4. [Roadmap](docs/hardware/roadmap.md) — v1.0 todos and v1.1+ hardware plans
-
-**Software:** [docs/software/software-architecture.md](docs/software/software-architecture.md) → [software/README.md](software/README.md)
+| | |
+|---|---|
+| **Hardware** | [Architecture](docs/hardware/hardware-architecture.md) → [Physical design](docs/hardware/physical-design.md) → subsystems → [Roadmap](docs/hardware/roadmap.md) |
+| **Software** | [Architecture](docs/software/software-architecture.md) · [Build & debug](software/README.md) |
 
 ## Repository layout
-
 
 | Directory                | Purpose                                         |
 | ------------------------ | ----------------------------------------------- |

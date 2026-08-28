@@ -2,7 +2,7 @@
 
 Technical documentation for the Gambos flight controller: custom hardware (KiCad) and STM32 firmware (CMake + FreeRTOS).
 
-**Start here:** [repository README](../README.md) — project overview, block diagram, bring-up, and links into hardware and software docs.
+**Start here:** [repository README](../README.md) — project overview, hardware and firmware architecture, bring-up, and links into detailed docs.
 
 **Schematic (v1.0):** [Gambos PCB schematic (PDF)](gambos-pcb.pdf) — full KiCad export for review.
 
@@ -20,7 +20,7 @@ Subsystem pages (read in order; each links to the next):
 
 ## Software
 
-- [Software architecture](software/software-architecture.md) — firmware layers and placeholders for stack docs
+- [Software architecture](software/software-architecture.md) — layer stack, handlers, and driver layout
 - [Build, flash, debug](../software/README.md)
 
 ## Repository entry points
