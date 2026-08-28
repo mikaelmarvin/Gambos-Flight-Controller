@@ -45,7 +45,7 @@ bool SdCardFileSystem::Mount(void) {
 
     const FRESULT fr = f_mount(&_fs, kSdVolumePath, 1);
     if (fr != FR_OK) {
-        LOG("ERROR: SD f_mount failed: %d", static_cast<int>(fr));
+        LOG("ERROR: SD f_mount failed: %d\r\n", static_cast<int>(fr));
         _mounted = false;
         return false;
     }
@@ -65,7 +65,7 @@ bool SdCardFileSystem::Unmount(void) {
 
     const FRESULT fr = f_unmount(kSdVolumePath);
     if (fr != FR_OK) {
-        LOG("ERROR: SD f_unmount failed: %d", static_cast<int>(fr));
+        LOG("ERROR: SD f_unmount failed: %d\r\n", static_cast<int>(fr));
         return false;
     }
 
@@ -91,30 +91,52 @@ bool SdCardFileSystem::OpenLogsForWrite(void) {
 
     FRESULT fr = f_mkdir(kLogDir);
     if ((fr != FR_OK) && (fr != FR_EXIST)) {
-        LOG("ERROR: SD f_mkdir failed: %d", static_cast<int>(fr));
+        LOG("ERROR: SD f_mkdir failed: %d\r\n", static_cast<int>(fr));
         return false;
     }
 
     // FatFs is configured with FF_USE_LFN=0 (8.3 names only), so
     // paths are short like "LOGS/0000.BIN". kLogPathMaxLen includes
     // room for that path plus the null terminator.
+    uint32_t next_index = 0U;
+    if (!FindNextLogIndex(next_index)) {
+        return false;
+    }
+
     char path[kLogPathMaxLen] = {};
-    if (!FindNextLogPath(path, sizeof(path))) {
-        return false;
+    // CREATE_NEW: never overwrite. Retry on FR_EXIST if the scan
+    // missed a file (e.g. leftover empty export).
+    constexpr uint32_t kMaxCreateRetries = 8U;
+    for (uint32_t attempt = 0U; attempt < kMaxCreateRetries;
+         ++attempt) {
+        if (next_index >= kMaxLogFileIndex) {
+            LOG("ERROR: SD LOGS/ is full (next would be %u)\r\n",
+                static_cast<unsigned>(next_index));
+            return false;
+        }
+        if (!FormatLogPath(path, sizeof(path), next_index)) {
+            return false;
+        }
+
+        fr = f_open(&_log_file, path, FA_WRITE | FA_CREATE_NEW);
+        if (fr == FR_OK) {
+            LOG("INFO: SD export file %s\r\n", path);
+            _logs_file_is_open = true;
+            return true;
+        }
+        if (fr != FR_EXIST) {
+            LOG("ERROR: SD f_open logs failed: %d path=%s\r\n",
+                static_cast<int>(fr),
+                path);
+            return false;
+        }
+
+        LOG("INFO: SD %s exists, trying next index\r\n", path);
+        ++next_index;
     }
 
-    // CREATE_NEW: never overwrite an existing export.
-    fr = f_open(&_log_file, path, FA_WRITE | FA_CREATE_NEW);
-    if (fr != FR_OK) {
-        LOG("ERROR: SD f_open logs failed: %d path=%s",
-            static_cast<int>(fr),
-            path);
-        return false;
-    }
-
-    LOG("INFO: SD export file %s\r\n", path);
-    _logs_file_is_open = true;
-    return true;
+    LOG("ERROR: SD f_open exhausted create retries\r\n");
+    return false;
 }
 
 bool SdCardFileSystem::CloseLogs(void) {
@@ -124,7 +146,7 @@ bool SdCardFileSystem::CloseLogs(void) {
 
     const FRESULT fr = f_close(&_log_file);
     if (fr != FR_OK) {
-        LOG("ERROR: SD f_close logs failed: %d",
+        LOG("ERROR: SD f_close logs failed: %d\r\n",
             static_cast<int>(fr));
         return false;
     }
@@ -142,7 +164,7 @@ bool SdCardFileSystem::WriteLogs(const uint8_t *data, uint32_t size) {
     const FRESULT fr =
         f_write(&_log_file, data, static_cast<UINT>(size), &written);
     if ((fr != FR_OK) || (written != static_cast<UINT>(size))) {
-        LOG("ERROR: SD f_write logs failed: %d written=%u",
+        LOG("ERROR: SD f_write logs failed: %d written=%u\r\n",
             static_cast<int>(fr),
             static_cast<unsigned>(written));
         return false;
@@ -151,25 +173,34 @@ bool SdCardFileSystem::WriteLogs(const uint8_t *data, uint32_t size) {
     return true;
 }
 
-bool SdCardFileSystem::FindNextLogPath(char *path,
-                                       uint32_t path_len) {
-    if ((path == nullptr) || (path_len < kLogPathMaxLen)) {
+bool SdCardFileSystem::FormatLogPath(char *path,
+                                     uint32_t path_len,
+                                     uint32_t index) {
+    if ((path == nullptr) || (path_len < kLogPathMaxLen) ||
+        (index >= kMaxLogFileIndex)) {
         return false;
     }
 
+    const int printed =
+        std::snprintf(path,
+                      path_len,
+                      "LOGS/%04u.BIN",
+                      static_cast<unsigned>(index));
+    return (printed > 0) &&
+           (static_cast<uint32_t>(printed) < path_len);
+}
+
+bool SdCardFileSystem::FindNextLogIndex(uint32_t &next_index) {
     // Scan LOGS/ once: next name is (highest NNNN.BIN index) + 1.
     // Gaps from PC deletes are never reused (0000,0001,0003 → 0004).
     DIR dir{};
     FRESULT fr = f_opendir(&dir, kLogDir);
     if (fr == FR_NO_PATH) {
-        // Directory not created yet — first file is 0000.
-        const int printed =
-            std::snprintf(path, path_len, "LOGS/0000.BIN");
-        return (printed > 0) &&
-               (static_cast<uint32_t>(printed) < path_len);
+        next_index = 0U;
+        return true;
     }
     if (fr != FR_OK) {
-        LOG("ERROR: SD f_opendir failed: %d", static_cast<int>(fr));
+        LOG("ERROR: SD f_opendir failed: %d\r\n", static_cast<int>(fr));
         return false;
     }
 
@@ -189,9 +220,11 @@ bool SdCardFileSystem::FindNextLogPath(char *path,
         }
 
         // Expect 8.3 name like "0003.BIN" (FF_USE_LFN == 0).
-        uint32_t index = 0U;
+        // Use unsigned — %u must match unsigned*, not uint32_t*
+        // (unsigned long on this toolchain).
+        unsigned index = 0U;
         char ext[4] = {};
-        if (std::sscanf(info.fname, "%04u.%3s", &index, ext) != 2) {
+        if (std::sscanf(info.fname, "%u.%3s", &index, ext) != 2) {
             continue;
         }
         if ((ext[0] != 'B' && ext[0] != 'b') ||
@@ -199,29 +232,25 @@ bool SdCardFileSystem::FindNextLogPath(char *path,
             (ext[2] != 'N' && ext[2] != 'n')) {
             continue;
         }
-        if (index > highest) {
-            highest = index;
+        if (static_cast<int32_t>(index) > highest) {
+            highest = static_cast<int32_t>(index);
         }
     }
     (void)f_closedir(&dir);
 
     if (fr != FR_OK) {
-        LOG("ERROR: SD f_readdir failed: %d", static_cast<int>(fr));
+        LOG("ERROR: SD f_readdir failed: %d\r\n", static_cast<int>(fr));
         return false;
     }
 
-    const uint32_t next = static_cast<uint32_t>(highest + 1);
-    if (next >= kMaxLogFileIndex) {
-        LOG("ERROR: SD LOGS/ is full (next would be %u)",
-            static_cast<unsigned>(next));
+    next_index = static_cast<uint32_t>(highest + 1);
+    if (next_index >= kMaxLogFileIndex) {
+        LOG("ERROR: SD LOGS/ is full (next would be %u)\r\n",
+            static_cast<unsigned>(next_index));
         return false;
     }
 
-    // Set the output argument path to the next log file path.
-    const int printed = std::snprintf(
-        path, path_len, "LOGS/%04u.BIN", static_cast<unsigned>(next));
-    return (printed > 0) &&
-           (static_cast<uint32_t>(printed) < path_len);
+    return true;
 }
 
 extern "C" DSTATUS disk_status(BYTE pdrv) {

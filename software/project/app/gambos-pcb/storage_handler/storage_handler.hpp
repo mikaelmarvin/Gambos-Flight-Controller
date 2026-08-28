@@ -45,6 +45,7 @@ class StorageHandler {
   private:
     static void TaskFunction(void *pvParameters);
     static void OnButtonInfo(const topics::ButtonInfo &topic);
+    static void OnAccelSample(const topics::AccelSample &topic);
 
     void HandleSettingsRead(const StorageQueueItem &item);
     void HandleSettingsWrite(const StorageQueueItem &item);
