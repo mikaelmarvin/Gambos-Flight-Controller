@@ -75,13 +75,14 @@ bool SensingHandler::ReadAndPublishImu(void) {
     accel_topic.x = accel.x;
     accel_topic.y = accel.y;
     accel_topic.z = accel.z;
-    (void)Messaging::Publish<topics::AccelSample>(accel_topic);
+    Messaging::Publish<topics::AccelSample>(accel_topic);
 
     topics::GyroSample gyro_topic{};
     gyro_topic.x = gyro.x;
     gyro_topic.y = gyro.y;
     gyro_topic.z = gyro.z;
-    return Messaging::Publish<topics::GyroSample>(gyro_topic);
+    Messaging::Publish<topics::GyroSample>(gyro_topic);
+    return true;
 }
 
 bool SensingHandler::ReadAndPublishMag(void) {
@@ -94,7 +95,8 @@ bool SensingHandler::ReadAndPublishMag(void) {
     topic.x = sample.x;
     topic.y = sample.y;
     topic.z = sample.z;
-    return Messaging::Publish<topics::MagSample>(topic);
+    Messaging::Publish<topics::MagSample>(topic);
+    return true;
 }
 
 bool SensingHandler::ReadAndPublishBaro(void) {
@@ -106,7 +108,8 @@ bool SensingHandler::ReadAndPublishBaro(void) {
     topics::BaroSample topic{};
     topic.pressure_pa = sample.pressure_pa;
     topic.temperature_centi_c = sample.temperature_centi_c;
-    return Messaging::Publish<topics::BaroSample>(topic);
+    Messaging::Publish<topics::BaroSample>(topic);
+    return true;
 }
 
 void SensingHandler::TaskFunction(void *pvParameters) {
@@ -114,14 +117,14 @@ void SensingHandler::TaskFunction(void *pvParameters) {
         static_cast<SensingHandler *>(pvParameters);
 
     while (true) {
-        (void)self->ReadAndPublishImu();
+        self->ReadAndPublishImu();
 
         self->_loop_count++;
         if ((self->_loop_count % kBaroDecimation) == 0U) {
-            (void)self->ReadAndPublishBaro();
+            self->ReadAndPublishBaro();
         }
         if ((self->_loop_count % kMagDecimation) == 0U) {
-            (void)self->ReadAndPublishMag();
+            self->ReadAndPublishMag();
         }
 
         vTaskDelay(pdMS_TO_TICKS(kTaskPeriodMs));

@@ -15,7 +15,6 @@ SdCard g_sd{Spi2(), {SD_CS_GPIO_Port, SD_CS_Pin}};
 Bmp384 g_baro{I2c1(), kBmp384I2cAddr7};
 Iis2mdctr g_magnetometer{I2c1(), kIis2mdctrI2cAddr7};
 Lsm6dsvtr g_imu{I2c1(), kLsm6dsvtrI2cAddr7};
-Nrf24l01p g_radio{};
 
 } // namespace
 
@@ -48,7 +47,7 @@ bool InitDevices(void) {
     }
 
     /* I2C sensors are initialized by SensingHandler. */
-    /* SD card is initialized by SdHandler (FatFs mount). */
+    /* SD / FatFs is owned by storage_handler (sd_fs) when needed. */
     return true;
 }
 
@@ -57,6 +56,5 @@ SdCard &Sd(void) { return g_sd; }
 Bmp384 &Baro(void) { return g_baro; }
 Iis2mdctr &Magnetometer(void) { return g_magnetometer; }
 Lsm6dsvtr &Imu(void) { return g_imu; }
-Nrf24l01p &Radio(void) { return g_radio; }
 
 } // namespace board
