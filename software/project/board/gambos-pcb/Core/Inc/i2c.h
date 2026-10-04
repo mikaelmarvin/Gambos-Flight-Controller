@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
- * @file    gpio.h
+ * @file    i2c.h
  * @brief   This file contains all the function prototypes for
- *          the gpio.c file
+ *          the i2c.c file
  ******************************************************************************
  * @attention
  *
@@ -17,28 +17,28 @@
  ******************************************************************************
  */
 /* USER CODE END Header */
-/* Define to prevent recursive inclusion
- * -------------------------------------*/
-#ifndef __GPIO_H__
-#define __GPIO_H__
+/* Define to prevent recursive inclusion -------------------------------------*/
+#ifndef __I2C_H__
+#define __I2C_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/* Includes
- * ------------------------------------------------------------------*/
+/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
+extern I2C_HandleTypeDef hi2c1;
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-void MX_GPIO_Init(void);
+void MX_I2C1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -47,4 +47,6 @@ void MX_GPIO_Init(void);
 #ifdef __cplusplus
 }
 #endif
-#endif /*__ GPIO_H__ */
+
+#endif /* __I2C_H__ */
+
