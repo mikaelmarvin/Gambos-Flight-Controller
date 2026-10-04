@@ -28,9 +28,22 @@ Schematic, layout, manufacture, bring-up, drivers, and application code in one r
 
 ## Hardware
 
-|               |                                        |
-| ------------- | -------------------------------------- |
-| 3D render (KiCad) | Bench bring-up — power section     |
+<p align="center">
+  <table cellspacing="0" cellpadding="12">
+    <tr>
+      <td align="center" valign="top">
+        <img src="docs/assets/3d-pcb-render.png" alt="3D PCB render" style="height:240px; width:auto; max-width:none;">
+        <br>
+        <sub>3D render (KiCad)</sub>
+      </td>
+      <td align="center" valign="top">
+        <img src="docs/assets/bringup-setup.jpg" alt="Bring-up setup on the bench" style="height:240px; width:auto; max-width:none;">
+        <br>
+        <sub>Bench bring-up — power section</sub>
+      </td>
+    </tr>
+  </table>
+</p>
 
 v1.0 layout (left) and early bring-up (right). Full schematic: [PDF](docs/gambos-pcb.pdf) · editable source: [hardware/](hardware/)
 
