@@ -1,7 +1,6 @@
 # Build
 software/project/build/
 software/project/.cache/
-software/project/board/gambos-pcb/
 *.elf
 *.bin
 *.hex
