@@ -23,11 +23,9 @@ Optional env:
 
 | Script | Role |
 |--------|------|
-| `build.sh` | Sync (default) + configure + compile → `build/gambos-pcb/gambos.elf`; use `--no-sync` to skip sync |
+| `build.sh` | Configure + compile → `build/gambos-pcb/gambos.elf` |
 | `clean.sh` | CMake `clean` for `gambos-pcb` |
 | `pristine.sh` / `pristine.sh all` | Delete entire `build/` |
 | `pristine.sh gambos-pcb` | Delete only `build/gambos-pcb/` |
-| `sync-cubemx-gambos-pcb.sh` | Normalize LF + clang-format `Core/`, apply patches → `board/gambos-pcb/` |
-| `regenerate-board-patches.sh` | Refresh patches from `gambos-pcb/` vs upstream; skips unchanged; optional patch name args |
 
 USB debug probes need **`/dev/bus/usb`** (see repo `docker-compose.yml`). Install SEGGER in the image (repo `Dockerfile`) and rebuild the Dev Container.
