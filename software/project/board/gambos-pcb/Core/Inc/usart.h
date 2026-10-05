@@ -17,8 +17,7 @@
  ******************************************************************************
  */
 /* USER CODE END Header */
-/* Define to prevent recursive inclusion
- * -------------------------------------*/
+/* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __USART_H__
 #define __USART_H__
 
@@ -26,8 +25,7 @@
 extern "C" {
 #endif
 
-/* Includes
- * ------------------------------------------------------------------*/
+/* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
@@ -51,3 +49,4 @@ void MX_UART4_Init(void);
 #endif
 
 #endif /* __USART_H__ */
+

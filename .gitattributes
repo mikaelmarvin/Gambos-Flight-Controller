@@ -1,3 +1,2 @@
-# CubeMX on Windows emits CRLF; keep the tracked export LF-only.
-software/project/board/gambos-pcb_upstream/** text eol=lf
-software/project/board/gambos-pcb_patches/** text eol=lf
+# CubeMX on Windows emits CRLF; keep the tracked board export LF-only.
+software/project/board/gambos-pcb/** text eol=lf

@@ -31,7 +31,7 @@ set(CUBEMX_BOARD_CMAKE_DIR "${CMAKE_SOURCE_DIR}/board/gambos-pcb/cmake/stm32cube
 if(NOT EXISTS "${CUBEMX_BOARD_CMAKE_DIR}/CMakeLists.txt")
     message(FATAL_ERROR
         "Missing Cube board cmake: ${CUBEMX_BOARD_CMAKE_DIR}/CMakeLists.txt\n"
-        "Run: ./scripts/sync-cubemx-gambos-pcb.sh"
+        "Expected committed tree at board/gambos-pcb/"
     )
 endif()
 add_subdirectory("${CUBEMX_BOARD_CMAKE_DIR}" cubemx_board)
