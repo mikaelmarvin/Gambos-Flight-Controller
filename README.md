@@ -24,7 +24,7 @@ The full board schematic is published as a PDF:
 
 **[Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf)**
 
-The editable design lives in the KiCad project under [`hardware/`](hardware/); the PDF is an export of that source.
+The editable KiCad design lives in a separate repository, [gambos_hardware](https://github.com/mikaelmarvin/gambos_hardware); the PDF is an export of that source.
 
 ## Render and Bring-up setup
 
@@ -79,6 +79,5 @@ Full index: **[docs/index.md](docs/index.md)**
 
 | Directory                | Purpose                                         |
 | ------------------------ | ----------------------------------------------- |
-| `[hardware/](hardware/)` | KiCad project, libraries, manufacturing outputs |
 | `[software/](software/)` | STM32 firmware (CMake, FreeRTOS)                |
 | `[docs/](docs/)`         | Hardware and software documentation, figures    |
