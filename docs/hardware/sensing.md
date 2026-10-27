@@ -14,7 +14,7 @@ The sensing section includes:
 
 All sensors share one **I2C** bus to reduce pin count and routing complexity.
 
-Sensors run at different sample rates, so firmware must serialize access (dedicated I2C task, mutexes or semaphores, etc.) — see the firmware tree under `software/project/`.
+Sensors run at different sample rates, so firmware must serialize access (dedicated I2C task, mutexes or semaphores, etc.) — see the firmware tree under `project/`.
 
 ## Routing and layout
 

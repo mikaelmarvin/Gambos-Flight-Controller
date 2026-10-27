@@ -1,6 +1,6 @@
 # Software architecture
 
-Firmware for Gambos lives under [`software/`](../../software/).
+Firmware for Gambos lives under [`project/`](../../project/).
 
 | | |
 | --- | --- |
@@ -10,7 +10,7 @@ Firmware for Gambos lives under [`software/`](../../software/).
 
 ## Getting started
 
-**[software/README.md](../../software/README.md)** — Dev Container, build, flash, and debug scripts.
+**[project/README.md](../../project/README.md)** — Dev Container, build, flash, and debug scripts.
 
 ## Software architecture *(documentation in progress)*
 

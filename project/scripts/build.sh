@@ -2,7 +2,7 @@
 # Configure (if needed) + build for the Gambos PCB target.
 #
 # Usage:
-#   ./software/project/scripts/build.sh
+#   ./project/scripts/build.sh
 #
 set -euo pipefail
 

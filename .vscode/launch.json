@@ -7,10 +7,10 @@
       "request": "launch",
       "servertype": "jlink",
       "cwd": "${workspaceFolder}",
-      "executable": "${workspaceFolder}/software/project/build/gambos-pcb/gambos.elf",
+      "executable": "${workspaceFolder}/project/build/gambos-pcb/gambos.elf",
       "device": "STM32F446RE",
       "interface": "swd",
-      "svdFile": "${workspaceFolder}/software/STM32F446.svd",
+      "svdFile": "${workspaceFolder}/STM32F446.svd",
       "runToEntryPoint": "main"
     },
     {
@@ -18,10 +18,10 @@
       "type": "cortex-debug",
       "request": "attach",
       "servertype": "jlink",
-      "executable": "${workspaceFolder}/software/project/build/gambos-pcb/gambos.elf",
+      "executable": "${workspaceFolder}/project/build/gambos-pcb/gambos.elf",
       "device": "STM32F446RE",
       "interface": "swd",
-      "svdFile": "${workspaceFolder}/software/STM32F446.svd"
+      "svdFile": "${workspaceFolder}/STM32F446.svd"
     }
   ]
 }

@@ -18,7 +18,7 @@
 4. Build:
 
 ```bash
-./software/project/scripts/build.sh
+./project/scripts/build.sh
 ```
 
 Put pins, clocks, timers, NVIC, and FreeRTOS parameters in the `.ioc`. Put application glue only in Cube `USER CODE` sections (for example `app_init()` in `Core/Src/main.c`).

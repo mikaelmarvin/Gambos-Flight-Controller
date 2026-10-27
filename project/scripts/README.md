@@ -1,4 +1,4 @@
-# `software/project/scripts`
+# `project/scripts`
 
 Run these from the **repository root**.
 
@@ -6,12 +6,12 @@ Run these from the **repository root**.
 
 | Command | Hardware | Probe | Flash |
 |---------|----------|-------|-------|
-| `./software/project/scripts/probe.sh` | Gambos PCB — **SEGGER J-Link** | `./software/project/scripts/probe.sh` | `./software/project/scripts/flash.sh` |
+| `./project/scripts/probe.sh` | Gambos PCB — **SEGGER J-Link** | `./project/scripts/probe.sh` | `./project/scripts/flash.sh` |
 
 Build first:
 
 ```bash
-./software/project/scripts/build.sh
+./project/scripts/build.sh
 ```
 
 Optional env:

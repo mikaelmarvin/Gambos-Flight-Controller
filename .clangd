@@ -1,6 +1,6 @@
 # Workspace-root clangd config (picked up for all files under gambos/).
 CompileFlags:
-  CompilationDatabase: software/project
+  CompilationDatabase: project
 
 Index:
   Background: Build
