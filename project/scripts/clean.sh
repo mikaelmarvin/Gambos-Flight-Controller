@@ -2,8 +2,8 @@
 # Run CMake clean for the Gambos PCB preset.
 #
 # Usage:
-#   ./software/project/scripts/clean.sh
-#   ./software/project/scripts/clean.sh gambos-pcb
+#   ./project/scripts/clean.sh
+#   ./project/scripts/clean.sh gambos-pcb
 #
 set -euo pipefail
 

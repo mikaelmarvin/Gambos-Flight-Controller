@@ -21,10 +21,10 @@ Subsystem pages (read in order; each links to the next):
 ## Software
 
 - [Software architecture](software/software-architecture.md) — firmware layers and placeholders for stack docs
-- [Build, flash, debug](../software/README.md)
+- [Build, flash, debug](../project/README.md)
 
 ## Repository entry points
 
 - [Repository README](../README.md)
 - [KiCad project](../hardware/gambos-pcb.kicad_pro)
-- [Firmware](../software/)
+- [Firmware](../project/)

@@ -21,12 +21,12 @@
         "[cpp]": {
           "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
         },
-        "C_Cpp.default.compileCommands": "${workspaceFolder}/software/project/compile_commands.json",
+        "C_Cpp.default.compileCommands": "${workspaceFolder}/project/compile_commands.json",
         "C_Cpp.intelliSenseEngine": "disabled",
         "C_Cpp.errorSquiggles": "disabled",
         "clangd.arguments": [
           "--background-index",
-          "--compile-commands-dir=${workspaceFolder}/software/project"
+          "--compile-commands-dir=${workspaceFolder}/project"
         ]
       }
     }

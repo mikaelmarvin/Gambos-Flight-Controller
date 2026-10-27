@@ -72,12 +72,12 @@ Full index: **[docs/index.md](docs/index.md)**
 3. [Power](docs/hardware/power.md) → [Storage](docs/hardware/storage.md) → [Sensing](docs/hardware/sensing.md) → [User interface](docs/hardware/user-interface.md)
 4. [Roadmap](docs/hardware/roadmap.md) — v1.0 todos and v1.1+ hardware plans
 
-**Software:** [docs/software/software-architecture.md](docs/software/software-architecture.md) → [software/README.md](software/README.md)
+**Software:** [docs/software/software-architecture.md](docs/software/software-architecture.md) → [project/README.md](project/README.md)
 
 ## Repository layout
 
 
 | Directory                | Purpose                                         |
 | ------------------------ | ----------------------------------------------- |
-| `[software/](software/)` | STM32 firmware (CMake, FreeRTOS)                |
+| `[project/](project/)`   | STM32 firmware (CMake, FreeRTOS)                |
 | `[docs/](docs/)`         | Hardware and software documentation, figures    |
