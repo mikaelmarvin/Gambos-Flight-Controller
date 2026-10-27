@@ -41,7 +41,8 @@ class SpiBus {
                             uint16_t len,
                             TickType_t timeout);
 
-    /** SPI_BAUDRATEPRESCALER_* ; SPI is briefly disabled while BR changes. */
+    /** SPI_BAUDRATEPRESCALER_* ; SPI is briefly disabled while BR
+     * changes. */
     bool SetBaudRatePrescaler(uint32_t prescaler, TickType_t timeout);
     uint32_t GetBaudRatePrescaler(void) const;
 
@@ -103,9 +104,16 @@ class I2cBus {
     SemaphoreHandle_t _bus_mutex{nullptr};
 };
 
+class UartBus {
+  public:
+    bool Init(UART_HandleTypeDef *huart);
+    bool IsInitialized(void) const;
+};
+
 // Singleton instances for each physical bus.
 SpiBus &Spi1(void);
 SpiBus &Spi2(void);
 I2cBus &I2c1(void);
+UartBus &Uart1(void);
 
 #endif /* BUS_HPP */
