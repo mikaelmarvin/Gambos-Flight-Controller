@@ -11,6 +11,7 @@
       "device": "STM32F446RE",
       "interface": "swd",
       "svdFile": "${workspaceFolder}/STM32F446.svd",
+      "rtos": "FreeRTOS",
       "runToEntryPoint": "main"
     },
     {
@@ -21,7 +22,8 @@
       "executable": "${workspaceFolder}/project/build/gambos-pcb/gambos.elf",
       "device": "STM32F446RE",
       "interface": "swd",
-      "svdFile": "${workspaceFolder}/STM32F446.svd"
+      "svdFile": "${workspaceFolder}/STM32F446.svd",
+      "rtos": "FreeRTOS"
     }
   ]
 }

@@ -2,6 +2,11 @@
   "cortex-debug.armToolchainPath": "/usr/bin",
   "cortex-debug.gdbPath": "/usr/bin/gdb-multiarch",
   "editor.formatOnSave": true,
+  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', 'DejaVu Sans Mono', monospace",
+  "editor.fontSize": 14,
+  "editor.lineHeight": 1.5,
+  "editor.fontLigatures": true,
+  "terminal.integrated.fontFamily": "'JetBrains Mono', monospace",
   "[c]": {
     "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
     "editor.wordWrap": "wordWrapColumn",

@@ -16,15 +16,15 @@ Custom **STM32F446** flight-controller PCB and firmware — schematic through la
 | **PCB**       | 4-layer, 75 × 50 mm — KiCad, manufactured **v1.0**                     |
 | **Firmware**  | CMake, FreeRTOS — `gambos-pcb` target                                  |
 | **Status**    | v1.0 built; hardware bring-up in progress; flight software in progress |
-| **Schematic** | [Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf) — KiCad export, v1.0 |
+| **Schematic** | [Gambos PCB schematic (PDF)](https://github.com/mikaelmarvin/gambos_hardware/blob/main/docs/gambos-pcb.pdf) — KiCad export, v1.0 |
 
 ## Schematic (v1.0)
 
 The full board schematic is published as a PDF:
 
-**[Gambos PCB schematic (PDF)](docs/gambos-pcb.pdf)**
+**[Gambos PCB schematic (PDF)](https://github.com/mikaelmarvin/gambos_hardware/blob/main/docs/gambos-pcb.pdf)**
 
-The editable KiCad design lives in a separate repository, [gambos_hardware](https://github.com/mikaelmarvin/gambos_hardware); the PDF is an export of that source.
+The KiCad design, the schematic PDF and the hardware documentation live in a separate repository, [gambos_hardware](https://github.com/mikaelmarvin/gambos_hardware).
 
 ## Render and Bring-up setup
 
@@ -55,7 +55,7 @@ Render of v1.0 layout in KiCad (left) and early bench bring-up (right), started 
   <sub>Hardware block diagram</sub>
 </p>
 
-Buses, actuation, and interfaces are described in [Hardware architecture](docs/hardware/hardware-architecture.md).
+Buses, actuation, and interfaces are described in [Hardware architecture](https://github.com/mikaelmarvin/gambos_hardware/blob/main/docs/hardware-architecture.md).
 
 ## Software architecture
 
@@ -65,14 +65,9 @@ Buses, actuation, and interfaces are described in [Hardware architecture](docs/h
 
 Full index: **[docs/index.md](docs/index.md)**
 
-**Hardware** (read in order after this page):
+**Hardware:** documentation for the v1.0 board lives in [gambos_hardware](https://github.com/mikaelmarvin/gambos_hardware#documentation-v10) — architecture, physical design, power, storage, sensing, user interface, and the hardware roadmap.
 
-1. [Hardware architecture](docs/hardware/hardware-architecture.md)
-2. [Physical design](docs/hardware/physical-design.md)
-3. [Power](docs/hardware/power.md) → [Storage](docs/hardware/storage.md) → [Sensing](docs/hardware/sensing.md) → [User interface](docs/hardware/user-interface.md)
-4. [Roadmap](docs/hardware/roadmap.md) — v1.0 todos and v1.1+ hardware plans
-
-**Software:** [docs/software/software-architecture.md](docs/software/software-architecture.md) → [project/README.md](project/README.md)
+**Software:** [docs/software/software-architecture.md](docs/software/software-architecture.md) → [project/README.md](project/README.md) · [Firmware roadmap](docs/software/roadmap.md)
 
 ## Repository layout
 
@@ -80,4 +75,4 @@ Full index: **[docs/index.md](docs/index.md)**
 | Directory                | Purpose                                         |
 | ------------------------ | ----------------------------------------------- |
 | `[project/](project/)`   | STM32 firmware (CMake, FreeRTOS)                |
-| `[docs/](docs/)`         | Hardware and software documentation, figures    |
+| `[docs/](docs/)`         | Software documentation, figures                 |

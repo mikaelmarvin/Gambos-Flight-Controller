@@ -20,5 +20,5 @@ Expand these sections on this page (or add linked pages) as the stack matures. T
 ## Related documentation
 
 - [Repository README](../../README.md)
-- [Hardware architecture](../hardware/hardware-architecture.md)
-- [Roadmap](../hardware/roadmap.md)
+- [Hardware architecture](https://github.com/mikaelmarvin/gambos_hardware/blob/main/docs/hardware-architecture.md)
+- [Roadmap](roadmap.md)

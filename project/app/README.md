@@ -1,3 +1,3 @@
 # Application
 
-The Gambos PCB application lives in `app/gambos-pcb/`. Sources are listed in `app/gambos-pcb/CMakeLists.txt` (included from the top-level `CMakeLists.txt`).
+The Gambos PCB application lives in `app/`. Sources are listed in `app/CMakeLists.txt` (included from the top-level `CMakeLists.txt`).

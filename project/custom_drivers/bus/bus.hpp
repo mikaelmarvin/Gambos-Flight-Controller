@@ -26,7 +26,7 @@ class CsAssert {
     CsPin _cs{};
 };
 
-/** One instance per physical SPI peripheral (hspi1, hspi2). */
+/** One instance per physical SPI peripheral (hspi1). */
 class SpiBus {
   public:
     bool Init(SPI_HandleTypeDef *hspi);
@@ -105,7 +105,6 @@ class I2cBus {
 
 // Singleton instances for each physical bus.
 SpiBus &Spi1(void);
-SpiBus &Spi2(void);
 I2cBus &I2c1(void);
 
 #endif /* BUS_HPP */
