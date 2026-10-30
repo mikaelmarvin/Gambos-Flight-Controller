@@ -14,7 +14,6 @@ uint16_t ToHalDevAddress(const uint16_t dev_addr_7bit) {
 
 void SignalSpiDmaComplete(SPI_HandleTypeDef *hspi) {
     Spi1().SignalIfHandle(hspi);
-    Spi2().SignalIfHandle(hspi);
 }
 
 void SignalI2cDmaComplete(I2C_HandleTypeDef *hi2c) {
@@ -422,7 +421,3 @@ SpiBus &Spi1(void) {
     return bus;
 }
 
-SpiBus &Spi2(void) {
-    static SpiBus bus;
-    return bus;
-}

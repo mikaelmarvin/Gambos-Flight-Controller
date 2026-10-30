@@ -12,7 +12,7 @@ if [[ $# -gt 0 ]]; then
 fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-BOARD_TREE="${ROOT}/board/gambos-pcb"
+BOARD_TREE="${ROOT}/board"
 cd "$ROOT"
 
 if [[ ! -f "${BOARD_TREE}/cmake/stm32cubemx/CMakeLists.txt" ]]; then

@@ -27,11 +27,11 @@ constexpr uint8_t kR1Ready = 0x00U;
 
 constexpr uint8_t kR7ValidVoltageRange = 0x01U;
 constexpr uint8_t kCmd8CheckPattern = 0xAAU;
-// SD init / identification: fOD <= 400 kHz. APB1 = 45 MHz → /128 ≈
-// 352 kHz.
-constexpr uint32_t kSdInitPrescaler = SPI_BAUDRATEPRESCALER_128;
-// Runtime SD transfers on shared SPI2. Cube default /2 = 22.5 MHz is
-// too fast for this slot; /16 ≈ 2.8 MHz is a safe SPI-mode rate.
+// SD init / identification: fOD <= 400 kHz. SPI1 on APB2 = 84 MHz →
+// /256 ≈ 328 kHz.
+constexpr uint32_t kSdInitPrescaler = SPI_BAUDRATEPRESCALER_256;
+// Runtime SD transfers on shared SPI1. Cube default /2 = 42 MHz is
+// too fast for this slot; /16 = 5.25 MHz is a safe SPI-mode rate.
 constexpr uint32_t kSdDataPrescaler = SPI_BAUDRATEPRESCALER_16;
 constexpr uint8_t kCmd0GoIdle[6] = {
     0x40U, 0x00U, 0x00U, 0x00U, 0x00U, 0x95U};
@@ -543,7 +543,7 @@ bool SdCard::Init(void) {
     } while (false);
 
     if (ok) {
-        // Stay moderate; do not restore Cube /2 (22.5 MHz).
+        // Stay moderate; do not restore Cube /2 (42 MHz).
         (void)_bus->SetBaudRatePrescaler(kSdDataPrescaler,
                                          kSpiDmaTimeoutMs);
     } else {

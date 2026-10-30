@@ -3,7 +3,21 @@
 
 namespace {
 
-constexpr uint32_t kTimCounterClockHz = 90'000'000U;
+// Timer kernel clock: PCLKx, doubled when the APBx prescaler is not 1.
+uint32_t TimerClockHz(const TIM_TypeDef *instance) {
+    const bool on_apb2 = (instance == TIM1) || (instance == TIM8) ||
+                         (instance == TIM9) || (instance == TIM10) ||
+                         (instance == TIM11);
+
+    const uint32_t pclk =
+        on_apb2 ? HAL_RCC_GetPCLK2Freq() : HAL_RCC_GetPCLK1Freq();
+    const uint32_t ppre = on_apb2 ? (RCC->CFGR & RCC_CFGR_PPRE2)
+                                  : (RCC->CFGR & RCC_CFGR_PPRE1);
+    const bool apb_div1 =
+        on_apb2 ? (ppre == RCC_CFGR_PPRE2_DIV1) : (ppre == RCC_CFGR_PPRE1_DIV1);
+
+    return apb_div1 ? pclk : (pclk * 2U);
+}
 
 } // namespace
 
@@ -51,7 +65,7 @@ bool PwmDriver::SetPulse(float pulse_ms) {
 
     const uint32_t psc = _htim->Instance->PSC;
     const uint32_t arr = __HAL_TIM_GET_AUTORELOAD(_htim);
-    const float tick_hz = static_cast<float>(kTimCounterClockHz) /
+    const float tick_hz = static_cast<float>(TimerClockHz(_htim->Instance)) /
                           static_cast<float>(psc + 1U);
     const float pulse_ticks_f = (pulse_ms / 1000.0f) * tick_hz;
 
