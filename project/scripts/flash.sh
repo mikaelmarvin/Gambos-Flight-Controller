@@ -4,7 +4,6 @@
 #
 # Usage:
 #   ./project/scripts/flash.sh
-#   ./project/scripts/flash.sh gambos-pcb
 #
 # Prerequisites: ./project/scripts/build.sh
 #
@@ -13,10 +12,8 @@
 #
 set -euo pipefail
 
-BOARD="${1:-gambos-pcb}"
-
-if [[ "${BOARD}" != "gambos-pcb" ]]; then
-    echo "Usage: $0 [gambos-pcb]" >&2
+if [[ $# -gt 0 ]]; then
+    echo "Error: The script $0 expects zero arguments" >&2
     exit 1
 fi
 
@@ -27,7 +24,7 @@ SPEED="${GAMBOS_JLINK_SPEED:-4000}"
 if [[ -n "${GAMBOS_FLASH_ELF:-}" ]]; then
     ELF="${GAMBOS_FLASH_ELF}"
 else
-    ELF="${ROOT}/build/${BOARD}/gambos.elf"
+    ELF="${ROOT}/build/gambos.elf"
 fi
 
 if [[ ! -f "$ELF" ]]; then
@@ -55,5 +52,5 @@ r
 g
 exit
 EOF
-echo "Flash gambos-pcb (J-Link): ${ELF}  device=${DEVICE} SWD=${SPEED}kHz"
+echo "Flash gambos (J-Link): ${ELF}  device=${DEVICE} SWD=${SPEED}kHz"
 exec JLinkExe -NoGui 1 -ExitOnError 1 -CommandFile "$tmp"

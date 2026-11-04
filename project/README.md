@@ -24,18 +24,13 @@ STM32 firmware for the Gambos project — built with CMake, developed in a **Dev
 Run from the **repository root** via `project/scripts/`.
 
 
-| Argument | Hardware   | Debugger            |
-| -------- | ---------- | ------------------- |
-| `gambos-pcb` (default) | Gambos PCB | **SEGGER J-Link** (`JLinkExe`) |
-
-
+Target: **Gambos PCB**, debugger: **SEGGER J-Link** (`JLinkExe`). The scripts take no arguments.
 
 | Script                            | Role                                              |
 | -----------------------------------| ---------------------------------------------------|
-| `build.sh`                        | Configure + compile → `build/gambos-pcb/gambos.elf` |
+| `build.sh`                        | Configure + compile → `build/gambos.elf`          |
 | `clean.sh`                        | CMake `clean`                                     |
-| `pristine.sh` / `pristine.sh all` | Delete entire `build/`                            |
-| `pristine.sh gambos-pcb`          | Delete only `build/gambos-pcb/`                   |
+| `pristine.sh`                     | Delete entire `build/`                            |
 | `flash.sh`                        | Program the MCU (build first)                     |
 | `probe.sh`                        | Verify debugger connection                        |
 
@@ -43,14 +38,14 @@ Run from the **repository root** via `project/scripts/`.
 ```bash
 ./project/scripts/build.sh
 ./project/scripts/clean.sh
-./project/scripts/pristine.sh          # or pristine.sh gambos-pcb | all
+./project/scripts/pristine.sh
 ./project/scripts/flash.sh
 ./project/scripts/probe.sh             # optional before flash
 ```
 
 ## Editor / clangd (IntelliSense)
 
-- `compile_commands.json` is generated under `project/build/gambos-pcb/` when you build. A symlink at `project/compile_commands.json` points at that directory.
+- `compile_commands.json` is generated under `project/build/` when you build. A symlink at `project/compile_commands.json` points at that directory.
 - **clangd path mappings** in `.devcontainer/devcontainer.json` and `.vscode/settings.json` translate host paths (`/home/mikael/gambos`) and container paths (`/workspace/gambos`) so IntelliSense works whether you built on the host or in the Dev Container — no file rewriting.
 - CMSIS-SVD for register view in Cortex-Debug: `STM32F446.svd` at the repo root (referenced from `.vscode/launch.json`).
 - `.clangd` (repo root) and `project/.clangd` point clangd at `project/compile_commands.json`.
@@ -58,7 +53,7 @@ Run from the **repository root** via `project/scripts/`.
 
 ## Debugging
 
-**Run and Debug (F5):** **Debug** or **Attach gambos-pcb (J-Link)** — see `.vscode/launch.json`. Symbols from `build/gambos-pcb/gambos.elf`; build (and flash if needed) first.
+**Run and Debug (F5):** **Debug gambos (J-Link)** or **Attach gambos (J-Link)** — see `.vscode/launch.json`. Symbols from `build/gambos.elf`; build (and flash if needed) first.
 
 **Before F5**
 

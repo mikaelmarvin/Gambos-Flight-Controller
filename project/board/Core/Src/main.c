@@ -105,7 +105,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   {
     static const uint8_t k_boot[] =
-        "\r\n[boot] gambos-pcb — UART5 @ 115200 (main, before "
+        "\r\n[boot] gambos — UART5 @ 115200 (main, before "
         "scheduler)\r\n";
     (void)HAL_UART_Transmit(
         &huart5, k_boot, sizeof(k_boot) - 1U, HAL_MAX_DELAY);

@@ -1,6 +1,6 @@
 # Board support
 
-## Gambos PCB (`gambos-pcb`)
+## Gambos PCB
 
 `board/` is the **committed STM32CubeMX export** used by CMake.
 
