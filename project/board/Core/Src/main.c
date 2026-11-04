@@ -24,7 +24,7 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb_otg.h"
+#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -102,7 +102,6 @@ int main(void)
   MX_TIM12_Init();
   MX_UART5_Init();
   MX_USART1_UART_Init();
-  MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
   {
     static const uint8_t k_boot[] =
