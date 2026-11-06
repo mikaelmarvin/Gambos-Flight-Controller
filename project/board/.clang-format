@@ -1,0 +1,4 @@
+# CubeMX-generated tree: keep ST's formatting so regenerations diff cleanly.
+# Overrides the repo-root .clang-format for everything under board/.
+DisableFormat: true
+SortIncludes: false

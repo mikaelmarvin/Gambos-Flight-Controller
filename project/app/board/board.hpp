@@ -17,11 +17,12 @@ constexpr uint8_t kLsm6dsvtrI2cAddr7 = 0x6AU;
 bool InitBuses(void);
 bool InitDevices(void);
 
-At25sf128a &Flash(void);
-SdCard &Sd(void);
+Lsm6dsvtr &Imu(void);
 Bmp384 &Baro(void);
 Iis2mdctr &Magnetometer(void);
-Lsm6dsvtr &Imu(void);
+
+At25sf128a &Flash(void);
+SdCard &Sd(void);
 
 } // namespace board
 

@@ -29,15 +29,16 @@ ButtonHandler g_button_handler;
 StorageHandler g_storage_handler{board::Flash(), board::Sd()};
 SensingHandler g_sensing_handler{
     board::Imu(), board::Magnetometer(), board::Baro()};
+} // namespace
 
 void AppStartupTask(void *pvParameters) {
     (void)pvParameters;
 
-    configASSERT(board::InitDevices());
-    configASSERT(g_button_handler.Initialize());
-    // configASSERT(g_actuator_handler.Initialize());
-    configASSERT(g_storage_handler.Initialize());
-    configASSERT(g_sensing_handler.Initialize());
+    board::InitDevices();
+    g_button_handler.Initialize();
+    // g_actuator_handler.Initialize());
+    g_storage_handler.Initialize();
+    g_sensing_handler.Initialize();
 
     LOG("app_startup: free heap %u bytes\r\n",
         static_cast<unsigned>(xPortGetFreeHeapSize()));
@@ -60,14 +61,12 @@ extern "C" void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     }
 }
 
-} // namespace
-
 extern "C" void app_init(void) {
-    configASSERT(board::InitBuses());
-    configASSERT(xTaskCreate(AppStartupTask,
-                             "app_startup",
-                             kAppStartupStackWords,
-                             nullptr,
-                             kAppStartupPriority,
-                             nullptr) == pdPASS);
+    board::InitBuses();
+    xTaskCreate(AppStartupTask,
+                "app_startup",
+                kAppStartupStackWords,
+                nullptr,
+                kAppStartupPriority,
+                nullptr);
 }
