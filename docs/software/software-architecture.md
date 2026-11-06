@@ -4,7 +4,7 @@ Firmware for Gambos lives under [`project/`](../../project/).
 
 | | |
 | --- | --- |
-| **MCU** | STM32F446 — Gambos PCB (`gambos-pcb`) |
+| **MCU** | STM32F446 — Gambos PCB |
 | **Build** | CMake, FreeRTOS, STM32 HAL |
 | **Status** | Build/flash workflow documented; flight-stack architecture docs not written yet |
 

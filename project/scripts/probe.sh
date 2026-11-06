@@ -4,16 +4,13 @@
 #
 # Usage:
 #   ./project/scripts/probe.sh
-#   ./project/scripts/probe.sh gambos-pcb
 #
 # Environment (optional): GAMBOS_JLINK_DEVICE, GAMBOS_JLINK_SPEED
 #
 set -euo pipefail
 
-BOARD="${1:-gambos-pcb}"
-
-if [[ "${BOARD}" != "gambos-pcb" ]]; then
-    echo "Usage: $0 [gambos-pcb]" >&2
+if [[ $# -gt 0 ]]; then
+    echo "Error: The script $0 expects zero arguments" >&2
     exit 1
 fi
 
@@ -37,5 +34,5 @@ speed ${SPEED}
 connect
 exit
 EOF
-echo "Probe gambos-pcb (J-Link): device=${DEVICE} SWD=${SPEED}kHz"
+echo "Probe gambos (J-Link): device=${DEVICE} SWD=${SPEED}kHz"
 exec JLinkExe -NoGui 1 -ExitOnError 1 -CommandFile "$tmp"

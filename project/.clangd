@@ -1,4 +1,4 @@
-# Active board: compile_commands.json in this directory (symlink to build/gambos-pcb/).
+# Active board: compile_commands.json in this directory (symlink to build/).
 # Restart clangd after rebuilding.
 
 CompileFlags:

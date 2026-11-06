@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Configure (if needed) + build for the Gambos PCB target.
+# Configure (if needed) + build for the Gambos target.
 #
 # Usage:
 #   ./project/scripts/build.sh
@@ -7,7 +7,7 @@
 set -euo pipefail
 
 if [[ $# -gt 0 ]]; then
-    echo "Usage: $0" >&2
+    echo "Error: The script $0 expects zero arguments" >&2
     exit 1
 fi
 
@@ -20,6 +20,6 @@ if [[ ! -f "${BOARD_TREE}/cmake/stm32cubemx/CMakeLists.txt" ]]; then
     exit 1
 fi
 
-cmake --preset gambos-pcb
-cmake --build build/gambos-pcb --parallel
-echo "OK: build/gambos-pcb/gambos.elf"
+cmake --preset gambos
+cmake --build build --parallel
+echo "OK: build/gambos.elf"

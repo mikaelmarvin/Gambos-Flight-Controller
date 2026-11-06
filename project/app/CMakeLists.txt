@@ -2,20 +2,20 @@
 # project warning flags apply here and not to the Cube-generated sources.
 # Invoked from top-level CMakeLists.txt via add_subdirectory(app).
 
-add_library(gambos_app OBJECT)
+add_library(gambos_app_lib OBJECT)
 
-target_include_directories(gambos_app PUBLIC
+target_include_directories(gambos_app_lib PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(gambos_app PUBLIC
+target_link_libraries(gambos_app_lib PUBLIC
     stm32cubemx
     little_fs
     fat_fs
     custom_drivers
 )
 
-target_sources(gambos_app PRIVATE
+target_sources(gambos_app_lib PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/app/app.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/retarget_print.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rtos_debug.cpp

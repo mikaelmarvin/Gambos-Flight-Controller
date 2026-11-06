@@ -25,7 +25,7 @@ fi
 
 # --- Full setup (postCreate) ---
 
-# Configure + build gambos-pcb (compile_commands.json for clangd).
+# Configure + build gambos (compile_commands.json for clangd).
 bash project/scripts/build.sh
 
 ensure_starship_bashrc || true

@@ -54,7 +54,7 @@ target_compile_options(gambos_warnings INTERFACE
 )
 
 get_target_property(MX_INCLUDE_DIRS stm32cubemx INTERFACE_INCLUDE_DIRECTORIES)
-foreach(own_target gambos_app custom_drivers)
+foreach(own_target gambos_app_lib custom_drivers)
     target_include_directories(${own_target} SYSTEM PRIVATE ${MX_INCLUDE_DIRS})
     target_link_libraries(${own_target} PRIVATE gambos_warnings)
 endforeach()
@@ -68,7 +68,7 @@ target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 target_link_libraries(${CMAKE_PROJECT_NAME}
-    gambos_app
+    gambos_app_lib
     stm32cubemx
     little_fs
     fat_fs

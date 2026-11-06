@@ -24,7 +24,7 @@
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
-#include "usb_otg.h"
+#include "usb_device.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -102,11 +102,10 @@ int main(void)
   MX_TIM12_Init();
   MX_UART5_Init();
   MX_USART1_UART_Init();
-  MX_USB_OTG_FS_PCD_Init();
   /* USER CODE BEGIN 2 */
   {
     static const uint8_t k_boot[] =
-        "\r\n[boot] gambos-pcb — UART5 @ 115200 (main, before "
+        "\r\n[boot] gambos — UART5 @ 115200 (main, before "
         "scheduler)\r\n";
     (void)HAL_UART_Transmit(
         &huart5, k_boot, sizeof(k_boot) - 1U, HAL_MAX_DELAY);

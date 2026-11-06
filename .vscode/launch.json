@@ -2,12 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug gambos-pcb (J-Link)",
+      "name": "Debug gambos (J-Link)",
       "type": "cortex-debug",
       "request": "launch",
       "servertype": "jlink",
       "cwd": "${workspaceFolder}",
-      "executable": "${workspaceFolder}/project/build/gambos-pcb/gambos.elf",
+      "executable": "${workspaceFolder}/project/build/gambos.elf",
       "device": "STM32F446RE",
       "interface": "swd",
       "svdFile": "${workspaceFolder}/STM32F446.svd",
@@ -15,11 +15,11 @@
       "runToEntryPoint": "main"
     },
     {
-      "name": "Attach gambos-pcb (J-Link)",
+      "name": "Attach gambos (J-Link)",
       "type": "cortex-debug",
       "request": "attach",
       "servertype": "jlink",
-      "executable": "${workspaceFolder}/project/build/gambos-pcb/gambos.elf",
+      "executable": "${workspaceFolder}/project/build/gambos.elf",
       "device": "STM32F446RE",
       "interface": "swd",
       "svdFile": "${workspaceFolder}/STM32F446.svd",
