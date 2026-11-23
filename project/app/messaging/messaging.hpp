@@ -74,6 +74,14 @@ struct BaroSample {
     int16_t temperature_centi_c;
 };
 
+struct RcChannels {
+    uint32_t frame_tick;
+    uint16_t throttle;
+    uint16_t aileron;
+    uint16_t elevator;
+    uint16_t rudder;
+};
+
 } // namespace topics
 
 #endif /* MESSAGING_HPP */

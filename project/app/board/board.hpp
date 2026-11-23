@@ -4,6 +4,7 @@
 #include "at25sf128a.hpp"
 #include "bmp384.hpp"
 #include "bus.hpp"
+#include "elrs_receiver.hpp"
 #include "iis2mdctr.hpp"
 #include "lsm6dsvtr.hpp"
 #include "sd_card.hpp"
@@ -23,6 +24,7 @@ Iis2mdctr &Magnetometer(void);
 
 At25sf128a &Flash(void);
 SdCard &Sd(void);
+ElrsReceiver &Receiver(void);
 
 } // namespace board
 

@@ -5,7 +5,7 @@
 
 namespace {
 
-constexpr TickType_t kI2cTimeout = pdMS_TO_TICKS(100U);
+constexpr TickType_t kI2cTimeoutMs = pdMS_TO_TICKS(100U);
 
 constexpr uint8_t kRegChipId = 0x00U;
 constexpr uint8_t kRegErr = 0x02U;
@@ -44,8 +44,8 @@ constexpr float kMinPressPa = 30000.0f;
 constexpr float kMaxPressPa = 125000.0f;
 
 uint16_t ConcatU16(uint8_t msb, uint8_t lsb) {
-    return static_cast<uint16_t>(
-        (static_cast<uint16_t>(msb) << 8U) | static_cast<uint16_t>(lsb));
+    return static_cast<uint16_t>((static_cast<uint16_t>(msb) << 8U) |
+                                 static_cast<uint16_t>(lsb));
 }
 
 uint32_t UnpackU24(const uint8_t *p) {
@@ -54,12 +54,18 @@ uint32_t UnpackU24(const uint8_t *p) {
            (static_cast<uint32_t>(p[2]) << 16U);
 }
 
-bool WriteReg(I2cBus *bus, uint8_t addr7, uint8_t reg, uint8_t value) {
-    return bus->MemWrite(addr7, reg, &value, 1U, kI2cTimeout);
+bool WriteReg(I2cBus *bus,
+              uint8_t addr7,
+              uint8_t reg,
+              uint8_t value) {
+    return bus->MemWrite(addr7, reg, &value, 1U, kI2cTimeoutMs);
 }
 
-bool ReadReg(I2cBus *bus, uint8_t addr7, uint8_t reg, uint8_t &value) {
-    return bus->MemRead(addr7, reg, &value, 1U, kI2cTimeout);
+bool ReadReg(I2cBus *bus,
+             uint8_t addr7,
+             uint8_t reg,
+             uint8_t &value) {
+    return bus->MemRead(addr7, reg, &value, 1U, kI2cTimeoutMs);
 }
 
 bool WaitStatusBit(I2cBus *bus,
@@ -101,22 +107,26 @@ bool Bmp384::SoftReset(void) {
 
 bool Bmp384::LoadCalibration(void) {
     uint8_t raw[kCalibBytes] = {};
-    if (!_bus->MemRead(_addr7, kRegCalib, raw, kCalibBytes, kI2cTimeout)) {
+    if (!_bus->MemRead(
+            _addr7, kRegCalib, raw, kCalibBytes, kI2cTimeoutMs)) {
         return false;
     }
 
     const uint16_t nvm_t1 = ConcatU16(raw[1], raw[0]);
     const uint16_t nvm_t2 = ConcatU16(raw[3], raw[2]);
     const int8_t nvm_t3 = static_cast<int8_t>(raw[4]);
-    const int16_t nvm_p1 = static_cast<int16_t>(ConcatU16(raw[6], raw[5]));
-    const int16_t nvm_p2 = static_cast<int16_t>(ConcatU16(raw[8], raw[7]));
+    const int16_t nvm_p1 =
+        static_cast<int16_t>(ConcatU16(raw[6], raw[5]));
+    const int16_t nvm_p2 =
+        static_cast<int16_t>(ConcatU16(raw[8], raw[7]));
     const int8_t nvm_p3 = static_cast<int8_t>(raw[9]);
     const int8_t nvm_p4 = static_cast<int8_t>(raw[10]);
     const uint16_t nvm_p5 = ConcatU16(raw[12], raw[11]);
     const uint16_t nvm_p6 = ConcatU16(raw[14], raw[13]);
     const int8_t nvm_p7 = static_cast<int8_t>(raw[15]);
     const int8_t nvm_p8 = static_cast<int8_t>(raw[16]);
-    const int16_t nvm_p9 = static_cast<int16_t>(ConcatU16(raw[18], raw[17]));
+    const int16_t nvm_p9 =
+        static_cast<int16_t>(ConcatU16(raw[18], raw[17]));
     const int8_t nvm_p10 = static_cast<int8_t>(raw[19]);
     const int8_t nvm_p11 = static_cast<int8_t>(raw[20]);
 
@@ -124,7 +134,8 @@ bool Bmp384::LoadCalibration(void) {
         return false;
     }
 
-    /* Quantize NVM → float coeffs (Bosch BMP3 API / datasheet §9.1). */
+    /* Quantize NVM → float coeffs (Bosch BMP3 API / datasheet §9.1).
+     */
     _calib.par_t1 = static_cast<float>(nvm_t1) * 256.0f;
     _calib.par_t2 = static_cast<float>(nvm_t2) / 1073741824.0f;
     _calib.par_t3 = static_cast<float>(nvm_t3) / 281474976710656.0f;
@@ -140,9 +151,8 @@ bool Bmp384::LoadCalibration(void) {
     _calib.par_p8 = static_cast<float>(nvm_p8) / 32768.0f;
     _calib.par_p9 = static_cast<float>(nvm_p9) / 281474976710656.0f;
     _calib.par_p10 = static_cast<float>(nvm_p10) / 281474976710656.0f;
-    _calib.par_p11 =
-        static_cast<float>(static_cast<double>(nvm_p11) /
-                           36893488147419103232.0);
+    _calib.par_p11 = static_cast<float>(static_cast<double>(nvm_p11) /
+                                        36893488147419103232.0);
     return true;
 }
 
@@ -185,7 +195,8 @@ bool Bmp384::Init(void) {
     }
 
     uint8_t err = 0U;
-    if (ReadReg(_bus, _addr7, kRegErr, err) && ((err & kErrConf) != 0U)) {
+    if (ReadReg(_bus, _addr7, kRegErr, err) &&
+        ((err & kErrConf) != 0U)) {
         return false;
     }
     return true;
@@ -195,8 +206,8 @@ int16_t Bmp384::CompensateTemperature(const uint32_t uncomp_temp) {
     const float partial_data1 =
         static_cast<float>(uncomp_temp) - _calib.par_t1;
     const float partial_data2 = partial_data1 * _calib.par_t2;
-    _calib.t_lin =
-        partial_data2 + (partial_data1 * partial_data1) * _calib.par_t3;
+    _calib.t_lin = partial_data2 +
+                   (partial_data1 * partial_data1) * _calib.par_t3;
 
     float temperature = _calib.t_lin;
     if (temperature < kMinTempC) {
@@ -214,10 +225,11 @@ int32_t Bmp384::CompensatePressure(const uint32_t uncomp_press) {
     const float t3 = t2 * t;
 
     const float partial_out1 = _calib.par_p5 + (_calib.par_p6 * t) +
-                               (_calib.par_p7 * t2) + (_calib.par_p8 * t3);
+                               (_calib.par_p7 * t2) +
+                               (_calib.par_p8 * t3);
     const float partial_out2 =
-        uncomp * (_calib.par_p1 + (_calib.par_p2 * t) + (_calib.par_p3 * t2) +
-                  (_calib.par_p4 * t3));
+        uncomp * (_calib.par_p1 + (_calib.par_p2 * t) +
+                  (_calib.par_p3 * t2) + (_calib.par_p4 * t3));
     const float partial_data3 =
         (uncomp * uncomp) * (_calib.par_p9 + _calib.par_p10 * t);
     const float partial_data4 =
@@ -237,13 +249,13 @@ bool Bmp384::ReadPressureTemperature(BaroSample &out) {
         return false;
     }
 
-    if (!WaitStatusBit(_bus, _addr7, kStatusDrdyPress | kStatusDrdyTemp,
-                       50U)) {
+    if (!WaitStatusBit(
+            _bus, _addr7, kStatusDrdyPress | kStatusDrdyTemp, 50U)) {
         return false;
     }
 
     uint8_t raw[6] = {};
-    if (!_bus->MemRead(_addr7, kRegData0, raw, 6U, kI2cTimeout)) {
+    if (!_bus->MemRead(_addr7, kRegData0, raw, 6U, kI2cTimeoutMs)) {
         return false;
     }
 

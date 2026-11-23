@@ -20,8 +20,8 @@ constexpr uint32_t kTaskStackWords = 512U;
 constexpr UBaseType_t kTaskPriority =
     static_cast<UBaseType_t>(tskIDLE_PRIORITY + 1U);
 
-constexpr TickType_t kIdleDelay = pdMS_TO_TICKS(1000U);
-constexpr TickType_t kProcessRequestsDelay = pdMS_TO_TICKS(300U);
+constexpr TickType_t kIdleDelayMs = pdMS_TO_TICKS(1000U);
+constexpr TickType_t kProcessRequestsDelayMs = pdMS_TO_TICKS(300U);
 
 } // namespace
 
@@ -80,7 +80,7 @@ void StorageHandler::TaskFunction(void *pvParameters) {
     while (true) {
         switch (self->_storage_state) {
         case StorageState::IDLE: {
-            vTaskDelay(kIdleDelay);
+            vTaskDelay(kIdleDelayMs);
             break;
         }
         case StorageState::PROCESS_REQUESTS: {
@@ -88,7 +88,8 @@ void StorageHandler::TaskFunction(void *pvParameters) {
             // There must be a timeout to make the task recheck its
             // state, a button can trigger a state change
             // asynchronously.
-            if (!self->_queue.Receive(item, kProcessRequestsDelay)) {
+            if (!self->_queue.Receive(item,
+                                      kProcessRequestsDelayMs)) {
                 continue;
             }
 

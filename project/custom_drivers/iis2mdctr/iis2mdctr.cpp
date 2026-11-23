@@ -5,7 +5,7 @@
 
 namespace {
 
-constexpr TickType_t kI2cTimeout = pdMS_TO_TICKS(100U);
+constexpr TickType_t kI2cTimeoutMs = pdMS_TO_TICKS(100U);
 
 constexpr uint8_t kRegWhoAmI = 0x4FU;
 constexpr uint8_t kRegCfgA = 0x60U;
@@ -51,7 +51,7 @@ bool Iis2mdctr::Init(void) {
      * = 0x40). */
     uint8_t who_am_i = 0U;
     if (!_bus->MemRead(
-            _addr7, kRegWhoAmI, &who_am_i, 1U, kI2cTimeout)) {
+            _addr7, kRegWhoAmI, &who_am_i, 1U, kI2cTimeoutMs)) {
         return false;
     }
     if (who_am_i != kWhoAmIValue) {
@@ -63,7 +63,7 @@ bool Iis2mdctr::Init(void) {
      * while the sensor updates outputs.
      */
     if (!_bus->MemWrite(
-            _addr7, kRegCfgC, &kCfgCBdu, 1U, kI2cTimeout)) {
+            _addr7, kRegCfgC, &kCfgCBdu, 1U, kI2cTimeoutMs)) {
         return false;
     }
 
@@ -73,7 +73,7 @@ bool Iis2mdctr::Init(void) {
      * task).
      */
     if (!_bus->MemWrite(
-            _addr7, kRegCfgA, &kCfgAContHr10Hz, 1U, kI2cTimeout)) {
+            _addr7, kRegCfgA, &kCfgAContHr10Hz, 1U, kI2cTimeoutMs)) {
         return false;
     }
 
@@ -87,7 +87,7 @@ bool Iis2mdctr::ReadSample(MagSample &out) {
 
     uint8_t status = 0U;
     if (!_bus->MemRead(
-            _addr7, kRegStatus, &status, 1U, kI2cTimeout)) {
+            _addr7, kRegStatus, &status, 1U, kI2cTimeoutMs)) {
         return false;
     }
     if ((status & kStatusZyxda) == 0U) {
@@ -96,7 +96,7 @@ bool Iis2mdctr::ReadSample(MagSample &out) {
 
     uint8_t raw[kMagRawBytes] = {};
     if (!_bus->MemRead(
-            _addr7, kRegOutXL, raw, kMagRawBytes, kI2cTimeout)) {
+            _addr7, kRegOutXL, raw, kMagRawBytes, kI2cTimeoutMs)) {
         return false;
     }
 

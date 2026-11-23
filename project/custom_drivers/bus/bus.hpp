@@ -26,6 +26,30 @@ class CsAssert {
     CsPin _cs{};
 };
 
+class UartBus {
+  public:
+    bool Init(UART_HandleTypeDef *huart);
+    bool IsInitialized(void) const;
+
+    /** Arms circular DMA reception into a caller-owned buffer.
+     * The buffer must outlive reception (DMA keeps writing into it).
+     */
+    bool StartReceiving(uint8_t *buffer, const uint16_t size);
+
+    /** Copies up to max_len newly received bytes into out and
+     * returns how many were copied (0 = nothing new). Bytes left over
+     * stay in the ring buffer for the next call. Single consumer
+     * only: call from one context (task), never concurrently. */
+    uint16_t Read(uint8_t *out, uint16_t max_len);
+
+  private:
+    UART_HandleTypeDef *_huart{nullptr};
+    uint8_t *_buffer_ptr{nullptr};
+    uint16_t _buffer_size{0U};
+    uint16_t _read_pos{0U};
+    bool _started{false};
+};
+
 /** One instance per physical SPI peripheral (hspi1). */
 class SpiBus {
   public:
@@ -41,7 +65,8 @@ class SpiBus {
                             uint16_t len,
                             TickType_t timeout);
 
-    /** SPI_BAUDRATEPRESCALER_* ; SPI is briefly disabled while BR changes. */
+    /** SPI_BAUDRATEPRESCALER_* ; SPI is briefly disabled while BR
+     * changes. */
     bool SetBaudRatePrescaler(uint32_t prescaler, TickType_t timeout);
     uint32_t GetBaudRatePrescaler(void) const;
 
@@ -106,5 +131,6 @@ class I2cBus {
 // Singleton instances for each physical bus.
 SpiBus &Spi1(void);
 I2cBus &I2c1(void);
+UartBus &Uart4(void);
 
 #endif /* BUS_HPP */

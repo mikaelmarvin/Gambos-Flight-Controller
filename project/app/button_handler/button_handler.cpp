@@ -20,7 +20,7 @@ constexpr uint32_t kButtonHandlerTaskStackSize =
     768U; /* printf in task + publish → subscriber LOG */
 constexpr uint32_t kButtonHandlerTaskPriority =
     (tskIDLE_PRIORITY + 2U);
-constexpr uint32_t kButtonHandlerTaskDelay = 20U;
+constexpr uint32_t kButtonHandlerTaskDelayMs = 20U;
 
 } // namespace
 
@@ -62,7 +62,7 @@ void ButtonHandler::TaskFunction(void *pvParameters) {
         LOG("User button pressed=%u\r\n", (unsigned)pressed);
         Messaging::Publish<topics::ButtonInfo>(topic);
 
-        vTaskDelay(pdMS_TO_TICKS(kButtonHandlerTaskDelay));
+        vTaskDelay(pdMS_TO_TICKS(kButtonHandlerTaskDelayMs));
     }
 }
 

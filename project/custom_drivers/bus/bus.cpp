@@ -2,9 +2,12 @@
 
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_i2c.h"
+#include "stm32f4xx_hal_spi.h"
+#include "stm32f4xx_hal_uart.h"
 
 #include "semphr.h"
 #include "task.h"
+#include <cstdint>
 
 namespace {
 
@@ -411,6 +414,79 @@ bool I2cBus::MemWrite(const uint16_t dev_addr_7bit,
     return ok;
 }
 
+bool UartBus::Init(UART_HandleTypeDef *huart) {
+    if (huart == nullptr) {
+        return false;
+    }
+
+    if (IsInitialized() && (_huart == huart)) {
+        return true;
+    }
+
+    _huart = huart;
+
+    return true;
+}
+
+bool UartBus::IsInitialized(void) const { return _huart != nullptr; }
+
+bool UartBus::StartReceiving(uint8_t *buffer, const uint16_t size) {
+
+    if (!IsInitialized() || (buffer == nullptr) || (size == 0U)) {
+        return false;
+    }
+
+    if (_started)
+        return true;
+
+    // Read() needs to know where the ring buffer is and how big it
+    // is.
+    _buffer_ptr = buffer;
+    _buffer_size = size;
+    _read_pos = 0U;
+
+    const HAL_StatusTypeDef started =
+        HAL_UART_Receive_DMA(_huart, buffer, size);
+
+    _started = started == HAL_OK;
+
+    return _started;
+}
+
+uint16_t UartBus::Read(uint8_t *out, const uint16_t max_len) {
+    if (!_started || (out == nullptr) || (max_len == 0U)) {
+        return 0U;
+    }
+
+    // Snapshot the DMA write index once. NDTR counts DOWN the bytes
+    // remaining until the circular buffer wraps.
+    uint16_t write_pos = static_cast<uint16_t>(
+        _buffer_size - __HAL_DMA_GET_COUNTER(_huart->hdmarx));
+    if (write_pos >= _buffer_size) {
+        write_pos = 0U;
+    }
+
+    // Keep the compiler/CPU from reading buffer bytes before the NDTR
+    // snapshot that says they are valid.
+    __DMB();
+
+    uint16_t count = 0U;
+    while ((_read_pos != write_pos) && (count < max_len)) {
+        out[count++] = _buffer_ptr[_read_pos];
+        _read_pos = static_cast<uint16_t>(_read_pos + 1U);
+        if (_read_pos == _buffer_size) {
+            _read_pos = 0U;
+        }
+    }
+
+    return count;
+}
+
+UartBus &Uart4(void) {
+    static UartBus bus;
+    return bus;
+}
+
 I2cBus &I2c1(void) {
     static I2cBus bus;
     return bus;
@@ -420,4 +496,3 @@ SpiBus &Spi1(void) {
     static SpiBus bus;
     return bus;
 }
-
