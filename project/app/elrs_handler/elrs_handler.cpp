@@ -11,7 +11,8 @@
 
 namespace {
 
-constexpr uint32_t kElrsHandlerTaskStackSize = 512U;
+// 768 words: the debug report calls printf from this task.
+constexpr uint32_t kElrsHandlerTaskStackSize = 768U;
 constexpr uint32_t kElrsHandlerTaskPriority = (tskIDLE_PRIORITY + 2U);
 constexpr uint32_t kElrsHandlerTaskDelayMs = 20U;
 
@@ -21,6 +22,21 @@ uint16_t Aileron(const crsf::RcChannels &c) { return c.channel_0; }
 uint16_t Elevator(const crsf::RcChannels &c) { return c.channel_1; }
 uint16_t Throttle(const crsf::RcChannels &c) { return c.channel_2; }
 uint16_t Rudder(const crsf::RcChannels &c) { return c.channel_3; }
+
+// Debug: print channel values every kElrsPrintPeriodMs while the
+// link is fresh. printf blocks on UART5, so don't print every cycle.
+constexpr bool kElrsPrintChannels = true;
+constexpr uint32_t kElrsPrintPeriodMs = 500U;
+
+void PrintChannels(const crsf::RcChannels &channels) {
+    // Raw CRSF values: 172 / 992 / 1811 = min / centre / max.
+    const uint16_t *const ch = &channels.channel_0;
+    LOG("elrs: ch");
+    for (uint8_t i = 0U; i < crsf::RcChannels::kChannelCount; ++i) {
+        printf(" %4u", (unsigned)ch[i]);
+    }
+    printf("\r\n");
+}
 
 } // namespace
 
@@ -52,6 +68,7 @@ void ElrsHandler::TaskFunction(void *pvParameters) {
     crsf::RcChannels channels{};
     topics::RcChannels topic{};
     RcStatus last_status = RcStatus::kNeverReceived;
+    TickType_t last_print = last_wake;
 
     while (true) {
         const RcStatus status =
@@ -76,6 +93,13 @@ void ElrsHandler::TaskFunction(void *pvParameters) {
                 LOG("WARN: elrs: link lost (frames stale)\r\n");
             }
             last_status = status;
+        }
+
+        if (kElrsPrintChannels && (status == RcStatus::kFresh) &&
+            (xTaskGetTickCount() - last_print) >=
+                pdMS_TO_TICKS(kElrsPrintPeriodMs)) {
+            last_print = xTaskGetTickCount();
+            PrintChannels(channels);
         }
 
         vTaskDelayUntil(&last_wake,
