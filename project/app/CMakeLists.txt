@@ -24,6 +24,7 @@ target_sources(gambos_app_lib PRIVATE
 add_subdirectory(button_handler)
 add_subdirectory(board)
 add_subdirectory(delayable_handler)
+add_subdirectory(elrs_handler)
 add_subdirectory(messaging)
 add_subdirectory(sensing_handler)
 add_subdirectory(storage_handler)

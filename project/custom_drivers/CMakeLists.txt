@@ -11,6 +11,7 @@ add_subdirectory(bmp384)
 add_subdirectory(at25sf128a)
 add_subdirectory(hw_pwm)
 add_subdirectory(sd_card)
+add_subdirectory(elrs_receiver)
 
 # CMSIS/HAL headers (GPIO_TypeDef, etc.) for drivers that use STM32 types.
 target_link_libraries(custom_drivers PUBLIC stm32cubemx)

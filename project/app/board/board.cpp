@@ -5,6 +5,7 @@
 
 #include "i2c.h"
 #include "spi.h"
+#include "usart.h"
 
 namespace board {
 
@@ -15,6 +16,7 @@ SdCard g_sd{Spi1(), {SD_CS_GPIO_Port, SD_CS_Pin}};
 Bmp384 g_baro{I2c1(), kBmp384I2cAddr7};
 Iis2mdctr g_magnetometer{I2c1(), kIis2mdctrI2cAddr7};
 Lsm6dsvtr g_imu{I2c1(), kLsm6dsvtrI2cAddr7};
+ElrsReceiver g_receiver{Uart4()};
 
 } // namespace
 
@@ -26,6 +28,11 @@ bool InitBuses(void) {
 
     if (!I2c1().Init(&hi2c1)) {
         LOG("ERROR: I2C1 bus init failed\r\n");
+        return false;
+    }
+
+    if (!Uart4().Init(&huart4)) {
+        LOG("ERROR: UART4 bus init failed\r\n");
         return false;
     }
 
@@ -51,5 +58,6 @@ SdCard &Sd(void) { return g_sd; }
 Bmp384 &Baro(void) { return g_baro; }
 Iis2mdctr &Magnetometer(void) { return g_magnetometer; }
 Lsm6dsvtr &Imu(void) { return g_imu; }
+ElrsReceiver &Receiver(void) { return g_receiver; }
 
 } // namespace board

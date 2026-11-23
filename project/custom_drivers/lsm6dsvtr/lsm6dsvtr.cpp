@@ -5,7 +5,7 @@
 
 namespace {
 
-constexpr TickType_t kI2cTimeout = pdMS_TO_TICKS(100U);
+constexpr TickType_t kI2cTimeoutMs = pdMS_TO_TICKS(100U);
 
 constexpr uint8_t kRegWhoAmI = 0x0FU;
 constexpr uint8_t kRegCtrl1 = 0x10U;
@@ -57,7 +57,7 @@ bool Lsm6dsvtr::Init(void) {
      * = 0x70). */
     uint8_t who_am_i = 0U;
     if (!_bus->MemRead(
-            _addr7, kRegWhoAmI, &who_am_i, 1U, kI2cTimeout)) {
+            _addr7, kRegWhoAmI, &who_am_i, 1U, kI2cTimeoutMs)) {
         return false;
     }
     if (who_am_i != kWhoAmIValue) {
@@ -70,21 +70,21 @@ bool Lsm6dsvtr::Init(void) {
      * burst-read.
      */
     if (!_bus->MemWrite(
-            _addr7, kRegCtrl3, &kCtrl3BduIfInc, 1U, kI2cTimeout)) {
+            _addr7, kRegCtrl3, &kCtrl3BduIfInc, 1U, kI2cTimeoutMs)) {
         return false;
     }
 
     /* CTRL8: accelerometer full-scale ±8 g (set before enabling the
      * sensor). */
     if (!_bus->MemWrite(
-            _addr7, kRegCtrl8, &kCtrl8Fs8g, 1U, kI2cTimeout)) {
+            _addr7, kRegCtrl8, &kCtrl8Fs8g, 1U, kI2cTimeoutMs)) {
         return false;
     }
 
     /* CTRL6: gyroscope full-scale ±2000 dps (set before enabling the
      * sensor). */
     if (!_bus->MemWrite(
-            _addr7, kRegCtrl6, &kCtrl6Fs2000Dps, 1U, kI2cTimeout)) {
+            _addr7, kRegCtrl6, &kCtrl6Fs2000Dps, 1U, kI2cTimeoutMs)) {
         return false;
     }
 
@@ -94,11 +94,11 @@ bool Lsm6dsvtr::Init(void) {
      * gyro).
      */
     if (!_bus->MemWrite(
-            _addr7, kRegCtrl1, &kCtrlHp120Hz, 1U, kI2cTimeout)) {
+            _addr7, kRegCtrl1, &kCtrlHp120Hz, 1U, kI2cTimeoutMs)) {
         return false;
     }
     if (!_bus->MemWrite(
-            _addr7, kRegCtrl2, &kCtrlHp120Hz, 1U, kI2cTimeout)) {
+            _addr7, kRegCtrl2, &kCtrlHp120Hz, 1U, kI2cTimeoutMs)) {
         return false;
     }
 
@@ -112,7 +112,7 @@ bool Lsm6dsvtr::ReadAccelGyro(AccelSample &accel, GyroSample &gyro) {
 
     uint8_t status = 0U;
     if (!_bus->MemRead(
-            _addr7, kRegStatus, &status, 1U, kI2cTimeout)) {
+            _addr7, kRegStatus, &status, 1U, kI2cTimeoutMs)) {
         return false;
     }
     if ((status & (kStatusXlda | kStatusGda)) !=
@@ -125,7 +125,7 @@ bool Lsm6dsvtr::ReadAccelGyro(AccelSample &accel, GyroSample &gyro) {
                        kRegOutXLG,
                        raw,
                        kAccelGyroRawBytes,
-                       kI2cTimeout)) {
+                       kI2cTimeoutMs)) {
         return false;
     }
 

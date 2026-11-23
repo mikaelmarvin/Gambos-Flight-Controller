@@ -12,7 +12,8 @@
  */
 class SensingHandler {
   public:
-    SensingHandler(Lsm6dsvtr &imu, Iis2mdctr &mag, Bmp384 &baro);
+    SensingHandler(Lsm6dsvtr &imu, Iis2mdctr &mag, Bmp384 &baro)
+        : _imu(imu), _mag(mag), _baro(baro) {}
 
     bool Initialize(void);
     void Start(void);

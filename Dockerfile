@@ -16,6 +16,8 @@ WORKDIR /workspace
 # && chains commands (if first succeeds, run second)
 # \ continues command on next line for readability
 RUN apt-get update && apt-get install -y \
+    # Tab completion in the terminal
+    bash-completion \
     # Build essentials: gcc, make, binutils, etc.
     build-essential \
     # CMake + Ninja for project build (generates compile_commands.json for editor)

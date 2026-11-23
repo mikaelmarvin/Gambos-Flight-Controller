@@ -27,11 +27,6 @@ constexpr uint32_t kMagDecimation = 12U;
 
 } // namespace
 
-SensingHandler::SensingHandler(Lsm6dsvtr &imu,
-                               Iis2mdctr &mag,
-                               Bmp384 &baro)
-    : _imu(imu), _mag(mag), _baro(baro) {}
-
 bool SensingHandler::Initialize(void) {
     if (!_imu.Init()) {
         LOG("ERROR: LSM6DSVTR init failed\r\n");
